@@ -1,0 +1,12 @@
+name = "RISCV"
+version = "0.1.0"
+
+defaultTargets = ["RISCV"]
+
+[[lean_lib]]
+name = "RISCV"
+
+[[require]]
+name = "Lean_RV64D"
+git = "https://github.com/opencompl/sail-riscv-lean.git"
+rev = "main"
