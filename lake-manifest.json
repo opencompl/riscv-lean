@@ -1,0 +1,15 @@
+{"version": "1.1.0",
+ "packagesDir": ".lake/packages",
+ "packages":
+ [{"url": "https://github.com/opencompl/sail-riscv-lean.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "00d34e59e6187551e71ae651960d425dc1929c0f",
+   "name": "Lean_RV64D",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "main",
+   "inherited": false,
+   "configFile": "lakefile.toml"}],
+ "name": "RISCV",
+ "lakeDir": ".lake"}
