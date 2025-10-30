@@ -1,3 +1,5 @@
+/-! BitVec-only semantics of the RISCV operations. -/
+
 namespace RV64I
 
 def addiw (imm : (BitVec 12)) (rs1_val : (BitVec 64)) : BitVec 64 :=

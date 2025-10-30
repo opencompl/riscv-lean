@@ -4,10 +4,7 @@ import LeanRV64D
 
 open LeanRV64D.Functions
 
-/-!
-  We define a BitVec-only semantics of the Sail model, that can decouple from the Sail monad.
-
--/
+/-! Monad-free Sail-style specification -/
 
 namespace SailRV64I
 
