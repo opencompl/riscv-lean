@@ -29,3 +29,20 @@ theorem add_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
   rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
   unfold instHPowInt_leanRV64D
   bv_decide
+
+theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiwop shamt sopw.SLLIW rs1_val = slliw shamt rs1_val := by
+  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.shift_bits_left, Sail.BitVec.extractLsb, slliw]
+  unfold instHPowInt_leanRV64D
+  bv_decide
+
+theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiwop shamt sopw.SRLIW rs1_val = srliw shamt rs1_val := by
+  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.shift_bits_right, Sail.BitVec.extractLsb, srliw]
+  unfold instHPowInt_leanRV64D
+  bv_decide
+
+theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by rfl

@@ -36,3 +36,24 @@ theorem utype_eq (imm : (BitVec 20)) (rd : regidx) (op : uop) (h_pc : s.regs.get
 theorem add_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by
   simp [execute_ADDIW, skeleton_unary, SailRV64I.addiw]
+
+theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIWOP shamt rs1 rd sopw.SLLIW
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiwop shamt sopw.SLLIW val) := by
+  simp only [execute_SHIFTIWOP, Nat.sub_zero, Nat.reduceAdd, bind_pure_comp, pure_bind,
+    skeleton_unary]
+  rfl
+
+theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIWOP shamt rs1 rd sopw.SRLIW
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiwop shamt sopw.SRLIW val) := by
+  simp only [execute_SHIFTIWOP, Nat.sub_zero, Nat.reduceAdd, bind_pure_comp, pure_bind,
+    skeleton_unary]
+  rfl
+
+theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIWOP shamt rs1 rd sopw.SRAIW
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiwop shamt sopw.SRAIW val) := by
+  simp only [execute_SHIFTIWOP, Nat.sub_zero, Nat.reduceAdd, bind_pure_comp, pure_bind,
+    skeleton_unary]
+  rfl
