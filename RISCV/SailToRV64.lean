@@ -1,5 +1,4 @@
 import RISCV.SailPure
-import RISCV.Instructions
 import RISCV.Skeleton
 
 /-!
