@@ -65,3 +65,28 @@ def srliw (shamt : BitVec 6) (rs1_val : BitVec 64)  : BitVec 64 :=
 -/
 def sraiw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 (BitVec.sshiftRight' (BitVec.extractLsb 31 0 rs1_val) shamt)
+
+def addw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb' 0 32 rs1_val
+  let rs2 := BitVec.extractLsb' 0 32 rs2_val
+  BitVec.signExtend 64 (BitVec.add rs1 rs2)
+
+def subw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb' 0 32 rs1_val
+  let rs2 := BitVec.extractLsb' 0 32 rs2_val
+  BitVec.signExtend 64 (BitVec.sub rs1 rs2)
+
+def sllw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb' 0 32 rs1_val;
+  let rs2 := BitVec.extractLsb' 0 32 rs2_val;
+  let shamt := BitVec.extractLsb' 0 5 rs2;
+  BitVec.signExtend 64 (rs1 <<< shamt)
+
+def srlw (rs2_val : BitVec 64) (rs1_val : BitVec 64)  : BitVec 64 :=
+  let rs1 := BitVec.extractLsb' 0 32 rs1_val;
+  let rs2 := BitVec.extractLsb' 0 32 rs2_val;
+  let shamt := BitVec.extractLsb' 0 5 rs2;
+  BitVec.signExtend 64 (rs1 >>> shamt)
+
+def sraw (rs2_val : (BitVec 64)) (rs1_val : (BitVec 64)) :=
+  BitVec.signExtend 64 (BitVec.sshiftRight' (BitVec.extractLsb 31 0 rs1_val) (BitVec.extractLsb 4 0 rs2_val))
