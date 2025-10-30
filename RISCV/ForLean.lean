@@ -8,4 +8,4 @@ theorem sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat) (x : B
     Nat.add_sub_cancel, show i ≤ w - 1 by omega, decide_true, BitVec.getLsbD_signExtend,
     Bool.true_and]
   by_cases hni : (n + i) < w
-  <;> {simp [hni]; omega}
+  <;> (simp [hni]; omega)
