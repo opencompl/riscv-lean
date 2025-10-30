@@ -25,6 +25,7 @@ def auipc (imm : BitVec 20) (pc : BitVec 64)  : BitVec 64 :=
 -/
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 (BitVec.setWidth 32 (BitVec.add (BitVec.signExtend 64 imm) rs1_val))
+
 /--
   Performs logical left shift on the 32-bit of value in register rs1 by the shift amount held in
   the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
