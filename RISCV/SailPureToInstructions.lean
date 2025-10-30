@@ -24,6 +24,12 @@ theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
   bv_decide
 
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
+  simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
+    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw, BitVec.add_eq]
+  rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
+  unfold instHPowInt_leanRV64D
+  bv_decide
 
 theorem shiftiop_slli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
     SailRV64I.shiftiop shamt sop.SLLI rs1_val = slli shamt rs1_val := by
