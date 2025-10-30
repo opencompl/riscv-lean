@@ -75,3 +75,33 @@ theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
   simp only [execute_SHIFTIWOP, Nat.sub_zero, Nat.reduceAdd, bind_pure_comp, pure_bind,
     skeleton_unary]
   rfl
+
+theorem rtype_add_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
+    execute_RTYPEW rs2 rs1 rd ropw.ADDW
+      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.ADDW val2 val1) := by
+  simp [execute_RTYPEW, skeleton_binary]
+  rfl
+
+theorem rtype_sub_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
+    execute_RTYPEW rs2 rs1 rd ropw.SUBW
+      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SUBW val2 val1) := by
+  simp [execute_RTYPEW, skeleton_binary]
+  rfl
+
+theorem rtype_sllw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
+    execute_RTYPEW rs2 rs1 rd ropw.SLLW
+      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SLLW val2 val1) := by
+  simp [execute_RTYPEW, skeleton_binary]
+  rfl
+
+theorem rtype_srlw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
+    execute_RTYPEW rs2 rs1 rd ropw.SRLW
+      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRLW val2 val1) := by
+  simp [execute_RTYPEW, skeleton_binary]
+  rfl
+
+theorem rtype_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
+    execute_RTYPEW rs2 rs1 rd ropw.SRAW
+      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRAW val2 val1) := by
+  simp [execute_RTYPEW, skeleton_binary]
+  rfl
