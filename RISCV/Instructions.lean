@@ -16,7 +16,7 @@ def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   bits of the destination register rd, filling in the lowest 12 bits with zeros.
 -/
 def lui (imm : BitVec 20) (_ : BitVec 64) : BitVec 64 :=
-     BitVec.signExtend 64 (imm ++ (0x000 : (BitVec 12)))
+    BitVec.signExtend 64 (imm ++ 0x0 : BitVec 12))
 
 /--
   Build pc-relative addresses and uses the U-type format. AUIPC forms a 32-bit offset from the
