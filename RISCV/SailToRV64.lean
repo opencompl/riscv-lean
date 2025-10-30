@@ -4,7 +4,6 @@ import LeanRV64D.Specialization
 import LeanRV64D.RiscvExtras
 import LeanRV64D
 import LeanRV64D.InstRetire
-import SSA.Projects.RISCV64.Semantics
 
 /-!
   # Correctness of `RISCV64` Dialect Semantics
