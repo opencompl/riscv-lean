@@ -2,7 +2,7 @@ import LeanRV64D
 open LeanRV64D.Functions
 
 /-!
-  ## Skeletons
+  # Skeletons
   We implement skeletons to wrap the execution of functions taking different inputs and
   writing to a destination register into Sail monads.
 -/
