@@ -24,4 +24,4 @@ def lui (imm : BitVec 20) (_ : BitVec 64) : BitVec 64 :=
   then places the result in register rd.
 -/
 def auipc (imm : BitVec 20) (pc : BitVec 64)  : BitVec 64 :=
-    BitVec.add (BitVec.signExtend 64 (BitVec.append imm (0x000 : (BitVec 12)))) pc
+  BitVec.add (BitVec.signExtend 64 (BitVec.append imm (0x0 : BitVec 12))) pc 
