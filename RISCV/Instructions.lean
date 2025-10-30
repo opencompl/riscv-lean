@@ -71,7 +71,7 @@ def sraiw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   Arithmetic overflow is ignored and the low 32-bits of the result is sign-extended to 64-bits and
   written to the destination register.
 -/
-def addw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
+def addw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb' 0 32 rs1_val
   let rs2 := BitVec.extractLsb' 0 32 rs2_val
   BitVec.signExtend 64 (BitVec.add rs1 rs2)
@@ -81,7 +81,7 @@ def addw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
   Arithmetic overflow is ignored and the low 32-bits of the result is sign-extended to 64-bits and
   written to the destination register.
 -/
-def subw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
+def subw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb' 0 32 rs1_val
   let rs2 := BitVec.extractLsb' 0 32 rs2_val
   BitVec.signExtend 64 (BitVec.sub rs1 rs2)
@@ -91,7 +91,7 @@ def subw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
   the lower 5 bits of register rs2 and produce 32-bit results and written to the destination
   register rd.
 -/
-def sllw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
+def sllw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb' 0 32 rs1_val;
   let rs2 := BitVec.extractLsb' 0 32 rs2_val;
   let shamt := BitVec.extractLsb' 0 5 rs2;
@@ -102,7 +102,7 @@ def sllw (rs1_val : BitVec 64) (rs2_val : BitVec 64) : BitVec 64 :=
   the lower 5 bits of register rs2 and produce 32-bit results and written to the destination
   register rd.
 -/
-def srlw (rs1_val : BitVec 64) (rs2_val : BitVec 64)  : BitVec 64 :=
+def srlw (rs2_val : BitVec 64) (rs1_val : BitVec 64)  : BitVec 64 :=
   let rs1 := BitVec.extractLsb' 0 32 rs1_val;
   let rs2 := BitVec.extractLsb' 0 32 rs2_val;
   let shamt := BitVec.extractLsb' 0 5 rs2;
@@ -113,7 +113,7 @@ def srlw (rs1_val : BitVec 64) (rs2_val : BitVec 64)  : BitVec 64 :=
   in the lower 5 bits of register rs2 and produce 32-bit results and written to the destination
   register rd.
 -/
-def sraw (rs1_val : BitVec 64) (rs2_val : BitVec 64) :=
+def sraw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 4 0 rs2_val
   BitVec.signExtend 64 (BitVec.sshiftRight' rs1 rs2)
