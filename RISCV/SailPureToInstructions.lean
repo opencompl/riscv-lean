@@ -60,3 +60,14 @@ theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     Sail.BitVec.extractLsb, Int.cast_ofNat_Int, Int.reduceSub, sraiw, Nat.sub_zero, Nat.reduceAdd,
     BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
   rfl
+
+theorem shiftiop_slli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SLLI rs1_val = slli shamt rs1_val := by
+  simp [SailRV64I.shiftiop, Sail.shift_bits_left, slli]
+
+theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SRLI rs1_val = srli shamt rs1_val := by
+  simp [SailRV64I.shiftiop, Sail.shift_bits_right, srli]
+
+theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by rfl

@@ -1,4 +1,5 @@
 import RISCV.SailPure
+import RISCV.Instructions
 import RISCV.Skeleton
 
 /-!
@@ -57,3 +58,15 @@ theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
   simp only [execute_SHIFTIWOP, Nat.sub_zero, Nat.reduceAdd, bind_pure_comp, pure_bind,
     skeleton_unary]
   rfl
+
+theorem shiftiop_slli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIOP shamt rs1 rd sop.SLLI
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SLLI val) := by
+  simp [execute_SHIFTIOP, Sail.shift_bits_left, LeanRV64D.Functions.log2_xlen,
+    Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
+
+theorem shiftiop_srli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIOP shamt rs1 rd sop.SRLI
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SRLI val) := by
+  simp [execute_SHIFTIOP, Sail.shift_bits_right, LeanRV64D.Functions.log2_xlen,
+    Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
