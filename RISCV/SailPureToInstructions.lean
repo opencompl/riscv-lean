@@ -13,5 +13,5 @@ theorem add_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
   simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
     Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw, BitVec.add_eq]
   rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
-  unfold HPow.hPow instHPowInt_leanRV64D
+  unfold instHPowInt_leanRV64D
   bv_decide
