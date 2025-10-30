@@ -11,7 +11,7 @@ theorem add_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by
   simp [execute_ADDIW, skeleton_unary, SailRV64I.addiw]
 
-theorem utype_eq_lui (imm : BitVec 20) (rd : regidx):
+theorem utype_lui_eq (imm : BitVec 20) (rd : regidx):
     execute_UTYPE imm rd (uop.LUI) = skeleton_utype_lui imm rd
     (fun imm' pc => SailRV64I.utype imm' pc uop.LUI) := by
   simp only [execute_UTYPE, sign_extend, Sail.BitVec.signExtend, Nat.reduceAdd,
@@ -19,7 +19,7 @@ theorem utype_eq_lui (imm : BitVec 20) (rd : regidx):
     map_inj_right_of_nonempty]
   rfl
 
-theorem utype_eq_auipc (imm : (BitVec 20)) (rd : regidx):
+theorem utype_quipc_eq (imm : (BitVec 20)) (rd : regidx):
     execute_UTYPE imm rd (uop.AUIPC) = skeleton_utype_auipc imm rd
     (fun imm' pc => SailRV64I.utype imm' pc uop.AUIPC) := by
   simp [execute_UTYPE, skeleton_utype_auipc, SailRV64I.utype]
