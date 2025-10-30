@@ -45,6 +45,4 @@ def srliw (shamt : BitVec 6) (rs1_val : BitVec 64)  : BitVec 64 :=
   in the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
 -/
 def sraiw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
-    BitVec.signExtend 64 (BitVec.setWidth 32
-        (BitVec.extractLsb (31 + shamt.toNat) shamt.toNat
-          (BitVec.signExtend ((32) + shamt.toNat) (BitVec.extractLsb 31 0 rs1_val))))
+  BitVec.signExtend 64 (BitVec.sshiftRight' (BitVec.extractLsb 31 0 rs1_val) shamt)
