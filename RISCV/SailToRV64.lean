@@ -51,7 +51,7 @@ theorem shiftiop_srai_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
   simp [execute_SHIFTIOP, shift_bits_right_arith, LeanRV64D.Functions.log2_xlen,
     Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
 
-theorem add_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by
   simp [execute_ADDIW, skeleton_unary, SailRV64I.addiw]
 
