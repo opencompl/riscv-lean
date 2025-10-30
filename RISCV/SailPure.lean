@@ -14,6 +14,12 @@ def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop)  : BitVec 64 :=
   | uop.LUI => off
   | uop.AUIPC => BitVec.add pc off
 
+def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
+  match op with
+  | sop.SLLI => (Sail.shift_bits_left rs1_val shamt)
+  | sop.SRLI => (Sail.shift_bits_right rs1_val shamt)
+  | sop.SRAI => (shift_bits_right_arith rs1_val shamt)
+
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
   (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))

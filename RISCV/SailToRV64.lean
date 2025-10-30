@@ -33,7 +33,25 @@ theorem utype_eq (imm : (BitVec 20)) (rd : regidx) (op : uop) (h_pc : s.regs.get
       rfl
   · simp
 
-theorem add_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+theorem shiftiop_slli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIOP shamt rs1 rd sop.SLLI
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SLLI val) := by
+  simp [execute_SHIFTIOP, Sail.shift_bits_left, LeanRV64D.Functions.log2_xlen,
+    Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
+
+theorem shiftiop_srli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIOP shamt rs1 rd sop.SRLI
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SRLI val) := by
+  simp [execute_SHIFTIOP, Sail.shift_bits_right, LeanRV64D.Functions.log2_xlen,
+    Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
+
+theorem shiftiop_srai_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_SHIFTIOP shamt rs1 rd sop.SRAI
+    = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SRAI val) := by
+  simp [execute_SHIFTIOP, shift_bits_right_arith, LeanRV64D.Functions.log2_xlen,
+    Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
+
+theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by
   simp [execute_ADDIW, skeleton_unary, SailRV64I.addiw]
 
