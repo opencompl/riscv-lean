@@ -1,6 +1,5 @@
 /-! Lean theorems to be upstreamed. -/
 
-
 theorem sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat) (x : BitVec w) :
     x.sshiftRight n = ((x.signExtend (w + n)).extractLsb (w - 1 + n) n).setWidth w := by
   ext i hi
