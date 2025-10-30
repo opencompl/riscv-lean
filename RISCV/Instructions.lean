@@ -64,6 +64,4 @@ def srli (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 := rs1_val >>> sha
   lower 5 bits of the immediate In RV64, bit-25 is used to shamt[5].
 -/
 def srai (shamt : BitVec 6) (rs1_val : BitVec 64): BitVec 64 :=
-  let value := rs1_val
-  let shift := shamt.toNat
-  BitVec.setWidth 64 (BitVec.extractLsb (63 + shift) shift (BitVec.signExtend (64 + shift) value))
+  BitVec.signExtend 64 (BitVec.sshiftRight' rs1_val shamt)

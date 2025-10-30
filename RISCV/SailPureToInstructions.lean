@@ -1,5 +1,6 @@
 import RISCV.SailPure
 import RISCV.Instructions
+import RISCV.ForLean
 
 /-!
   Proofs of the equivalence between monad-free Sail specifications and bitvec-only semantics for
@@ -70,4 +71,10 @@ theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
   simp [SailRV64I.shiftiop, Sail.shift_bits_right, srli]
 
 theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by rfl
+    SailRV64I.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by
+  simp only [SailRV64I.shiftiop, LeanRV64D.Functions.shift_bits_right_arith,
+    LeanRV64D.Functions.shift_right_arith, Int.cast_ofNat_Int, Int.reduceSub,
+    Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, srai,
+    BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one,
+    BitVec.signExtend_eq]
+  rfl
