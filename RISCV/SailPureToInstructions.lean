@@ -45,9 +45,4 @@ theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
   bv_decide
 
 theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by
-  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    LeanRV64D.Functions.shift_bits_right_arith, Sail.BitVec.extractLsb, sraiw, Nat.sub_zero,
-    Nat.reduceAdd]
-  unfold instHPowInt_leanRV64D
-  bv_decide
+    SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by rfl
