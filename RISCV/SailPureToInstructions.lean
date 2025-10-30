@@ -44,5 +44,19 @@ theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
   unfold instHPowInt_leanRV64D
   bv_decide
 
+
+theorem sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat) (x : BitVec w) :
+    x.sshiftRight n = ((x.signExtend (w + n)).extractLsb (w - 1 + n) n).setWidth w := by
+  ext i hi
+  simp [BitVec.getElem_sshiftRight]
+  simp [show i ≤ w - 1 by omega]
+  simp [BitVec.getLsbD_signExtend]
+  by_cases hni : (n + i) < w <;> simp [hni] <;> omega
+
 theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by rfl
+    SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by
+  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    LeanRV64D.Functions.shift_bits_right_arith, LeanRV64D.Functions.shift_right_arith,
+    Sail.BitVec.extractLsb, Int.cast_ofNat_Int, Int.reduceSub, sraiw, Nat.sub_zero, Nat.reduceAdd,
+    BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
+  rfl
