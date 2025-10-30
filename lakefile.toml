@@ -10,8 +10,3 @@ name = "RISCV"
 name = "Lean_RV64D"
 git = "https://github.com/opencompl/sail-riscv-lean.git"
 rev = "main"
-
-[[require]]
-name = "lean-mlir"
-git = "https://github.com/opencompl/lean-mlir.git"
-rev = "main"
