@@ -24,8 +24,7 @@ theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
   bv_decide
 
 theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
-    SailRV64I.utype imm pc (uop.AUIPC)
-    = RV64I.auipc imm pc:= by
+    SailRV64I.utype imm pc (uop.AUIPC) = RV64I.auipc imm pc := by
   simp only [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
     Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.add_eq, auipc, BitVec.append_eq]
   unfold instHPowInt_leanRV64D
