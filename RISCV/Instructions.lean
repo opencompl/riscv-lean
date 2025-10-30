@@ -46,3 +46,21 @@ def srliw (shamt : BitVec 6) (rs1_val : BitVec 64)  : BitVec 64 :=
 -/
 def sraiw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 (BitVec.sshiftRight' (BitVec.extractLsb 31 0 rs1_val) shamt)
+
+/--
+  Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5
+  bits of the immediate In RV64, bit-25 is used to shamt[5].
+-/
+def slli (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 := rs1_val <<< shamt
+
+/--
+  Performs logical right shift on the value in register rs1 by the shift amount held in the lower 5
+  bits of the immediate In RV64, bit-25 is used to shamt[5].
+-/
+def srli (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 := rs1_val >>> shamt
+
+/--
+  Performs arithmetic right shift on the value in register rs1 by the shift amount held in the
+  lower 5 bits of the immediate In RV64, bit-25 is used to shamt[5].
+-/
+def srai (shamt : BitVec 6) (rs1_val : BitVec 64): BitVec 64 := BitVec.sshiftRight' rs1_val  shamt
