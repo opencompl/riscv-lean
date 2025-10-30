@@ -4,6 +4,7 @@ import LeanRV64D.Specialization
 import LeanRV64D.RiscvExtras
 import LeanRV64D
 import LeanRV64D.InstRetire
+import RISCV.SailPure
 
 /-!
   # Correctness of `RISCV64` Dialect Semantics
@@ -67,3 +68,8 @@ def skeleton_UTYPE_LUI  (imm : BitVec 20) (rd : regidx)
   let result := execute_func imm 0#64
   wX_bits rd result
   pure RETIRE_SUCCESS
+
+
+theorem add_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ADDIW (imm) (rs1) (rd) = skeleton_unary rs1 rd (RV64I.addiw imm) := by
+  simp [execute_ADDIW, skeleton_unary, RV64I.addiw]
