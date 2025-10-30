@@ -38,3 +38,15 @@ def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
   | sop.SLLI => (Sail.shift_bits_left rs1_val shamt)
   | sop.SRLI => (Sail.shift_bits_right rs1_val shamt)
   | sop.SRAI => (shift_bits_right_arith rs1_val shamt)
+
+def rtipew (op : ropw) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
+  let rs2_val32 :=  Sail.BitVec.extractLsb rs2_val 31 0
+  let result : (BitVec 32) :=
+    match op with
+    | ropw.ADDW => (rs1_val32 + rs2_val32)
+    | ropw.SUBW => (rs1_val32 - rs2_val32)
+    | ropw.SLLW => (Sail.shift_bits_left rs1_val32 (Sail.BitVec.extractLsb rs2_val32 4 0))
+    | ropw.SRLW => (Sail.shift_bits_right rs1_val32 (Sail.BitVec.extractLsb rs2_val32 4 0))
+    | ropw.SRAW => (shift_bits_right_arith rs1_val32 (Sail.BitVec.extractLsb rs2_val32 4 0))
+  ((sign_extend (m := ((2 ^i 3) *i 8)) result))
