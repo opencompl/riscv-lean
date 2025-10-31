@@ -160,3 +160,7 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
       = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRAW val2 val1) := by
   simp [execute_RTYPEW, skeleton_binary]
   rfl
+
+/-! # RV32M, RV64M Instructions -/
+
+/-! # RV64M Instructions -/

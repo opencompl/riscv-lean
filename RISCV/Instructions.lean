@@ -188,3 +188,7 @@ def sraw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 4 0 rs2_val
   BitVec.signExtend 64 (BitVec.sshiftRight' rs1 rs2)
+
+/-! # RV32M, RV64M Instructions -/
+
+/-! # RV64M Instructions -/

@@ -141,3 +141,7 @@ theorem rtypew_sraw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
     sraw, BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend,
     Nat.add_one_sub_one]
   rfl
+
+/-! # RV32M, RV64M Instructions -/
+
+/-! # RV64M Instructions -/
