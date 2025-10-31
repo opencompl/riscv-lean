@@ -8,3 +8,15 @@ theorem sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat) (x : B
     Bool.true_and]
   by_cases hni : (n + i) < w
   <;> (simp [hni]; omega)
+
+theorem extractLsb'_eq_setWidth {x : BitVec w} : x.extractLsb' 0 n = x.setWidth n := by
+  ext i hi
+  simp
+
+theorem extractLsb'_ofInt_eq_ofInt {x : Int} {w w' : Nat}  {h : w ≤ w'} :
+    (BitVec.extractLsb' 0 w (BitVec.ofInt w' x)) = (BitVec.ofInt w x) := by
+  simp only [extractLsb'_eq_setWidth, ← BitVec.signExtend_eq_setWidth_of_le _ (by omega)]
+  apply BitVec.eq_of_toInt_eq
+  simp only [BitVec.toInt_signExtend, BitVec.toInt_ofInt, h, Nat.min_eq_left]
+  rw [Int.bmod_bmod_of_dvd]
+  apply Nat.pow_dvd_pow 2 h

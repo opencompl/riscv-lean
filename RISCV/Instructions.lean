@@ -189,6 +189,12 @@ def sraw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
   let rs2 := BitVec.extractLsb 4 0 rs2_val
   BitVec.signExtend 64 (BitVec.sshiftRight' rs1 rs2)
 
-/-! # RV32M, RV64M Instructions -/
+/-! # M Extension for Integer Multiplication and Division -/
 
-/-! # RV64M Instructions -/
+/--
+  Perform an XLEN bits by XLEN bits signed integer reminder of rs1 by rs2.
+-/
+def rem (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if is_unsigned then
+    if rs2_val = 0 then rs1_val else rs1_val.umod rs2_val
+  else rs1_val.srem rs2_val
