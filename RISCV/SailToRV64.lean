@@ -161,7 +161,7 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
   simp [execute_RTYPEW, skeleton_binary]
   rfl
 
-/-! # RV32M, RV64M Instructions -/
+/-! # M Extension for Integer Multiplication and Division -/
 
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd true
@@ -170,8 +170,6 @@ theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by rfl
-
-/-! # RV64M Instructions -/
 
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
