@@ -74,7 +74,7 @@ def sltu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   Performs bitwise XOR on registers rs1 and rs2 and place the result in rd.
 -/
 def xor (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.xor rs2_val rs1_val
+  BitVec.xor rs1_val rs2_val
 
 /--
   Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of
@@ -95,13 +95,13 @@ def sra (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
 -/
 def or (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.or rs2_val rs1_val
+  BitVec.or rs1_val rs2_val
 
 /--
   Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 -/
 def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.and rs2_val rs1_val
+  BitVec.and rs1_val rs2_val
 
 /--
   Adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign-extension
