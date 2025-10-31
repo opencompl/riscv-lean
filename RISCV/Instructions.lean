@@ -40,13 +40,13 @@ def srai (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
   Adds the registers rs1 and rs2 and stores the result in rd. Arithmetic overflow is ignored and
   the result is simply the low XLEN bits of the result.
 -/
-def add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := BitVec.add rs1_val rs2_val
+def add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val + rs2_val
 
 /--
   Subs the register rs2 from rs1 and stores the result in rd. Arithmetic overflow is ignored and
   the result is simply the low XLEN bits of the result.
 -/
-def sub (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := BitVec.sub rs1_val rs2_val
+def sub (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val - rs2_val
 
 /--
   Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5
@@ -73,8 +73,7 @@ def sltu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 /--
   Performs bitwise XOR on registers rs1 and rs2 and place the result in rd.
 -/
-def xor (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.xor rs1_val rs2_val
+def xor (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val ^^^ rs2_val
 
 /--
   Logical right shift on the value in register rs1 by the shift amount held in the lower 5 bits of
@@ -94,14 +93,12 @@ def sra (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 /--
   Performs bitwise OR on registers rs1 and rs2 and place the result in rd.
 -/
-def or (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.or rs1_val rs2_val
+def or (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val ||| rs2_val
 
 /--
   Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 -/
-def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.and rs1_val rs2_val
+def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val &&& rs2_val
 
 /--
   Adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign-extension
