@@ -20,7 +20,7 @@ def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
   | sop.SRLI => (Sail.shift_bits_right rs1_val shamt)
   | sop.SRAI => (shift_bits_right_arith rs1_val shamt)
 
-def rtype (op : rop)  (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   match op with
   | rop.ADD => rs1_val + rs2_val
   | rop.SUB => rs1_val - rs2_val
