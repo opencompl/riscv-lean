@@ -8,7 +8,7 @@ open LeanRV64D.Functions
 
 namespace SailRV64I
 
-def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop)  : BitVec 64 :=
+def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
   let off := (sign_extend (m := (2 ^i 3) *i 8) (imm ++ (0x0 : BitVec 12)))
   match op with
   | uop.LUI => off
