@@ -5,12 +5,12 @@ import RISCV.ForLean
 /-!
   Proofs of the equivalence between monad-free Sail specifications and bitvec-only semantics for
   RISCV operations.
-  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+  Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
 namespace RV64I
 
-/-! # RV32I, RV64I Instructions -/
+/-! # RV64I HINT -/
 
 theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
     SailRV64I.utype imm pc (uop.LUI) = RV64I.lui imm pc := by
@@ -25,6 +25,31 @@ theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
     Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.add_eq, auipc, BitVec.append_eq]
   unfold instHPowInt_leanRV64D
   bv_decide
+
+theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
+  simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
+    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw, BitVec.add_eq]
+  rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
+  unfold instHPowInt_leanRV64D
+  bv_decide
+
+theorem shiftiop_slli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SLLI rs1_val = slli shamt rs1_val := by
+  simp [SailRV64I.shiftiop, Sail.shift_bits_left, slli]
+
+theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SRLI rs1_val = srli shamt rs1_val := by
+  simp [SailRV64I.shiftiop, Sail.shift_bits_right, srli]
+
+theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by
+  simp only [SailRV64I.shiftiop, LeanRV64D.Functions.shift_bits_right_arith,
+    LeanRV64D.Functions.shift_right_arith, Int.cast_ofNat_Int, Int.reduceSub,
+    Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, srai,
+    BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one,
+    BitVec.signExtend_eq]
+  rfl
 
 theorem rtype_add_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.ADD rs2_val rs1_val = RV64I.add rs2_val rs1_val := by rfl
@@ -59,33 +84,6 @@ theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.AND rs2_val rs1_val = RV64I.and rs2_val rs1_val := by rfl
-
-/-! # RV64I Instructions -/
-
-theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
-    SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
-  simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
-    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw, BitVec.add_eq]
-  rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
-  unfold instHPowInt_leanRV64D
-  bv_decide
-
-theorem shiftiop_slli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiop shamt sop.SLLI rs1_val = slli shamt rs1_val := by
-  simp [SailRV64I.shiftiop, Sail.shift_bits_left, slli]
-
-theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiop shamt sop.SRLI rs1_val = srli shamt rs1_val := by
-  simp [SailRV64I.shiftiop, Sail.shift_bits_right, srli]
-
-theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by
-  simp only [SailRV64I.shiftiop, LeanRV64D.Functions.shift_bits_right_arith,
-    LeanRV64D.Functions.shift_right_arith, Int.cast_ofNat_Int, Int.reduceSub,
-    Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, srai,
-    BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one,
-    BitVec.signExtend_eq]
-  rfl
 
 theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SLLIW rs1_val = slliw shamt rs1_val := by

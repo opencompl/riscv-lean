@@ -3,12 +3,12 @@ import RISCV.Skeleton
 
 /-!
   Proofs of the equivalence between monadic and monad-free Sail specifications.
-  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+  Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
 open LeanRV64D.Functions
 
-/-! # RV32I, RV64I Instructions -/
+/-! # RV64I Base Integer Instruction Set -/
 
 theorem utype_lui_eq (imm : BitVec 20) (rd : regidx) :
     execute_UTYPE imm rd uop.LUI = skeleton_utype_lui imm rd
@@ -35,6 +35,9 @@ theorem utype_eq (imm : BitVec 20) (rd : regidx) (op : uop) (h_pc : s.regs.get? 
     · simp only
       rfl
   · simp
+
+theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by rfl
 
 theorem shiftiop_slli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     execute_SHIFTIOP shamt rs1 rd sop.SLLI
@@ -103,11 +106,6 @@ theorem rtype_and_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_RTYPE rs2 rs1 rd rop.AND
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.AND val2 val1) := by
   simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
-
-/-! # RV64I Instructions -/
-
-theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
-    execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by rfl
 
 theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     execute_SHIFTIWOP shamt rs1 rd sopw.SLLIW
