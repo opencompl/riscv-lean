@@ -55,7 +55,7 @@ theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.OR rs2_val rs1_val = RV64I.or rs2_val rs1_val := by rfl
 
 theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.rtype rop.OR rs2_val rs1_val = RV64I.or rs2_val rs1_val := by rfl
+    SailRV64I.rtype rop.AND rs2_val rs1_val = RV64I.and rs2_val rs1_val := by rfl
 
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
