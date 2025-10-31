@@ -6,18 +6,22 @@ open LeanRV64D.Functions
 
 /-!
   Monad-free Sail-style specification
-  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+  Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
 namespace SailRV64I
 
-/-! # RV32I, RV64I Instructions -/
+/-! # RV64I Base Integer Instruction Set -/
 
 def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
   let off := (sign_extend (m := (2 ^i 3) *i 8) (imm ++ (0x0 : BitVec 12)))
   match op with
   | uop.LUI => off
   | uop.AUIPC => BitVec.add pc off
+
+def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
+  let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
+  (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))
 
 def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
   match op with
@@ -43,12 +47,6 @@ def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
         (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
   | rop.OR => rs1_val ||| rs2_val
   | rop.AND => rs1_val &&& rs2_val
-
-/-! # RV64I Instructions -/
-
-def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
-  let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
-  (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))
 
 def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
