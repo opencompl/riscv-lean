@@ -147,17 +147,41 @@ theorem rtypew_sraw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
 theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rem true rs1_val rs2_val = rem true rs1_val rs2_val := by
   simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, rem]
-  by_cases h1 : rs1_val = 0
+  by_cases h1 : rs1_val = 0#64
   · simp [h1, BitVec.extractLsb'_setWidth_of_le]
-  · have : ¬ rs1_val.toNat = 0 := by
-      simp only [BitVec.ofNat_eq_ofNat, BitVec.toNat_eq, BitVec.toNat_ofNat, Nat.reducePow,
-        Nat.zero_mod] at h1
-      simp [h1]
-    simp only [Nat.reduceAdd, ↓reduceIte, beq_iff_eq, this, Nat.reduceLeDiff,
-      extractLsb'_ofInt_eq_ofInt, BitVec.umod_eq]
-    conv =>
-      rhs
-      simp [show ¬ rs1_val = 0#64 by omega]
+  · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
+    have h1' : ¬rs1_val.toNat = 0 := by simp [BitVec.toNat_eq] at h1; exact h1
+    simp only [BitVec.ofNat_eq_ofNat, h1, h1', reduceIte, BitVec.umod_eq]
+    rw [extractLsb'_ofInt_eq_ofInt (by omega)]
+    apply BitVec.eq_of_toInt_eq
+    simp only [BitVec.toInt_ofInt, Nat.reducePow, BitVec.toInt_umod]
+    rfl
+
+theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rem false rs1_val rs2_val = rem false rs1_val rs2_val := by
+  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, rem]
+  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
+  split
+  · case _ h => simp at h
+  · case isFalse hf =>
+    rw [← BitVec.toInt_srem]
+    rw [BitVec.ofInt_toInt]
+    by_cases h1 : rs1_val = 0#64
+    · simp only [Nat.reduceAdd, Bool.false_eq_true, ↓reduceIte, h1, BitVec.toInt_zero,
+      Int.toNat_zero, BEq.rfl, BitVec.reduceEq]
+      rw [extractLsb'_ofInt_eq_ofInt (by omega)]
+      apply?
+      apply BitVec.eq_of_toInt_eq
+      simp only [Int.ofNat_toNat, BitVec.toInt_ofInt]
+
+
+
+    sorry
+
+  · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
+    have h1' : ¬rs1_val.toNat = 0 := by simp [BitVec.toNat_eq] at h1; exact h1
+    simp only [BitVec.ofNat_eq_ofNat, h1, h1', reduceIte, BitVec.umod_eq]
+    rw [extractLsb'_ofInt_eq_ofInt (by omega)]
     apply BitVec.eq_of_toInt_eq
     simp only [BitVec.toInt_ofInt, Nat.reducePow, BitVec.toInt_umod]
     rfl
