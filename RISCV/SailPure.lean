@@ -52,7 +52,7 @@ def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
 
 def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
-  let result : (BitVec 32) :=
+  let result : BitVec 32 :=
     match op with
     | sopw.SLLIW => (Sail.shift_bits_left rs1_val32 shamt)
     | sopw.SRLIW => (Sail.shift_bits_right rs1_val32 shamt)
@@ -62,7 +62,7 @@ def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :
 def rtypew (op : ropw) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
   let rs2_val32 :=  Sail.BitVec.extractLsb rs2_val 31 0
-  let result : (BitVec 32) :=
+  let result : BitVec 32 :=
     match op with
     | ropw.ADDW => (rs1_val32 + rs2_val32)
     | ropw.SUBW => (rs1_val32 - rs2_val32)
