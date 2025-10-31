@@ -8,7 +8,7 @@ import RISCV.Skeleton
 open LeanRV64D.Functions
 
 theorem utype_lui_eq (imm : BitVec 20) (rd : regidx):
-    execute_UTYPE imm rd (uop.LUI) = skeleton_utype_lui imm rd
+    execute_UTYPE imm rd uop.LUI = skeleton_utype_lui imm rd
     (fun imm' pc => SailRV64I.utype imm' pc uop.LUI) := by
   simp only [execute_UTYPE, sign_extend, Sail.BitVec.signExtend, Nat.reduceAdd,
     BitVec.ofNat_eq_ofNat, bind_pure_comp, pure_bind, skeleton_utype_lui, imp_self, implies_true,
@@ -16,7 +16,7 @@ theorem utype_lui_eq (imm : BitVec 20) (rd : regidx):
   rfl
 
 theorem utype_auipc_eq (imm : BitVec 20) (rd : regidx):
-    execute_UTYPE imm rd (uop.AUIPC) = skeleton_utype_auipc imm rd
+    execute_UTYPE imm rd uop.AUIPC = skeleton_utype_auipc imm rd
     (fun imm' pc => SailRV64I.utype imm' pc uop.AUIPC) := by
   simp [execute_UTYPE, skeleton_utype_auipc, SailRV64I.utype]
 
