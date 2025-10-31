@@ -20,12 +20,31 @@ def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
   | sop.SRLI => (Sail.shift_bits_right rs1_val shamt)
   | sop.SRAI => (shift_bits_right_arith rs1_val shamt)
 
+def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  match op with
+  | rop.ADD => rs1_val + rs2_val
+  | rop.SUB => rs1_val - rs2_val
+  | rop.SLL =>
+    (Sail.shift_bits_left rs1_val
+        (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
+  | rop.SLT => (zero_extend (m := ((2 ^i 3) *i 8)) (bool_to_bits (zopz0zI_s rs1_val rs2_val)))
+  | rop.SLTU => (zero_extend (m := ((2 ^i 3) *i 8)) (bool_to_bits (zopz0zI_u rs1_val rs2_val)))
+  | rop.XOR => rs1_val ^^^ rs2_val
+  | rop.SRL =>
+    (Sail.shift_bits_right rs1_val
+        (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
+  | rop.SRA =>
+    (shift_bits_right_arith rs1_val
+        (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
+  | rop.OR => rs1_val ||| rs2_val
+  | rop.AND => rs1_val &&& rs2_val
+
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
   (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))
 
 def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :=
-  let rs1_val32 := Sail.BitVec.extractLsb (rs1_val) 31 0
+  let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
   let result : (BitVec 32) :=
     match op with
     | sopw.SLLIW => (Sail.shift_bits_left rs1_val32 shamt)

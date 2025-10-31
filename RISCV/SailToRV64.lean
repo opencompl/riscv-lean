@@ -51,6 +51,56 @@ theorem shiftiop_srai_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
   simp [execute_SHIFTIOP, shift_bits_right_arith, LeanRV64D.Functions.log2_xlen,
     Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
 
+theorem rtype_add_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.ADD
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.ADD val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_sub_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SUB
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SUB val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_sll_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SLL
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SLL val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_slt_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SLT
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SLT val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_sltu_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SLTU
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SLTU val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_xor_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.XOR
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.XOR val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_srl_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SRL
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SRL val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_sra_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.SRA
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.SRA val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_or_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.OR
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.OR val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
+theorem rtype_and_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs2 rs1 rd rop.AND
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtype rop.AND val2 val1) := by
+  simp [execute_RTYPE, skeleton_binary, SailRV64I.rtype]
+
 theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by
   simp [execute_ADDIW, skeleton_unary, SailRV64I.addiw]

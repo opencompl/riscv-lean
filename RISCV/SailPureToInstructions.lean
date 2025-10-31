@@ -23,6 +23,40 @@ theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
   unfold instHPowInt_leanRV64D
   bv_decide
 
+theorem rtype_add_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.ADD rs2_val rs1_val = RV64I.add rs2_val rs1_val := by rfl
+
+theorem rtype_sub_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SUB rs2_val rs1_val = RV64I.sub rs2_val rs1_val := by rfl
+
+theorem rtype_sll_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SLL rs2_val rs1_val = RV64I.sll rs2_val rs1_val := by rfl
+
+theorem rtype_slt_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SLT rs2_val rs1_val = RV64I.slt rs2_val rs1_val := by rfl
+
+theorem rtype_sltu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SLTU rs2_val rs1_val = RV64I.sltu rs2_val rs1_val := by rfl
+
+theorem rtype_xor_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.XOR rs2_val rs1_val = RV64I.xor rs2_val rs1_val := by rfl
+
+theorem rtype_srl_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SRL rs2_val rs1_val = RV64I.srl rs2_val rs1_val := by rfl
+
+theorem rtype_sra_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.SRA rs2_val rs1_val = RV64I.sra rs2_val rs1_val := by
+  simp only [SailRV64I.rtype, Nat.sub_zero, sra, Nat.reduceAdd, BitVec.sshiftRight_eq',
+    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow,
+    sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
+  rfl
+
+theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.OR rs2_val rs1_val = RV64I.or rs2_val rs1_val := by rfl
+
+theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rtype rop.AND rs2_val rs1_val = RV64I.and rs2_val rs1_val := by rfl
+
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
   simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
