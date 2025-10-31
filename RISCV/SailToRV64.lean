@@ -163,4 +163,20 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 /-! # RV32M, RV64M Instructions -/
 
+theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_REM rs2 rs1 rd true
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := by rfl
+
+theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_REM rs2 rs1 rd false
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by rfl
+
 /-! # RV64M Instructions -/
+
+theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_REMW rs2 rs1 rd true
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := by rfl
+
+theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_REMW rs2 rs1 rd false
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := by rfl
