@@ -14,7 +14,7 @@ def lui (imm : BitVec 20) (_ : BitVec 64) : BitVec 64 :=
   20-bit U-immediate, filling in the lowest 12 bits with zeros, adds this offset to the pc,
   then places the result in register rd.
 -/
-def auipc (imm : BitVec 20) (pc : BitVec 64)  : BitVec 64 :=
+def auipc (imm : BitVec 20) (pc : BitVec 64) : BitVec 64 :=
   BitVec.add (BitVec.signExtend 64 (BitVec.append imm (0x0 : BitVec 12))) pc
 
 /--
@@ -49,14 +49,14 @@ def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   Performs logical left shift on the 32-bit of value in register rs1 by the shift amount held in
   the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
 -/
-def slliw (shamt : BitVec 6) (rs1_val : BitVec 64)  : BitVec 64 :=
+def slliw (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 ((BitVec.extractLsb' 0 32 rs1_val) <<< shamt)
 
 /--
   Performs logical right shift on the 32-bit of value in register rs1 by the shift amount held in
   the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
 -/
-def srliw (shamt : BitVec 6) (rs1_val : BitVec 64)  : BitVec 64 :=
+def srliw (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 ((BitVec.extractLsb' 0 32 rs1_val) >>> shamt)
 
 /--
@@ -102,7 +102,7 @@ def sllw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   the lower 5 bits of register rs2 and produce 32-bit results and written to the destination
   register rd.
 -/
-def srlw (rs2_val : BitVec 64) (rs1_val : BitVec 64)  : BitVec 64 :=
+def srlw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb' 0 32 rs1_val;
   let rs2 := BitVec.extractLsb' 0 32 rs2_val;
   let shamt := BitVec.extractLsb' 0 5 rs2;
