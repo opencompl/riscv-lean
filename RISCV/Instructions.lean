@@ -1,6 +1,11 @@
-/-! BitVec-only semantics of the RISCV operations. -/
+/-!
+  BitVec-only semantics of the RISCV operations.
+  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+-/
 
 namespace RV64I
+
+/-! # RV32I, RV64I Instructions -/
 
 /--
   Build 32-bit constants and uses the U-type format. LUI places the U-immediate value in the top 20
@@ -99,6 +104,8 @@ def or (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val ||| rs
   Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 -/
 def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val &&& rs2_val
+
+/-! # RV64I Instructions -/
 
 /--
   Adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign-extension

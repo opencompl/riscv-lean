@@ -5,9 +5,12 @@ import RISCV.ForLean
 /-!
   Proofs of the equivalence between monad-free Sail specifications and bitvec-only semantics for
   RISCV operations.
+  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
 -/
 
 namespace RV64I
+
+/-! # RV32I, RV64I Instructions -/
 
 theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
     SailRV64I.utype imm pc (uop.LUI) = RV64I.lui imm pc := by
@@ -56,6 +59,8 @@ theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.AND rs2_val rs1_val = RV64I.and rs2_val rs1_val := by rfl
+
+/-! # RV64I Instructions -/
 
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by

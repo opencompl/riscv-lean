@@ -4,9 +4,14 @@ import LeanRV64D
 
 open LeanRV64D.Functions
 
-/-! Monad-free Sail-style specification -/
+/-!
+  Monad-free Sail-style specification
+  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+-/
 
 namespace SailRV64I
+
+/-! # RV32I, RV64I Instructions -/
 
 def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
   let off := (sign_extend (m := (2 ^i 3) *i 8) (imm ++ (0x0 : BitVec 12)))
@@ -38,6 +43,8 @@ def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
         (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
   | rop.OR => rs1_val ||| rs2_val
   | rop.AND => rs1_val &&& rs2_val
+
+/-! # RV64I Instructions -/
 
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
