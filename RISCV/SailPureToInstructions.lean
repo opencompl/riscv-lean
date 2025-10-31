@@ -145,8 +145,8 @@ theorem rtypew_sraw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
 /-! # M Extension for Integer Multiplication and Division -/
 
 theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.rem true rs1_val rs2_val = rem true rs1_val rs2_val := by
-  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, rem]
+    SailRV64I.rem true rs1_val rs2_val = remu rs1_val rs2_val := by
+  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, remu]
   by_cases h1 : rs1_val = 0#64
   · simp [h1, BitVec.extractLsb'_setWidth_of_le]
   · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
@@ -158,7 +158,7 @@ theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     rfl
 
 theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.rem false rs1_val rs2_val = rem false rs1_val rs2_val := by
+    SailRV64I.rem false rs1_val rs2_val = remu  rs1_val rs2_val := by
   simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, rem]
   rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
   split

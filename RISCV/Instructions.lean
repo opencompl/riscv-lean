@@ -194,19 +194,27 @@ def sraw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
 /--
   Perform an XLEN bits by XLEN bits signed integer reminder of rs1 by rs2.
 -/
-def rem (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  if is_unsigned then
-    if rs2_val = 0 then rs1_val else rs1_val.umod rs2_val
-  else
-    if rs2_val = 0 then rs1_val else rs1_val.srem rs2_val
+def rem (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0 then rs1_val else rs1_val.srem rs2_val
+
+/--
+  Perform an XLEN bits by XLEN bits unsigned integer reminder of rs1 by rs2.
+-/
+def remu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0 then rs1_val else rs1_val.umod rs2_val
 
 /--
   Perform an 32 bits by 32 bits signed integer reminder of rs1 by rs2.
 -/
-def remw (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+def remw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 31 0 rs2_val
-  if is_unsigned then
-    if rs2_val = 0#64 then rs1_val else BitVec.signExtend 64 (rs1.umod rs2)
-  else
-    if rs2_val = 0#64 then rs1_val else BitVec.signExtend 64 (rs1.srem rs2)
+  if rs2_val = 0#64 then rs1_val else BitVec.signExtend 64 (rs1.srem rs2)
+
+/--
+  Perform an 32 bits by 32 bits unsigned integer reminder of rs1 by rs2.
+-/
+def remuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  let rs2 := BitVec.extractLsb 31 0 rs2_val
+  if rs2_val = 0#64 then rs1_val else BitVec.signExtend 64 (rs1.umod rs2)
