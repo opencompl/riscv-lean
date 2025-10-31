@@ -15,12 +15,12 @@ theorem utype_lui_eq (imm : BitVec 20) (rd : regidx):
     map_inj_right_of_nonempty]
   rfl
 
-theorem utype_auipc_eq (imm : (BitVec 20)) (rd : regidx):
+theorem utype_auipc_eq (imm : BitVec 20) (rd : regidx):
     execute_UTYPE imm rd (uop.AUIPC) = skeleton_utype_auipc imm rd
     (fun imm' pc => SailRV64I.utype imm' pc uop.AUIPC) := by
   simp [execute_UTYPE, skeleton_utype_auipc, SailRV64I.utype]
 
-theorem utype_eq (imm : (BitVec 20)) (rd : regidx) (op : uop) (h_pc : s.regs.get? Register.PC = some valt):
+theorem utype_eq (imm : BitVec 20) (rd : regidx) (op : uop) (h_pc : s.regs.get? Register.PC = some valt):
     execute_UTYPE imm rd op s = skeleton_utype imm rd op SailRV64I.utype s := by
   simp [execute_UTYPE, skeleton_utype, SailRV64I.utype]
   cases op
