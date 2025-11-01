@@ -22,7 +22,7 @@ theorem extractLsb'_ofInt_eq_ofInt {x : Int} {w w' : Nat} (h : w ≤ w') :
   rw [Int.bmod_bmod_of_dvd]
   apply Nat.pow_dvd_pow 2 h
 
-theorem lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
+theorem Int.lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
   match a, b, Int.eq_negSucc_of_lt_zero H with
   | Int.ofNat _, _, ⟨n, rfl⟩ => by
     rename_i aas
@@ -33,7 +33,7 @@ theorem lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
     have :=  ((@Int.ofNat_ne_zero n.succ).2 (Nat.succ_ne_zero n))
     omega
 
-theorem tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :=
+theorem Int.tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :=
   match a, b, Int.eq_negSucc_of_lt_zero H with
   | Int.ofNat _, _, ⟨n, rfl⟩ => by
     rename_i aas
@@ -67,4 +67,30 @@ theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb :
       rw [Int.emod_eq_of_lt]
       omega
       omega
+      omega
+
+theorem BitVec.ofInt_toInt_tmod_toInt {x y : BitVec w} :
+    (BitVec.ofInt w (x.toInt.tmod y.toInt)).toInt = x.toInt.tmod y.toInt := by
+  rw [BitVec.toInt_ofInt]
+  by_cases hb : y.toInt = 0
+  · simp [hb]
+
+  have xlt := @BitVec.two_mul_toInt_lt w x
+  have ylt := @BitVec.two_mul_toInt_lt w y
+  have lex := @BitVec.le_two_mul_toInt w x
+  have ley := @BitVec.le_two_mul_toInt w y
+
+  rw [Int.bmod_eq_of_le_mul_two]
+  <;> simp
+  · by_cases hy : 0 < y.toInt
+    · have := @Int.lt_tmod_of_pos x.toInt y.toInt hy
+      omega
+    · have := @Int.lt_tmod_of_neg x.toInt y.toInt (by omega)
+      omega
+  · by_cases hy : 0 < y.toInt
+    · have := @Int.tmod_lt_of_pos x.toInt y.toInt hy
+      omega
+    · have := @Int.lt_tmod_of_neg x.toInt y.toInt (by omega)
+      have : x.toInt.tmod y.toInt < -y.toInt := @Int.tmod_lt_of_neg x.toInt y.toInt (by omega)
+      norm_cast at *
       omega

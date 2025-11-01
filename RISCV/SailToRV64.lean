@@ -144,6 +144,7 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd true
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := by
+  -- This should be by rfl after the SAIL model is fixed.
   simp only [execute_REM, SailRV64I.rem, skeleton_binary]
   simp [to_bits_truncate, Sail.get_slice_int]
   congr; ext a; congr; ext b; congr
@@ -155,6 +156,7 @@ theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by
+  -- This should be by rfl after the SAIL model is fixed.
   simp only [execute_REM, SailRV64I.rem, skeleton_binary]
   simp [to_bits_truncate, Sail.get_slice_int]
   congr; ext a; congr; ext b; congr
@@ -166,7 +168,6 @@ theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     sorry
   · simp [hh]
     sorry
-
 
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
