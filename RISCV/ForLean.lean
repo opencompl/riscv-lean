@@ -35,8 +35,18 @@ theorem lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
 
 theorem tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :=
   match a, b, Int.eq_negSucc_of_lt_zero H with
-  | Int.ofNat _, _, ⟨n, rfl⟩ => by sorry
-  | Int.negSucc _, _, ⟨n, rfl⟩ => Int.negSucc_eq n ▸ by sorry
+  | Int.ofNat _, _, ⟨n, rfl⟩ => by
+    rename_i aas
+    simp
+    simp [Int.tmod]
+    simp at *
+    norm_cast
+    apply Nat.mod_lt
+    omega
+  | Int.negSucc _, _, ⟨n, rfl⟩ => by
+    simp [Int.tmod]
+    norm_cast
+    omega
 
 theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb : 0 ≤ b) : a % b < x := by
   by_cases hb : b = 0
