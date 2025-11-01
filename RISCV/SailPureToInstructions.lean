@@ -158,51 +158,23 @@ theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     simp only [Int.natCast_eq_zero, h1', ↓reduceIte]
     congr
 
+
+theorem ofInt_toInt_tmod_toInt {x y : BitVec w} :
+    (BitVec.ofInt w (x.toInt.tmod y.toInt)).toInt = x.toInt.tmod y.toInt := by
+  sorry
+
 theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rem false rs1_val rs2_val = rem rs1_val rs2_val := by
-  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate,
-    Sail.get_slice_int, rem]
-  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
-  split
-  case isTrue ht  =>
-    simp only [BitVec.ofInt_toInt, BitVec.srem, BitVec.umod_eq, BitVec.neg_eq]
-    obtain rfl : rs2_val = 0#_ :=
-      BitVec.eq_of_toInt_eq ht
-    split <;> simp
-  case isFalse hf =>
-    rw [← BitVec.toInt_srem ]
-    rw [BitVec.ofInt_toInt]
-  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
+  simp only [SailRV64I.rem, rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int]
   simp
+  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
   by_cases h : rs1_val = 0#64
   · simp [h]
   · simp [h]
-    have hh := @BitVec.toInt_ne 64 rs1_val 0
-    simp at hh
-    simp [h] at hh
+    simp at h
+    simp [← BitVec.toInt_inj] at h
+    simp [h]
     rw [← BitVec.toInt_inj]
-    simp only [hh, BitVec.toInt_ofInt, reduceIte]
     rw [BitVec.toInt_srem]
-    have := @Int.tmod_lt_of_pos rs2_val.toInt rs1_val.toInt
-    have := @Int.lt_tmod_of_pos rs2_val.toInt rs1_val.toInt
-    have lt1 := @BitVec.toInt_lt 64 rs1_val
-    have lt2 := @BitVec.toInt_lt 64 rs2_val
-    have le1 := @BitVec.le_toInt 64 rs1_val
-    have le2 := @BitVec.le_toInt 64 rs2_val
-    have ltt1 := @Int.tmod_lt_of_lt (2 ^ (64 - 1)) rs2_val.toInt rs1_val.toInt (by omega)
-    have ltt1 := @Int.le_tmod_of_le (-2 ^ (64 - 1)) rs2_val.toInt rs1_val.toInt (by omega)
-    rw [Int.bmod_eq_of_le]
-    ·
-      by_cases hrs : 0 < rs1_val.toInt
-      · simp [hrs] at this
-        omega
-      · simp [hrs] at this
-        simp at *
-        omega
-    ·
-      by_cases hrs : 0 < rs1_val.toInt
-      · omega
-      ·
-        simp [hrs] at this
-        simp at *
-        omega
+    congr
+    rw [ofInt_toInt_tmod_toInt]
