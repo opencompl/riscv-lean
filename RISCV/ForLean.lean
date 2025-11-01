@@ -69,28 +69,26 @@ theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb :
       omega
       omega
 
+@[simp]
 theorem BitVec.ofInt_toInt_tmod_toInt {x y : BitVec w} :
     (BitVec.ofInt w (x.toInt.tmod y.toInt)).toInt = x.toInt.tmod y.toInt := by
-  rw [BitVec.toInt_ofInt]
-  by_cases hb : y.toInt = 0
-  · simp [hb]
+  by_cases hb : y.toInt = 0; simp [hb]
 
-  have xlt := @BitVec.two_mul_toInt_lt w x
   have ylt := @BitVec.two_mul_toInt_lt w y
-  have lex := @BitVec.le_two_mul_toInt w x
   have ley := @BitVec.le_two_mul_toInt w y
 
-  rw [Int.bmod_eq_of_le_mul_two]
-  <;> simp
+  rw [BitVec.toInt_ofInt, Int.bmod_eq_of_le_mul_two]
   · by_cases hy : 0 < y.toInt
-    · have := @Int.lt_tmod_of_pos x.toInt y.toInt hy
+    · have := Int.lt_tmod_of_pos x.toInt hy
+      norm_cast at *
       omega
     · have := @Int.lt_tmod_of_neg x.toInt y.toInt (by omega)
+      norm_cast at *
       omega
   · by_cases hy : 0 < y.toInt
-    · have := @Int.tmod_lt_of_pos x.toInt y.toInt hy
+    · have := Int.tmod_lt_of_pos x.toInt hy
+      norm_cast at *
       omega
-    · have := @Int.lt_tmod_of_neg x.toInt y.toInt (by omega)
-      have : x.toInt.tmod y.toInt < -y.toInt := @Int.tmod_lt_of_neg x.toInt y.toInt (by omega)
+    · have := @Int.tmod_lt_of_neg x.toInt y.toInt (by omega)
       norm_cast at *
       omega

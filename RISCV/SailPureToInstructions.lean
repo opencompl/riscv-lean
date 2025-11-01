@@ -164,11 +164,7 @@ theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
   by_cases h : rs1_val = 0#64
   · simp [h]
-  · simp [h]
-    simp at h
-    simp [← BitVec.toInt_inj] at h
-    simp [h]
-    rw [← BitVec.toInt_inj]
-    rw [BitVec.toInt_srem]
-    congr
-    rw [BitVec.ofInt_toInt_tmod_toInt]
+  · have h' := h
+    simp only [← BitVec.toInt_inj, BitVec.toInt_zero] at h
+    simp only [h, h', reduceIte, ← BitVec.toInt_inj, BitVec.toInt_srem,
+      BitVec.ofInt_toInt_tmod_toInt]
