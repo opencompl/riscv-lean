@@ -33,6 +33,11 @@ theorem lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
     have :=  ((@Int.ofNat_ne_zero n.succ).2 (Nat.succ_ne_zero n))
     omega
 
+theorem tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :=
+  match a, b, Int.eq_negSucc_of_lt_zero H with
+  | Int.ofNat _, _, ⟨n, rfl⟩ => by sorry
+  | Int.negSucc _, _, ⟨n, rfl⟩ => Int.negSucc_eq n ▸ by sorry
+
 theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb : 0 ≤ b) : a % b < x := by
   by_cases hb : b = 0
   · subst hb

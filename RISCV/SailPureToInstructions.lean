@@ -162,10 +162,8 @@ theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 theorem ofInt_toInt_tmod_toInt {x y : BitVec w} :
     (BitVec.ofInt w (x.toInt.tmod y.toInt)).toInt = x.toInt.tmod y.toInt := by
   rw [BitVec.toInt_ofInt]
-
   by_cases hb : y.toInt = 0
   · simp [hb]
-
 
   have xlt := @BitVec.two_mul_toInt_lt w x
   have ylt := @BitVec.two_mul_toInt_lt w y
@@ -180,14 +178,12 @@ theorem ofInt_toInt_tmod_toInt {x y : BitVec w} :
     · have := @lt_tmod_of_neg x.toInt y.toInt (by omega)
       omega
   · by_cases hy : 0 < y.toInt
-    ·
-      have := @Int.lt_tmod_of_pos x.toInt y.toInt hy
-      norm_cast at *
-      sorry
+    · have := @Int.tmod_lt_of_pos x.toInt y.toInt hy
+      omega
     · have := @lt_tmod_of_neg x.toInt y.toInt (by omega)
-      sorry
-
-
+      have : x.toInt.tmod y.toInt < -y.toInt := @tmod_lt_of_neg x.toInt y.toInt (by omega)
+      norm_cast at *
+      omega
 
 theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rem false rs1_val rs2_val = rem rs1_val rs2_val := by
