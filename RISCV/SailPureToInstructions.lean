@@ -163,6 +163,16 @@ theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate,
     Sail.get_slice_int, rem]
   rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
+  split
+  case isTrue ht  =>
+    simp only [BitVec.ofInt_toInt, BitVec.srem, BitVec.umod_eq, BitVec.neg_eq]
+    obtain rfl : rs2_val = 0#_ :=
+      BitVec.eq_of_toInt_eq ht
+    split <;> simp
+  case isFalse hf =>
+    rw [← BitVec.toInt_srem ]
+    rw [BitVec.ofInt_toInt]
+  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
   simp
   by_cases h : rs1_val = 0#64
   · simp [h]

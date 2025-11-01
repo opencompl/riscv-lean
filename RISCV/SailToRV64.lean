@@ -165,11 +165,30 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd true
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := by
+  simp only [execute_REM, SailRV64I.rem, skeleton_binary]
+  simp [to_bits_truncate, Sail.get_slice_int]
+  congr; ext a; congr; ext b; congr
+  by_cases hh : b.toNat = 0
+  · simp [hh]
+  · simp [hh]
+    congr
 
 theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by
+  simp only [execute_REM, SailRV64I.rem, skeleton_binary]
+  simp [to_bits_truncate, Sail.get_slice_int]
+  congr; ext a; congr; ext b; congr
+  by_cases hh : b.toInt = 0
+  · simp [hh]
+    -- this proof is broken. I feel the sail model is wrong here.
+    -- BitVec.ofNat 65 a.toInt.toNat = BitVec.ofInt 65 a.toInt
+    -- The toNat on the LHS should not be here.
+    sorry
+  · simp [hh]
+    sorry
+
 
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true

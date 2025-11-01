@@ -55,58 +55,10 @@ theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb :
       omega
 
 theorem Int.tmod_lt_of_lt (a : Int) {b : Int} (H : a < x) (hb : 0 ≤ b): Int.tmod a b < x := by
-  rw [Int.tmod_eq_emod]
-  split
-  ·
-    simp
-    rename_i h
-    cases h
-    ·
-      rename_i aa
-      apply Int.emod_lt_of_lt
-      exact H
-      exact aa
-      exact hb
-    ·
-      rename_i ab_dvd
-      sorry
-  ·
-    rename_i h
-    simp at *
+  sorry
 
-
-
-      sorry
-
-theorem Int.tmod_lt_of_lt (a : Int) {b : Int} (H : a < x) : Int.tmod a b < x := by
-  rw [Int.tmod_eq_emod]
-  split
-  ·
-    simp
-    rename_i h
-    cases h
-    ·
-      rename_i aa
-      apply Int.emod_lt_of_lt
-      exact H
-      exact aa
-      exact
-      sorry
-
-
-    split
-
-    have := Int.emod_lt
-
-  obtain (hx|hx|hx) := Int.lt_trichotomy b x
-  · sorry
-  ·
-    simp [H]
-  ·
-    have := Int.tmod_lt_of_pos a hx
-
-
-
+theorem Int.tmod_lt_of_lt' (a : Int) {b : Int} (H : a < x) : Int.tmod a b < x := by
+  sorry
 
 theorem Int.le_tmod_of_le (a : Int) {b : Int} (H : x ≤ a) : x ≤ Int.tmod a b := by
   sorry
