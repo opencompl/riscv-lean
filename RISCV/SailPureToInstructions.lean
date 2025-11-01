@@ -139,3 +139,32 @@ theorem rtypew_sraw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
     sraw, BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend,
     Nat.add_one_sub_one]
   rfl
+
+/-! # M Extension for Integer Multiplication and Division -/
+
+theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rem true rs1_val rs2_val = remu rs1_val rs2_val := by
+  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, remu]
+  by_cases h1 : rs1_val = 0#64
+  · simp [h1, BitVec.extractLsb'_setWidth_of_le]
+  · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
+    have h1' : ¬rs1_val.toNat = 0 := by simp [BitVec.toNat_eq] at h1; exact h1
+    simp only [BitVec.ofNat_eq_ofNat, h1, reduceIte, BitVec.umod_eq]
+    rw [extractLsb'_ofInt_eq_ofInt (by omega)]
+    apply BitVec.eq_of_toInt_eq
+    simp only [BitVec.toInt_ofInt, Nat.reducePow, BitVec.toInt_umod]
+    simp only [Int.natCast_eq_zero, h1', ↓reduceIte]
+    congr
+
+
+theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.rem false rs1_val rs2_val = rem rs1_val rs2_val := by
+  simp only [SailRV64I.rem, rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int]
+  simp
+  rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
+  by_cases h : rs1_val = 0#64
+  · simp [h]
+  · have h' := h
+    simp only [← BitVec.toInt_inj, BitVec.toInt_zero] at h
+    simp only [h, h', reduceIte, ← BitVec.toInt_inj, BitVec.toInt_srem,
+      BitVec.ofInt_toInt_tmod_toInt]
