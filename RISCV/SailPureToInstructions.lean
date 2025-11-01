@@ -151,37 +151,48 @@ theorem rem_unsigned_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   · simp [h1, BitVec.extractLsb'_setWidth_of_le]
   · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
     have h1' : ¬rs1_val.toNat = 0 := by simp [BitVec.toNat_eq] at h1; exact h1
-    simp only [BitVec.ofNat_eq_ofNat, h1, h1', reduceIte, BitVec.umod_eq]
+    simp only [BitVec.ofNat_eq_ofNat, h1, reduceIte, BitVec.umod_eq]
     rw [extractLsb'_ofInt_eq_ofInt (by omega)]
     apply BitVec.eq_of_toInt_eq
     simp only [BitVec.toInt_ofInt, Nat.reducePow, BitVec.toInt_umod]
-    rfl
+    simp only [Int.natCast_eq_zero, h1', ↓reduceIte]
+    congr
 
 theorem rem_signed_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.rem false rs1_val rs2_val = remu  rs1_val rs2_val := by
-  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, rem]
+    SailRV64I.rem false rs1_val rs2_val = rem rs1_val rs2_val := by
+  simp only [SailRV64I.rem, LeanRV64D.Functions.to_bits_truncate,
+    Sail.get_slice_int, rem]
   rw [extractLsb'_ofInt_eq_ofInt (h:= by simp)]
-  split
-  · case _ h => simp at h
-  · case isFalse hf =>
-    rw [← BitVec.toInt_srem]
-    rw [BitVec.ofInt_toInt]
-    by_cases h1 : rs1_val = 0#64
-    · simp only [Nat.reduceAdd, Bool.false_eq_true, ↓reduceIte, h1, BitVec.toInt_zero,
-      Int.toNat_zero, BEq.rfl, BitVec.reduceEq]
-      rw [extractLsb'_ofInt_eq_ofInt (by omega)]
-      apply?
-      apply BitVec.eq_of_toInt_eq
-      simp only [Int.ofNat_toNat, BitVec.toInt_ofInt]
-
-
-
-    sorry
-
-  · simp only [Nat.reduceAdd, reduceIte, beq_iff_eq]
-    have h1' : ¬rs1_val.toNat = 0 := by simp [BitVec.toNat_eq] at h1; exact h1
-    simp only [BitVec.ofNat_eq_ofNat, h1, h1', reduceIte, BitVec.umod_eq]
-    rw [extractLsb'_ofInt_eq_ofInt (by omega)]
-    apply BitVec.eq_of_toInt_eq
-    simp only [BitVec.toInt_ofInt, Nat.reducePow, BitVec.toInt_umod]
-    rfl
+  simp
+  by_cases h : rs1_val = 0#64
+  · simp [h]
+  · simp [h]
+    have hh := @BitVec.toInt_ne 64 rs1_val 0
+    simp at hh
+    simp [h] at hh
+    rw [← BitVec.toInt_inj]
+    simp only [hh, BitVec.toInt_ofInt, reduceIte]
+    rw [BitVec.toInt_srem]
+    have := @Int.tmod_lt_of_pos rs2_val.toInt rs1_val.toInt
+    have := @Int.lt_tmod_of_pos rs2_val.toInt rs1_val.toInt
+    have lt1 := @BitVec.toInt_lt 64 rs1_val
+    have lt2 := @BitVec.toInt_lt 64 rs2_val
+    have le1 := @BitVec.le_toInt 64 rs1_val
+    have le2 := @BitVec.le_toInt 64 rs2_val
+    have ltt1 := @Int.tmod_lt_of_lt (2 ^ (64 - 1)) rs2_val.toInt rs1_val.toInt (by omega)
+    have ltt1 := @Int.le_tmod_of_le (-2 ^ (64 - 1)) rs2_val.toInt rs1_val.toInt (by omega)
+    rw [Int.bmod_eq_of_le]
+    ·
+      by_cases hrs : 0 < rs1_val.toInt
+      · simp [hrs] at this
+        omega
+      · simp [hrs] at this
+        simp at *
+        omega
+    ·
+      by_cases hrs : 0 < rs1_val.toInt
+      · omega
+      ·
+        simp [hrs] at this
+        simp at *
+        omega
