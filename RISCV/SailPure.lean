@@ -6,18 +6,22 @@ open LeanRV64D.Functions
 
 /-!
   Monad-free Sail-style specification
-  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+  Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
 namespace SailRV64I
 
-/-! # RV32I, RV64I Instructions -/
+/-! # RV64I Base Integer Instruction Set -/
 
 def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
   let off := (sign_extend (m := (2 ^i 3) *i 8) (imm ++ (0x0 : BitVec 12)))
   match op with
   | uop.LUI => off
   | uop.AUIPC => BitVec.add pc off
+
+def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
+  let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
+  (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))
 
 def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
   match op with
@@ -44,15 +48,9 @@ def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   | rop.OR => rs1_val ||| rs2_val
   | rop.AND => rs1_val &&& rs2_val
 
-/-! # RV64I Instructions -/
-
-def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
-  let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
-  (sign_extend (m := ((2 ^i 3) *i 8)) (Sail.BitVec.extractLsb result 31 0))
-
 def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
-  let result : (BitVec 32) :=
+  let result : BitVec 32 :=
     match op with
     | sopw.SLLIW => (Sail.shift_bits_left rs1_val32 shamt)
     | sopw.SRLIW => (Sail.shift_bits_right rs1_val32 shamt)
@@ -62,7 +60,7 @@ def shiftiwop (shamt : BitVec 5) (op : sopw) (rs1_val : BitVec 64) : BitVec 64 :
 def rtypew (op : ropw) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
   let rs2_val32 :=  Sail.BitVec.extractLsb rs2_val 31 0
-  let result : (BitVec 32) :=
+  let result : BitVec 32 :=
     match op with
     | ropw.ADDW => (rs1_val32 + rs2_val32)
     | ropw.SUBW => (rs1_val32 - rs2_val32)

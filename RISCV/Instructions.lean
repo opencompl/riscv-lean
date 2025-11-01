@@ -1,11 +1,11 @@
 /-!
   BitVec-only semantics of the RISCV operations.
-  Ordered as in https://msyksphinz-self.github.io/riscv-isadoc.
+  Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
 namespace RV64I
 
-/-! # RV32I, RV64I Instructions -/
+/-! # RV64I Base Integer Instruction Set -/
 
 /--
   Build 32-bit constants and uses the U-type format. LUI places the U-immediate value in the top 20
@@ -21,6 +21,15 @@ def lui (imm : BitVec 20) (_ : BitVec 64) : BitVec 64 :=
 -/
 def auipc (imm : BitVec 20) (pc : BitVec 64) : BitVec 64 :=
   BitVec.add (BitVec.signExtend 64 (BitVec.append imm (0x0 : BitVec 12))) pc
+
+/--
+  Adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign-extension
+  of a 32-bit result in rd. Overflows are ignored and the result is the low 32 bits of the result
+  sign-extended to 64 bits. Note, ADDIW rd, rs1, 0 writes the sign-extension of the lower 32 bits
+  of register rs1 into register rd (assembler pseudoinstruction SEXT.W).
+-/
+def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.signExtend 64 (BitVec.setWidth 32 (BitVec.add (BitVec.signExtend 64 imm) rs1_val))
 
 /--
   Performs logical left shift on the value in register rs1 by the shift amount held in the lower 5
@@ -104,17 +113,6 @@ def or (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val ||| rs
   Performs bitwise AND on registers rs1 and rs2 and place the result in rd.
 -/
 def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val &&& rs2_val
-
-/-! # RV64I Instructions -/
-
-/--
-  Adds the sign-extended 12-bit immediate to register rs1 and produces the proper sign-extension
-  of a 32-bit result in rd. Overflows are ignored and the result is the low 32 bits of the result
-  sign-extended to 64 bits. Note, ADDIW rd, rs1, 0 writes the sign-extension of the lower 32 bits
-  of register rs1 into register rd (assembler pseudoinstruction SEXT.W).
--/
-def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.signExtend 64 (BitVec.setWidth 32 (BitVec.add (BitVec.signExtend 64 imm) rs1_val))
 
 /--
   Performs logical left shift on the 32-bit of value in register rs1 by the shift amount held in
