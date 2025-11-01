@@ -48,26 +48,13 @@ theorem Int.tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :
     norm_cast
     omega
 
-theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb : 0 ≤ b) : a % b < x := by
-  by_cases hb : b = 0
-  · subst hb
-    simp [hax]
-
+theorem Int.emod_lt_of_lt {a b : Int} (ha : 0 ≤ a) (hb : 0 ≤ b) (hax : a < x) : a % b < x := by
+  by_cases hb : b = 0; subst hb; simp [hax]
   have := @Int.emod_lt a b hb
-
   by_cases hb_lt_x : b < x
-  · rw [Int.natAbs_of_nonneg (by omega)] at this
+  · omega
+  · rw [Int.emod_eq_of_lt (by omega) (by omega)]
     omega
-  · simp at hb_lt_x
-    have hab : a < b := by omega
-    by_cases ha : 0 ≤ a
-    · rw [Int.emod_eq_of_lt (by omega) (by omega)]
-      omega
-    · simp at *
-      rw [Int.emod_eq_of_lt]
-      omega
-      omega
-      omega
 
 @[simp]
 theorem BitVec.ofInt_toInt_tmod_toInt {x y : BitVec w} :
