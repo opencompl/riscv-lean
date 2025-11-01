@@ -53,12 +53,3 @@ theorem Int.emod_lt_of_lt (a : Int) {b : Int} (hax : a < x) (ha : 0 ≤ a) (hb :
       omega
       omega
       omega
-
-theorem Int.tmod_lt_of_lt (a : Int) {b : Int} (H : a < x) (hb : 0 ≤ b): Int.tmod a b < x := by
-  sorry
-
-theorem Int.tmod_lt_of_lt' (a : Int) {b : Int} (H : a < x) : Int.tmod a b < x := by
-  sorry
-
-theorem Int.le_tmod_of_le (a : Int) {b : Int} (H : x ≤ a) : x ≤ Int.tmod a b := by
-  sorry
