@@ -266,3 +266,19 @@ theorem mulw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   congr
   apply BitVec.eq_of_toInt_eq
   simp
+
+theorem div_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.div rs1_val rs2_val False = div rs1_val rs2_val := by
+  sorry
+
+theorem divw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.divw rs1_val rs2_val False = divw rs1_val rs2_val := by
+  sorry
+
+theorem divu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.div rs1_val rs2_val True = divu rs1_val rs2_val := by
+  sorry
+
+theorem divuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.divw rs1_val rs2_val True = divuw rs1_val rs2_val := by
+  sorry
