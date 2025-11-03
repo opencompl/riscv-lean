@@ -13,7 +13,6 @@ theorem extractLsb'_eq_setWidth {x : BitVec w} : x.extractLsb' 0 n = x.setWidth 
   ext i hi
   simp
 
-
 theorem extractLsb'_ofInt_eq_ofInt {x : Int} {w w' : Nat} (h : w ≤ w') :
     (BitVec.extractLsb' 0 w (BitVec.ofInt w' x)) = (BitVec.ofInt w x) := by
   simp only [extractLsb'_eq_setWidth, ← BitVec.signExtend_eq_setWidth_of_le _ (by omega)]
@@ -30,21 +29,21 @@ theorem Int.lt_tmod_of_neg (a : Int) {b : Int} (H : b < 0) : b < Int.tmod a b :=
   | Int.negSucc _, _, ⟨n, rfl⟩ => Int.negSucc_eq n ▸ by
     rw [Int.negSucc_eq, Int.neg_tmod, Int.tmod_neg, Int.neg_lt_neg_iff]
     apply Int.tmod_lt_of_pos
-    have :=  ((@Int.ofNat_ne_zero n.succ).2 (Nat.succ_ne_zero n))
+    have := ((@Int.ofNat_ne_zero n.succ).2 (Nat.succ_ne_zero n))
     omega
 
 theorem Int.tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :=
   match a, b, Int.eq_negSucc_of_lt_zero H with
   | Int.ofNat _, _, ⟨n, rfl⟩ => by
     rename_i aas
-    simp
-    simp [Int.tmod]
-    simp at *
+    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_coe, natCast_emod, natCast_add, cast_ofNat_Int,
+      neg_negSucc]
     norm_cast
     apply Nat.mod_lt
     omega
   | Int.negSucc _, _, ⟨n, rfl⟩ => by
-    simp [Int.tmod]
+    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_coe, natCast_emod, natCast_add, cast_ofNat_Int,
+      neg_negSucc]
     norm_cast
     omega
 
