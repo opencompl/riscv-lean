@@ -68,3 +68,19 @@ def rtypew (op : ropw) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :
     | ropw.SRLW => (Sail.shift_bits_right rs1_val32 (Sail.BitVec.extractLsb rs2_val32 4 0))
     | ropw.SRAW => (shift_bits_right_arith rs1_val32 (Sail.BitVec.extractLsb rs2_val32 4 0))
   ((sign_extend (m := ((2 ^i 3) *i 8)) result))
+
+/-! # M Extension for Integer Multiplication and Division -/
+
+def rem (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val else BitVec.toInt rs1_val
+  let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val else BitVec.toInt rs2_val
+  let remainder := if (rs2_int == 0 : Bool) then rs1_int else (Int.tmod rs1_int rs2_int)
+  to_bits_truncate (l := 64) remainder
+
+def remw (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
+  let rs2_val32 := Sail.BitVec.extractLsb rs2_val 31 0
+  let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val32 else BitVec.toInt rs1_val32
+  let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
+  let rem := if ((rs2_int == 0) : Bool) then rs1_int else Int.tmod rs1_int rs2_int
+  sign_extend (m := ((2 ^i 3) *i 8)) (to_bits_truncate (l := 32) rem)
