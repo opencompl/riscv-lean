@@ -247,3 +247,22 @@ def mulhsu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 def mulw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64
     (((BitVec.extractLsb 31 0 rs1_val) * (BitVec.extractLsb 31 0 rs2_val)))
+
+/--
+  Perform an XLEN bits by XLEN bits signed integer division of rs1 by rs2, rounding towards zero.
+-/
+def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0#64 then
+    -1#64
+  else
+    rs1_val.sdiv rs2_val
+
+/--
+  Perform an XLEN bits by XLEN bits unsigned integer division of rs1 by rs2, rounding towards zero.
+-/
+def divu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0#64 then  (-1)  else rs1_val.udiv rs2_val
+
+/--
+  Perform an 32 bits by 32 bits signed integer division of rs1 by rs2.
+-/
