@@ -161,3 +161,11 @@ theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := rem_sail_error
+
+theorem mulw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_MULW rs2 rs1 rd
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.mulw val2 val1) := by rfl
+
+theorem mul_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_MUL rs2 rs1 rd op
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.mul val2 val1 op) := by rfl
