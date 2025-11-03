@@ -257,12 +257,18 @@ def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   else
     rs1_val.sdiv rs2_val
 
+def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  let rs2 := BitVec.extractLsb 31 0 rs2_val
+  BitVec.signExtend 64 (if rs2 = 0#32 then  -1#32 else rs1.sdiv rs2)
+
 /--
   Perform an XLEN bits by XLEN bits unsigned integer division of rs1 by rs2, rounding towards zero.
 -/
 def divu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   if rs2_val = 0#64 then  (-1)  else rs1_val.udiv rs2_val
 
-/--
-  Perform an 32 bits by 32 bits signed integer division of rs1 by rs2.
--/
+def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  let rs2 := BitVec.extractLsb 31 0 rs2_val
+  BitVec.signExtend 64 (if rs2 = 32 then -1#32 else rs1.udiv rs2)
