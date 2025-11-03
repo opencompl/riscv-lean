@@ -238,4 +238,4 @@ def mulhu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   Performs an XLEN-bit \(\times\) XLEN-bit multiplication of signed rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
 -/
 def mulhsu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.extractLsb 127 64 (((BitVec.signExtend 129 rs1_val ) * (BitVec.zeroExtend 129 rs2_val )))
+  BitVec.extractLsb 127 64 (((BitVec.signExtend 129 rs1_val) * (BitVec.zeroExtend 129 rs2_val)))
