@@ -84,3 +84,23 @@ def remw (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitV
   let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
   let rem := if ((rs2_int == 0) : Bool) then rs1_int else Int.tmod rs1_int rs2_int
   sign_extend (m := ((2 ^i 3) *i 8)) (to_bits_truncate (l := 32) rem)
+
+--purified
+def execute_MULW_pure64 (rs2_val : (BitVec 64)) (rs1_val : (BitVec 64)) : BitVec 64 :=
+  let rs1_val32 := (Sail.BitVec.extractLsb rs1_val 31 0)
+  let rs2_val32 := (Sail.BitVec.extractLsb rs2_val 31 0)
+  let rs1_int : Int := (BitVec.toInt rs1_val32)
+  let rs2_int : Int := (BitVec.toInt rs2_val32)
+  let result32 := (Sail.BitVec.extractLsb (to_bits (l := 64) (rs1_int *i rs2_int)) 31 0)
+  let result : xlenbits := (sign_extend (m := ((2 ^i 3) *i 8)) result32)
+  result
+
+--purified,
+def execute_MUL_pure64 (mul_op : mul_op) (rs2_val : (BitVec 64)) (rs1_val : (BitVec 64)) : BitVec 64 :=
+  let rs1_int : Int := if mul_op.signed_rs1 then BitVec.toInt rs1_val else BitVec.toNat rs1_val
+  let rs2_int : Int := if mul_op.signed_rs2 then BitVec.toInt rs2_val else BitVec.toNat rs2_val
+  let result_wide := to_bits (l := 2 *i LeanRV64D.Functions.xlen) (rs1_int *i rs2_int)
+  if mul_op.high
+    then Sail.BitVec.extractLsb
+      result_wide ((2 *i LeanRV64D.Functions.xlen) -i 1) LeanRV64D.Functions.xlen
+    else Sail.BitVec.extractLsb result_wide (LeanRV64D.Functions.xlen -i 1) 0
