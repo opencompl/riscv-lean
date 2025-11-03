@@ -190,3 +190,4 @@ theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
   simp [execute_REMW, Sail.BitVec.extractLsb, sign_extend, Sail.BitVec.signExtend, to_bits_truncate,
     Sail.get_slice_int, skeleton_binary, SailRV64I.remw]
   -- broken too?
+  sorry
