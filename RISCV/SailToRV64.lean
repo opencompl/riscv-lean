@@ -173,10 +173,20 @@ theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := by
-
-  sorry
+  simp only [execute_REMW, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb, sign_extend,
+    Sail.BitVec.signExtend, to_bits_truncate, Sail.get_slice_int, ↓reduceIte, beq_iff_eq,
+    BitVec.ofInt_natCast, bind_pure_comp, pure_bind, BitVec.extractLsb_toNat, Nat.shiftRight_zero,
+    Nat.reducePow, Int.natCast_emod, Int.cast_ofNat_Int, skeleton_binary, SailRV64I.remw]
+  congr; ext a; congr; ext b; congr
+  by_cases hh : b.toNat = 0
+  · simp [hh]
+    -- broken too?
+    sorry
+  · sorry
 
 theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := by
-  sorry
+  simp [execute_REMW, Sail.BitVec.extractLsb, sign_extend, Sail.BitVec.signExtend, to_bits_truncate,
+    Sail.get_slice_int, skeleton_binary, SailRV64I.remw]
+  -- broken too?
