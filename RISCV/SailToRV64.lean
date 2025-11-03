@@ -169,3 +169,10 @@ theorem mulw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem mul_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_MUL rs2 rs1 rd op
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.mul val2 val1 op) := by rfl
+
+theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+  execute_DIV rs2 rs1 rd True
+  = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 True) := by
+simp [execute_DIV, skeleton_binary, SailRV64I.div]
+
+rfl
