@@ -266,3 +266,12 @@ theorem mulhsu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   simp only [Int.toNat_natCast, BitVec.ofNat_toNat]
   · omega
   · omega
+
+theorem mulw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.mulw rs1_val rs2_val = mulw rs1_val rs2_val := by
+  simp only [SailRV64I.mulw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, Sail.BitVec.extractLsb, mulw]
+  rw [extractLsb'_ofInt_eq_ofInt (h := by simp), BitVec.extractLsb]
+  congr
+  apply BitVec.eq_of_toInt_eq
+  simp

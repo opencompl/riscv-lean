@@ -239,3 +239,11 @@ def mulhu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 -/
 def mulhsu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.extractLsb 127 64 (((BitVec.signExtend 129 rs1_val) * (BitVec.zeroExtend 129 rs2_val)))
+
+/--
+  Multiplies the lower 32 bits of the source registers, placing the sign extension of the lower
+  32 bits of the result into the destination register.
+-/
+def mulw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.signExtend 64
+    (((BitVec.extractLsb 31 0 rs1_val) * (BitVec.extractLsb 31 0 rs2_val)))
