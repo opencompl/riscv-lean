@@ -175,4 +175,7 @@ theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
   = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 True) := by
 simp [execute_DIV, skeleton_binary, SailRV64I.div]
 
-rfl
+theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+  execute_DIVW rs2 rs1 rd True
+  = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 True) := by
+simp [execute_DIVW, skeleton_binary, SailRV64I.divw]

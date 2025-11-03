@@ -104,8 +104,8 @@ def mul  (rs2_val : BitVec 64) (rs1_val : BitVec 64) (mul_op : mul_op) : BitVec 
     else Sail.BitVec.extractLsb result_wide (LeanRV64D.Functions.xlen -i 1) 0
 
 def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitVec 64 :=
-  let rs1_int : Int := if is_unsigned then (BitVec.toInt rs1_val) else (BitVec.toNat rs1_val)
-  let rs2_int : Int := if is_unsigned then (BitVec.toInt rs2_val) else (BitVec.toNat rs2_val)
+  let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val else BitVec.toInt rs1_val
+  let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val else BitVec.toInt rs2_val
   let quotient : Int := if ((rs2_int == 0) : Bool) then (Neg.neg 1)
                   else (Int.tdiv rs1_int rs2_int)
   let quotient : Int :=
@@ -117,8 +117,8 @@ def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitVe
 def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb (rs1_val) 31 0
   let rs2_val32 :=  Sail.BitVec.extractLsb (rs2_val) 31 0
-  let rs1_int : Int := if is_unsigned then BitVec.toInt rs1_val32 else BitVec.toNat rs1_val32
-  let rs2_int : Int := if is_unsigned then BitVec.toInt rs2_val32 else BitVec.toNat rs2_val32
+  let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val32 else BitVec.toInt rs1_val32
+  let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
   let quotient : Int := if ((rs2_int == 0) : Bool) then (Neg.neg 1) else (Int.tdiv rs1_int rs2_int)
   let quotient :=
     if (((LeanRV64D.Functions.not is_unsigned) && (quotient ≥b (2 ^i 31))) : Bool)
