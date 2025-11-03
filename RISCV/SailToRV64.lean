@@ -143,8 +143,7 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 /--
   Due to a mistake in the Sail model, some proofs are currently broken.
-  We replace the proofs depending on mistaken definitions with an axiom.
--/
+  We replace the proofs depending on mistaken definitions with an axiom. -/
 axiom rem_sail_error {p: Prop} : p
 
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
