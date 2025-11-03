@@ -143,7 +143,8 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 /--
   Due to a mistake in the Sail model, some proofs are currently broken.
-  We replace the proofs depending on mistaken definitions with an axiom.-/
+  We replace the proofs depending on mistaken definitions with an axiom.
+-/
 axiom rem_sail_error {p: Prop} : p
 
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
@@ -161,3 +162,10 @@ theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := rem_sail_error
+
+theorem mulw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_MULW rs2 rs1 rd
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.mulw val2 val1) := by
+  simp [execute_MULW, SailRV64I.mulw]
+
+  sorry
