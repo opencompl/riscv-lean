@@ -80,7 +80,7 @@ def rem (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVe
 def remw (is_unsigned : Bool) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1_val32 := Sail.BitVec.extractLsb rs1_val 31 0
   let rs2_val32 := Sail.BitVec.extractLsb rs2_val 31 0
-  let rs1_int := if is_unsigned then BitVec.toNat rs1_val32 else BitVec.toInt rs1_val32
-  let rs2_int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
+  let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val32 else BitVec.toInt rs1_val32
+  let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
   let rem := if ((rs2_int == 0) : Bool) then rs1_int else Int.tmod rs1_int rs2_int
   sign_extend (m := ((2 ^i 3) *i 8)) (to_bits_truncate (l := 32) rem)
