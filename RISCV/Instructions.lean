@@ -214,3 +214,28 @@ def remuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 31 0 rs2_val
   BitVec.signExtend 64 (rs1.umod rs2)
+
+/--
+  Performs an XLEN-bit \(\times\) XLEN-bit multiplication of signed rs1 by signed rs2 and places
+  the lower XLEN bits in the destination register.
+-/
+def mul (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val * rs2_val
+
+/--
+  Performs an XLEN-bit \(\times\) XLEN-bit multiplication of signed rs1 by signed rs2 and places the upper XLEN bits in the destination register.
+-/
+def mulh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb 127 64 ((BitVec.signExtend 129 rs1_val) * (BitVec.signExtend 129 rs2_val))
+
+/--
+  Performs an XLEN-bit \(\times\) XLEN-bit multiplication of unsigned rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
+-/
+def mulhu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+   BitVec.extractLsb 127 64
+    (BitVec.extractLsb' 0 128 ((BitVec.zeroExtend 128 rs1_val) * (BitVec.zeroExtend 128 rs2_val)))
+
+/--
+  Performs an XLEN-bit \(\times\) XLEN-bit multiplication of signed rs1 by unsigned rs2 and places the upper XLEN bits in the destination register.
+-/
+def mulhsu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb 127 64 (((BitVec.signExtend 129 rs1_val ) * (BitVec.zeroExtend 129 rs2_val )))
