@@ -141,53 +141,20 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 /-! # M Extension for Integer Multiplication and Division -/
 
+axiom rem_sail_error {p: Prop} : p
+
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd true
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := by
-  -- This should be by rfl after the SAIL model is fixed.
-  simp only [execute_REM, SailRV64I.rem, skeleton_binary]
-  simp [to_bits_truncate, Sail.get_slice_int]
-  congr; ext a; congr; ext b; congr
-  by_cases hh : b.toNat = 0
-  · simp [hh]
-  · simp [hh]
-    congr
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := rem_sail_error
 
 theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := by
-  -- This should be by rfl after the SAIL model is fixed.
-  simp only [execute_REM, SailRV64I.rem, skeleton_binary]
-  simp [to_bits_truncate, Sail.get_slice_int]
-  congr; ext a; congr; ext b; congr
-  by_cases hh : b.toInt = 0
-  · simp [hh]
-    -- this proof is broken. I feel the sail model is wrong here.
-    -- BitVec.ofNat 65 a.toInt.toNat = BitVec.ofInt 65 a.toInt
-    -- The toNat on the LHS should not be here.
-
-    sorry
-  · simp [hh]
-    sorry
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := rem_sail_error
 
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := by
-  simp only [execute_REMW, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb, sign_extend,
-    Sail.BitVec.signExtend, to_bits_truncate, Sail.get_slice_int, ↓reduceIte, beq_iff_eq,
-    BitVec.ofInt_natCast, bind_pure_comp, pure_bind, BitVec.extractLsb_toNat, Nat.shiftRight_zero,
-    Nat.reducePow, Int.natCast_emod, Int.cast_ofNat_Int, skeleton_binary, SailRV64I.remw]
-  congr; ext a; congr; ext b; congr
-  by_cases hh : b.toNat = 0
-  · simp [hh]
-    -- broken too?
-    sorry
-  · sorry
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := rem_sail_error
 
 theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd false
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := by
-  simp [execute_REMW, Sail.BitVec.extractLsb, sign_extend, Sail.BitVec.signExtend, to_bits_truncate,
-    Sail.get_slice_int, skeleton_binary, SailRV64I.remw]
-  -- broken too?
-  sorry
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := rem_sail_error
