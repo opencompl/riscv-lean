@@ -78,3 +78,8 @@ theorem BitVec.ofInt_toInt_tmod_toInt {x y : BitVec w} :
     · have := @Int.tmod_lt_of_neg x.toInt y.toInt (by omega)
       norm_cast at *
       omega
+
+theorem BitVec.setWidth_signExtend_eq_self {w w' : Nat} {x : BitVec w} (h : w ≤ w') : (x.signExtend w').setWidth w = x := by
+  ext i hi
+  simp  [hi, BitVec.getLsbD_signExtend]
+  omega
