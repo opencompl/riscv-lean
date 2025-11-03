@@ -267,9 +267,36 @@ theorem mulw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   apply BitVec.eq_of_toInt_eq
   simp
 
+#eval 2^63
+
 theorem div_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.div rs1_val rs2_val False = div rs1_val rs2_val := by
-  sorry
+  simp only [SailRV64I.div, div, LeanRV64D.Functions.to_bits_truncate, LeanRV64D.Functions.not,
+    Sail.get_slice_int, LeanRV64D.Functions.xlen, instHPowInt_leanRV64D]
+  simp only [Nat.reduceAdd, decide_false, Bool.not_false, Bool.false_eq_true, beq_iff_eq,
+    Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub, Int.reduceToNat,
+    ge_iff_le, Bool.true_and, decide_eq_true_eq, reduceIte]
+  by_cases h : rs1_val = 0
+  · simp [h]
+  ·
+    have h' := h
+    simp at h
+    rw [← BitVec.toInt_inj] at h'
+    simp at h'
+    simp only [h', ↓reduceIte]
+    simp only [h, ↓reduceIte]
+    rw [← BitVec.toInt_inj]
+    simp only [BitVec.toInt_sdiv]
+    split
+    ·
+      sorry
+    ·
+      simp
+      simp only [BitVec.extractLsb']
+      simp only [BitVec.toNat_ofInt, Nat.reducePow, Int.cast_ofNat_Int, Nat.shiftRight_zero]
+      congr
+
+      sorry
 
 theorem divw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.divw rs1_val rs2_val False = divw rs1_val rs2_val := by
