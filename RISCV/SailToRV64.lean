@@ -219,9 +219,43 @@ theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 def rX_pure (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) (x : regidx) : BitVec 64 :=
   let regs := s.regs
   let i := match x.1 with
-            | 1 => Register.x1
-            | _ => sorry
-  regs[i]?.get!
+    | 1 => Register.x1
+    | 2 => Register.x2
+    | 3 => Register.x3
+    | 4 => Register.x4
+    | 5 => Register.x5
+    | 6 => Register.x6
+    | 7 => Register.x7
+    | 8 => Register.x8
+    | 9 => Register.x9
+    | 10 => Register.x10
+    | 11 => Register.x11
+    | 12 => Register.x12
+    | 13 => Register.x13
+    | 14 => Register.x14
+    | 15 => Register.x15
+    | 16 => Register.x16
+    | 17 => Register.x17
+    | 18 => Register.x18
+    | 19 => Register.x19
+    | 20 => Register.x20
+    | 21 => Register.x21
+    | 22 => Register.x22
+    | 23 => Register.x23
+    | 24 => Register.x24
+    | 25 => Register.x25
+    | 26 => Register.x26
+    | 27 => Register.x27
+    | 28 => Register.x28
+    | 29 => Register.x29
+    | 30 => Register.x30
+    | 31 => Register.x31
+    | _ => Register.x1
+  match (regs.get? i) with
+  | some rType =>
+    match i with
+    | .x21 => rX (.x21)
+  | _ => sorry
 
 @[simp]
 theorem run_eq :
@@ -235,7 +269,7 @@ theorem zicond_rtype_eq (rs1 : regidx) (rs2 : regidx) (rs : regidx) (op : zicond
   cases op
   · case _ =>
     apply EStateM.ext
-    simp
+    simp only [bind_map_left, beq_iff_eq, EStateM.run_bind, run_eq, EStateM.run_map]
     intros s
     split
     . case _ h1 =>
@@ -255,7 +289,7 @@ theorem zicond_rtype_eq (rs1 : regidx) (rs2 : regidx) (rs : regidx) (op : zicond
         simp_all
   · case _ =>
     apply EStateM.ext
-    simp
+    simp only [bind_map_left, bne_iff_ne, ne_eq, ite_not, EStateM.run_bind, run_eq, EStateM.run_map]
     intros s
     split
     . case _ h1 =>
