@@ -120,7 +120,7 @@ def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitV
   let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val32 else BitVec.toInt rs1_val32
   let rs2_int : Int := if is_unsigned then BitVec.toNat rs2_val32 else BitVec.toInt rs2_val32
   let quotient : Int := if ((rs2_int == 0) : Bool) then (Neg.neg 1) else (Int.tdiv rs1_int rs2_int)
-  let quotient :=
+  let quotient : Int :=
     if (((LeanRV64D.Functions.not is_unsigned) && (quotient ≥b (2 ^i 31))) : Bool)
       then (Neg.neg (2 ^i 31))
     else quotient
