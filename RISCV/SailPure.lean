@@ -124,4 +124,4 @@ def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitV
     if (((LeanRV64D.Functions.not is_unsigned) && (quotient ≥b (2 ^i 31))) : Bool)
       then (Neg.neg (2 ^i 31))
     else quotient
-  sign_extend (m := ((2 ^i 3) *i 8)) (to_bits_truncate (l := 32) quotient)
+  sign_extend (m := 64) (to_bits_truncate (l := 32) quotient)

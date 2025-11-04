@@ -297,8 +297,35 @@ theorem div_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem divw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.divw rs1_val rs2_val False = divw rs1_val rs2_val := by
+  simp only [SailRV64I.divw, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, Nat.reduceAdd,
+    LeanRV64D.Functions.not, decide_false, Bool.not_false, Bool.false_eq_true, reduceIte,
+    beq_iff_eq, Int.reduceNeg, ge_iff_le, Bool.true_and, decide_eq_true_eq, divw,
+    LeanRV64D.Functions.sign_extend, Sail.BitVec.extractLsb, Sail.BitVec.signExtend]
+  rw [extractLsb'_ofInt_eq_ofInt (by simp)]
+  by_cases h1 : BitVec.extractLsb 31 0 rs1_val = 0#32
+  · case pos =>
+    simp [h1, show ¬ (2 ^ (31 : Int) : Int) ≤ -1 by omega]
+  · case neg =>
+    generalize hrs1 : (BitVec.extractLsb 31 0 rs1_val) = rs1 at *
+    generalize hrs2 : (BitVec.extractLsb 31 0 rs2_val) = rs2 at *
+    have h1' : ¬ rs1.toInt = 0 := (BitVec.toInt_ne).mpr h1
+    simp only [h1', reduceIte, h1]
+    apply BitVec.eq_of_toInt_eq
+    by_cases hcond : rs2 ≠ BitVec.intMin 32 ∨ rs1 ≠ -1#32
+    · rw [← BitVec.toInt_sdiv_of_ne_or_ne rs2 rs1 hcond]
+      split
+      · have := BitVec.toInt_le (x := rs2.sdiv rs1)
+        omega
+      · simp
+    · simp only [ne_eq, not_or, Decidable.not_not] at hcond
+      obtain ⟨hcond, hcond'⟩ := hcond
+      congr
+      simp only [Nat.sub_zero, Nat.reduceAdd, hcond, BitVec.toInt_intMin, Nat.add_one_sub_one,
+        hcond', BitVec.reduceNeg, BitVec.reduceToInt, Int.tdiv_neg, Int.tdiv_one, Int.neg_neg,
+        Nat.mod_eq_of_lt (a := 2^31) (b := 2^32) (by omega),
+        show (2 ^ (31 : Int) : Int) ≤ (2 ^ (31 : Nat) : Nat) by omega]
+      rfl
 
-  sorry
 
 theorem divu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.div rs1_val rs2_val True = divu rs1_val rs2_val := by
