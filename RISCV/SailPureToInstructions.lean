@@ -326,7 +326,6 @@ theorem divw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
         show (2 ^ (31 : Int) : Int) ≤ (2 ^ (31 : Nat) : Nat) by omega]
       rfl
 
-
 theorem divu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.div rs1_val rs2_val True = divu rs1_val rs2_val := by
   simp only [SailRV64I.div, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, Nat.reduceAdd,
