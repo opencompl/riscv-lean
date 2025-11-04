@@ -10,3 +10,8 @@ name = "RISCV"
 name = "Lean_RV64D"
 git = "https://github.com/opencompl/sail-riscv-lean.git"
 rev = "main"
+
+[[require]]
+name = "batteries"
+git = "https://github.com/leanprover-community/batteries.git"
+rev = "nightly-testing-2025-10-26"

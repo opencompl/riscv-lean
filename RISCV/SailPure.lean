@@ -138,9 +138,7 @@ def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitV
 
 /-! # "Zicond" Extension for Integer Conditional Operations -/
 
-def zicond (rs2_val : (BitVec 64)) (rs1_val : (BitVec 64)) (op : zicondop) : BitVec 64 :=
-  let cond :=
-    match op with
-    | zicondop.CZERO_EQZ => (rs2_val == (zeros (n := 64)))
-    | zicondop.CZERO_NEZ => (rs2_val != (zeros (n := 64)))
-  if (cond : Bool) then zeros (n := 64) else rs1_val
+def zicond (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : zicondop) : BitVec 64 :=
+  match op with
+  | zicondop.CZERO_EQZ => if (rs2_val == (zeros (n := 64))) then (zeros (n := 64)) else rs1_val
+  | zicondop.CZERO_NEZ => if (rs2_val != (zeros (n := 64))) then (zeros (n := 64)) else rs1_val

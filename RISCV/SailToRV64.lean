@@ -1,5 +1,6 @@
 import RISCV.SailPure
 import RISCV.Skeleton
+import Batteries.Lean.EStateM
 
 /-!
   Proofs of the equivalence between monadic and monad-free Sail specifications.
@@ -215,17 +216,67 @@ theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 
 /-! # "Zicond" Extension for Integer Conditional Operations -/
 
-theorem zicond_rtype_eqz_eq (arg0 : regidx) (arg1 : regidx) (arg2 : regidx) :
-    execute_ZICOND_RTYPE arg0 arg1 arg2 (zicondop.CZERO_EQZ)
-    = skeleton_binary arg0 arg1 arg2 (fun val1 val2 => SailRV64I.zicond val2 val1 zicondop.CZERO_EQZ) := by
-  unfold execute_ZICOND_RTYPE skeleton_binary SailRV64I.zicond
-  simp
-  rfl
+def rX_pure (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) (x : regidx) : BitVec 64 :=
+  let regs := s.regs
+  let i := match x.1 with
+            | 1 => Register.x1
+            | _ => sorry
+  regs[i]?.get!
 
-theorem zicond_rtype_nez_eq (arg0 : regidx) (arg1 : regidx) (arg2 : regidx) :
-    Functions.execute_ZICOND_RTYPE arg0 arg1 arg2 (zicondop.RISCV_CZERO_NEZ)
-      = skeleton_binary arg0 arg1 arg2 (fun val1 val2 => RV64.ZICOND_RTYPE_pure64_RISCV_RISCV_CZERO_NEZ  val2 val1)
-  := by
-  unfold Functions.execute_ZICOND_RTYPE skeleton_binary
-  simp
-  rfl
+@[simp]
+theorem run_eq :
+    EStateM.run (rX_bits rs2) s = EStateM.Result.ok (rX_pure s rs2) s := by
+  sorry
+
+theorem zicond_rtype_eq (rs1 : regidx) (rs2 : regidx) (rs : regidx) (op : zicondop) :
+  execute_ZICOND_RTYPE rs1 rs2 rd op
+  = skeleton_binary' rs1 rs2 rd (fun val1 val2 => SailRV64I.zicond val2 val1 op) := by
+  simp [execute_ZICOND_RTYPE, skeleton_binary', SailRV64I.zicond]
+  cases op
+  · case _ =>
+    apply EStateM.ext
+    simp
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+      · case _ h3 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all
+  · case _ =>
+    apply EStateM.ext
+    simp
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+      · case _ h3 =>
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all
+
+theorem zicond_rtype_nez_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZICOND_RTYPE rs2 rs1 rd (zicondop.CZERO_NEZ)
+    = skeleton_binary rs1 rs2 rd (fun val1 val2 => SailRV64I.zicond val2 val1 zicondop.CZERO_NEZ) := by
+  simp [execute_ZICOND_RTYPE, skeleton_binary, SailRV64I.zicond]
+
+  sorry
