@@ -81,16 +81,15 @@ theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SLLIW rs1_val = slliw shamt rs1_val := by
-  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Sail.shift_bits_left, Sail.BitVec.extractLsb, slliw]
-  sorry
+  simp [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.shift_bits_left, Sail.BitVec.extractLsb, slliw, BitVec.extractLsb'_eq_extractLsb,
+    Nat.mod_eq_of_lt (a := shamt.toNat) (b := 64) (by omega)]
 
 theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SRLIW rs1_val = srliw shamt rs1_val := by
   simp [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Sail.shift_bits_right, Sail.BitVec.extractLsb, srliw]
-  rw [Nat.mod_eq_of_lt (by omega)]
-  sorry
+    Sail.shift_bits_right, Sail.BitVec.extractLsb, srliw, BitVec.extractLsb'_eq_extractLsb,
+    Nat.mod_eq_of_lt (a := shamt.toNat) (b := 64) (by omega)]
 
 theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by
