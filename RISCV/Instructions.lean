@@ -271,4 +271,4 @@ def divu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 31 0 rs2_val
-  BitVec.signExtend 64 (if rs2 = 32 then -1#32 else rs1.udiv rs2)
+  BitVec.signExtend 64 (if rs2 = 0#32 then -1#32 else rs1.udiv rs2)
