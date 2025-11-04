@@ -212,3 +212,5 @@ theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_DIVW rs2 rs1 rd is_unsigned
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
