@@ -214,3 +214,18 @@ theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
 
 /-! # "Zicond" Extension for Integer Conditional Operations -/
+
+theorem zicond_rtype_eqz_eq (arg0 : regidx) (arg1 : regidx) (arg2 : regidx) :
+    execute_ZICOND_RTYPE arg0 arg1 arg2 (zicondop.CZERO_EQZ)
+    = skeleton_binary arg0 arg1 arg2 (fun val1 val2 => SailRV64I.zicond val2 val1 zicondop.CZERO_EQZ) := by
+  unfold execute_ZICOND_RTYPE skeleton_binary SailRV64I.zicond
+  simp
+  rfl
+
+theorem zicond_rtype_nez_eq (arg0 : regidx) (arg1 : regidx) (arg2 : regidx) :
+    Functions.execute_ZICOND_RTYPE arg0 arg1 arg2 (zicondop.RISCV_CZERO_NEZ)
+      = skeleton_binary arg0 arg1 arg2 (fun val1 val2 => RV64.ZICOND_RTYPE_pure64_RISCV_RISCV_CZERO_NEZ  val2 val1)
+  := by
+  unfold Functions.execute_ZICOND_RTYPE skeleton_binary
+  simp
+  rfl
