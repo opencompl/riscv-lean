@@ -23,7 +23,7 @@ theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
   simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
-    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw, BitVec.add_eq]
+    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw]
   rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
   unfold instHPowInt_leanRV64D
   bv_decide
