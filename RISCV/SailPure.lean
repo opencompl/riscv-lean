@@ -20,7 +20,7 @@ def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
   | uop.AUIPC => BitVec.add pc off
 
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
-  let result :=  rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
+  let result := rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
   (sign_extend (m := 64) (Sail.BitVec.extractLsb result 31 0))
 
 def shiftiop (shamt : BitVec 6) (op : sop) (rs1_val : BitVec 64) : BitVec 64 :=
@@ -94,7 +94,7 @@ def mulw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let result : xlenbits := (sign_extend (m := 64) result32)
   result
 
-def mul  (rs2_val : BitVec 64) (rs1_val : BitVec 64) (mul_op : mul_op) : BitVec 64 :=
+def mul (rs2_val : BitVec 64) (rs1_val : BitVec 64) (mul_op : mul_op) : BitVec 64 :=
   let rs1_int : Int := if mul_op.signed_rs1 then BitVec.toInt rs1_val else BitVec.toNat rs1_val
   let rs2_int : Int := if mul_op.signed_rs2 then BitVec.toInt rs2_val else BitVec.toNat rs2_val
   let result_wide := to_bits_truncate (l := 2 *i LeanRV64D.Functions.xlen) (rs1_int *i rs2_int)
