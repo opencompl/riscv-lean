@@ -38,7 +38,7 @@ theorem utype_eq (imm : BitVec 20) (rd : regidx) (op : uop) (h_pc : s.regs.get? 
 
 theorem itype_addi_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ITYPE imm rs1 rd iop.ADDI
-    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ADDI) := by
+      = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ADDI) := by
   simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
 
 theorem itype_slti_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
