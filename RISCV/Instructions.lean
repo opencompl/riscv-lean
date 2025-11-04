@@ -28,8 +28,8 @@ def auipc (imm : BitVec 20) (pc : BitVec 64) : BitVec 64 :=
   rd, rs1 assembler pseudo-instruction.
 -/
 def addi (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
-    let immext : BitVec 64 := (BitVec.signExtend 64 imm) ;
-    BitVec.add rs1_val immext
+  let immext : BitVec 64 := (BitVec.signExtend 64 imm) ;
+  BitVec.add rs1_val immext
 
 /--
   Place the value 1 in register rd if register rs1 is less than the signextended immediate when
