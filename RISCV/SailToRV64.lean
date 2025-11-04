@@ -66,7 +66,6 @@ theorem itype_xori_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.XORI) := by
   simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
 
-
 theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by rfl
 
