@@ -10,21 +10,15 @@ import RISCV.ForLean
 
 namespace RV64I
 
-/-! # RV64I HINT -/
+/-! # RV64I Base Integer Instruction Set -/
 
 theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
     SailRV64I.utype imm pc (uop.LUI) = RV64I.lui imm pc := by
-  simp only [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    BitVec.signExtend, Nat.reduceAdd, BitVec.ofNat_eq_ofNat, lui]
-  unfold instHPowInt_leanRV64D
-  bv_decide
+  simp [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, lui]
 
 theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
     SailRV64I.utype imm pc (uop.AUIPC) = RV64I.auipc imm pc := by
-  simp only [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.add_eq, auipc, BitVec.append_eq]
-  unfold instHPowInt_leanRV64D
-  bv_decide
+  simp [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, auipc, BitVec.add_comm]
 
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
@@ -87,17 +81,15 @@ theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SLLIW rs1_val = slliw shamt rs1_val := by
-  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Sail.shift_bits_left, Sail.BitVec.extractLsb, slliw]
-  unfold instHPowInt_leanRV64D
-  bv_decide
+  simp [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.shift_bits_left, Sail.BitVec.extractLsb, slliw, BitVec.extractLsb'_eq_extractLsb,
+    Nat.mod_eq_of_lt (a := shamt.toNat) (b := 64) (by omega)]
 
 theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SRLIW rs1_val = srliw shamt rs1_val := by
-  simp only [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Sail.shift_bits_right, Sail.BitVec.extractLsb, srliw]
-  unfold instHPowInt_leanRV64D
-  bv_decide
+  simp [SailRV64I.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.shift_bits_right, Sail.BitVec.extractLsb, srliw, BitVec.extractLsb'_eq_extractLsb,
+    Nat.mod_eq_of_lt (a := shamt.toNat) (b := 64) (by omega)]
 
 theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64I.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by
@@ -180,7 +172,6 @@ theorem remw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     simp only [heq, BitVec.ofInt_toInt, BitVec.srem_zero]
   · case _ hfalse =>
     rw [← BitVec.toInt_srem, BitVec.ofInt_toInt]
-    congr
 
 theorem remuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.remw True rs1_val rs2_val = remuw rs1_val rs2_val := by
