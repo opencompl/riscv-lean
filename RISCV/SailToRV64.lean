@@ -38,7 +38,7 @@ theorem utype_eq (imm : BitVec 20) (rd : regidx) (op : uop) (h_pc : s.regs.get? 
 
 theorem itype_addi_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ITYPE imm rs1 rd iop.ADDI
-      = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ADDI) := by
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ADDI) := by
   simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
 
 theorem itype_slti_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
@@ -151,23 +151,23 @@ theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
 
 theorem rtypew_add_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
     execute_RTYPEW rs2 rs1 rd ropw.ADDW
-      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.ADDW val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.ADDW val2 val1) := by rfl
 
 theorem rtypew_sub_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
     execute_RTYPEW rs2 rs1 rd ropw.SUBW
-      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SUBW val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SUBW val2 val1) := by rfl
 
 theorem rtypew_sllw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
     execute_RTYPEW rs2 rs1 rd ropw.SLLW
-      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SLLW val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SLLW val2 val1) := by rfl
 
 theorem rtypew_srlw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
     execute_RTYPEW rs2 rs1 rd ropw.SRLW
-      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRLW val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRLW val2 val1) := by rfl
 
 theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
     execute_RTYPEW rs2 rs1 rd ropw.SRAW
-      = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRAW val2 val1) := by rfl
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rtypew ropw.SRAW val2 val1) := by rfl
 
 /-! # M Extension for Integer Multiplication and Division -/
 
@@ -206,9 +206,9 @@ theorem mul_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 axiom div_sail_error {p: Prop} : p
 
 theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
-  execute_DIV rs2 rs1 rd is_unsigned
-  = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 is_unsigned) := div_sail_error
+    execute_DIV rs2 rs1 rd is_unsigned
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 is_unsigned) := div_sail_error
 
 theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
-  execute_DIVW rs2 rs1 rd is_unsigned
-  = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
+    execute_DIVW rs2 rs1 rd is_unsigned
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
