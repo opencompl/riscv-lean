@@ -36,6 +36,36 @@ theorem utype_eq (imm : BitVec 20) (rd : regidx) (op : uop) (h_pc : s.regs.get? 
       rfl
   · simp
 
+theorem itype_addi_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.ADDI
+      = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ADDI) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
+theorem itype_slti_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.SLTI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.SLTI) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
+theorem itype_sltiu_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.SLTIU
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.SLTIU) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
+theorem itype_andi_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.ANDI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ANDI) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
+theorem itype_ori_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.ORI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.ORI) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
+theorem itype_xori_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE imm rs1 rd iop.XORI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.itype imm val1 iop.XORI) := by
+  simp [execute_ITYPE, SailRV64I.itype, skeleton_unary]
+
 theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64I.addiw imm) := by rfl
 
