@@ -249,7 +249,7 @@ def mulw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
     (((BitVec.extractLsb 31 0 rs1_val) * (BitVec.extractLsb 31 0 rs2_val)))
 
 /--
-  Perform an 64 bits by 64 bits signed integer division of rs1 by rs2, rounding towards zero.
+  Perform a XLEN bits by XLEN bits signed integer division of rs1 by rs2, rounding towards zero.
 -/
 def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   if rs2_val = 0#64 then
