@@ -20,6 +20,38 @@ theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
     SailRV64I.utype imm pc (uop.AUIPC) = RV64I.auipc imm pc := by
   simp [SailRV64I.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, auipc, BitVec.add_comm]
 
+theorem itype_addi_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.ADDI = addi imm rs1_val := by
+  simp [SailRV64I.itype, addi, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend]
+
+theorem itype_slti_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.SLTI = slti imm rs1_val := by
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, LeanRV64D.Functions.zero_extend, LeanRV64D.Functions.bool_to_bits, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_s, slti]
+  split <;>
+  case _ arg h =>
+  apply BitVec.eq_of_toInt_eq
+  simp [BitVec.slt, h]
+
+theorem itype_sltiu_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.SLTIU = sltiu imm rs1_val := by
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, LeanRV64D.Functions.zero_extend, LeanRV64D.Functions.bool_to_bits, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_u, sltiu]
+  split <;>
+  case _ arg h =>
+  apply BitVec.eq_of_toInt_eq
+  simp [BitVec.ult, h]
+
+theorem itype_andi_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.ANDI = andi imm rs1_val := by
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, andi]
+
+theorem itype_ori_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.ORI = ori imm rs1_val := by
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, ori]
+
+theorem itype_xori_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
+    SailRV64I.itype imm rs1_val iop.XORI = xori imm rs1_val := by
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, xori]
+
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
   simp only [SailRV64I.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
