@@ -1,5 +1,6 @@
 import RISCV.SailPure
 import RISCV.Skeleton
+import RISCV.ForMathlib
 
 /-!
   Proofs of the equivalence between monadic and monad-free Sail specifications.
@@ -212,3 +213,98 @@ theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_DIVW rs2 rs1 rd is_unsigned
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+theorem zicond_rtype_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) (op : zicondop) :
+  execute_ZICOND_RTYPE rs1 rs2 rd op
+  = skeleton_binary' rs1 rs2 rd (fun val1 val2 => SailRV64I.zicond val2 val1 op) := by
+  simp [execute_ZICOND_RTYPE, skeleton_binary', SailRV64I.zicond]
+  cases op
+  · case _ =>
+    apply EStateM.ext
+    simp only [bind_map_left, beq_iff_eq, EStateM.run_bind, run_eq, EStateM.run_map]
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+      · case _ h3 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all
+  · case _ =>
+    apply EStateM.ext
+    simp only [bind_map_left, bne_iff_ne, ne_eq, ite_not, EStateM.run_bind, run_eq, EStateM.run_map]
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+      · case _ h3 =>
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all
+
+theorem zicond_rtype_nez_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZICOND_RTYPE rs2 rs1 rd (zicondop.CZERO_NEZ)
+    = skeleton_binary rs1 rs2 rd (fun val1 val2 => SailRV64I.zicond val2 val1 zicondop.CZERO_NEZ) := by
+  simp [execute_ZICOND_RTYPE, skeleton_binary, SailRV64I.zicond]
+
+  cases op
+  · case _ =>
+    apply EStateM.ext
+    simp only [bind_map_left, beq_iff_eq, EStateM.run_bind, run_eq, EStateM.run_map]
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+      · case _ h3 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all
+  · case _ =>
+    apply EStateM.ext
+    simp only [bind_map_left, bne_iff_ne, ne_eq, ite_not, EStateM.run_bind, run_eq, EStateM.run_map]
+    intros s
+    split
+    . case _ h1 =>
+      split
+      . case _ h2 =>
+        simp_all
+        obtain ⟨hs1, hs1'⟩ := h1
+        subst hs1'
+        simp_all
+      · case _ h3 =>
+        simp_all
+    · case _ h1 =>
+      split
+      . case _ h2 =>
+        split at h1 <;> simp_all
+      · case _ h3 =>
+        simp_all

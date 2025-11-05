@@ -70,7 +70,7 @@ def ori (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   in rd Note, "XORI rd, rs1, -1" performs a bitwise logical inversion of register rs1
   (assembler pseudo-instruction NOT rd, rs)
 -/
-def xori (imm : (BitVec 12)) (rs1_val : (BitVec 64)) : BitVec 64 :=
+def xori (imm : (BitVec 12)) (rs1_val : BitVec 64) : BitVec 64 :=
   let immext : BitVec 64 := (BitVec.signExtend 64 imm)
   BitVec.xor rs1_val immext
 
@@ -332,3 +332,11 @@ def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 31 0 rs2_val
   BitVec.signExtend 64 (if rs2 = 0#32 then -1#32 else rs1.udiv rs2)
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+def zicond_rtype_eqz (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
+  if rs2_val = BitVec.zero 64 then BitVec.zero 64 else rs1_val
+
+def zicond_rtype_nez (rs2_val : BitVec 64) (rs1_val : BitVec 64) :=
+  if rs2_val = BitVec.zero 64 then rs1_val else BitVec.zero 64

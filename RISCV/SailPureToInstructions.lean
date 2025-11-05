@@ -399,3 +399,13 @@ theorem divuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     apply BitVec.eq_of_toNat_eq
     have := Nat.div_lt_of_lt (a := rs2.toNat) (b := rs1.toNat) (c := 2 ^ 32) (by omega)
     simp [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (a := rs2.toNat / rs1.toNat) (b := 2 ^ 32) (by omega)]
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+theorem zicond_rtype_eqz_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+  SailRV64I.zicond rs1_val rs2_val zicondop.CZERO_EQZ = zicond_rtype_eqz rs1_val rs2_val := by
+  simp [SailRV64I.zicond, zicond_rtype_eqz, LeanRV64D.Functions.zeros]
+
+theorem zicond_rtype_nez_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+  SailRV64I.zicond rs1_val rs2_val zicondop.CZERO_NEZ = zicond_rtype_nez rs1_val rs2_val := by
+  simp [SailRV64I.zicond, zicond_rtype_nez, LeanRV64D.Functions.zeros]

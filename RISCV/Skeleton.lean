@@ -8,12 +8,24 @@ open LeanRV64D.Functions
 -/
 
 /-- Given a function `execute_func` with two source registers `rs1`, `rs2` and a destination register `rd`,
-  read the values from the source registers and write the result of the function to the destination register.
+  read the values in reverse order from the source registers and write the result of the function to the destination register.
 -/
 def skeleton_binary  (rs2 : regidx) (rs1 : regidx) (rd : regidx)
     (execute_func : BitVec 64 → BitVec 64 → BitVec 64) : SailM ExecutionResult := do
   let rs1_val ← rX_bits rs1
   let rs2_val ← rX_bits rs2
+  let result := execute_func rs1_val rs2_val
+  wX_bits rd result
+  pure RETIRE_SUCCESS
+
+/-- Given a function `execute_func` with two source registers `rs1`, `rs2` and a destination register `rd`,
+  read the values from the source registers and write the result of the function
+  to the destination register.
+-/
+def skeleton_binary'  (rs2 : regidx) (rs1 : regidx) (rd : regidx)
+    (execute_func : BitVec 64 → BitVec 64 → BitVec 64) : SailM ExecutionResult := do
+  let rs2_val ← rX_bits rs2
+  let rs1_val ← rX_bits rs1
   let result := execute_func rs1_val rs2_val
   wX_bits rd result
   pure RETIRE_SUCCESS
