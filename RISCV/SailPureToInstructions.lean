@@ -418,3 +418,13 @@ theorem zbs_bext_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   <;> case _ b heq =>
       simp at heq
       simp [heq]
+
+theorem zbs_binv_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BINV = binv rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, binv]
+
+theorem zbs_bset_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BSET = bset rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, bset]
