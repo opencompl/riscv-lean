@@ -135,3 +135,17 @@ def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitV
       then (Neg.neg (2 ^i 31))
     else quotient
   sign_extend (m := 64) (to_bits_truncate (l := 32) quotient)
+
+/-! # "B" Extension for Bit Manipulation -/
+
+def zbs_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbs) : BitVec 64 :=
+  let mask : xlenbits :=
+    (Sail.shift_bits_left (zero_extend (m := 64) (0b1 : (BitVec 1)))
+      (Sail.BitVec.extractLsb rs2_val 5 0))
+  let result : xlenbits :=
+    match op with
+    | .BCLR => (rs1_val &&& (Complement.complement mask))
+    | .BEXT => (zero_extend (m := 64) (bool_to_bits (bne (rs1_val &&& mask) (zeros (n := 64)))))
+    | .BINV => (rs1_val ^^^ mask)
+    | .BSET => (rs1_val ||| mask)
+  result
