@@ -332,3 +332,35 @@ def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let rs1 := BitVec.extractLsb 31 0 rs1_val
   let rs2 := BitVec.extractLsb 31 0 rs2_val
   BitVec.signExtend 64 (if rs2 = 0#32 then -1#32 else rs1.udiv rs2)
+
+/-! # "B" Extension for Bit Manipulation -/
+
+/--
+  This instruction returns rs1 with a single bit cleared at the index specified
+  in rs2. The index is read from the lower log2(XLEN) bits of rs2.
+-/
+def bclr (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val &&& (~~~((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)))
+
+/--
+  This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
+-/
+def bext (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.setWidth 64
+    (if (rs1_val &&&
+      ((BitVec.setWidth 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)) != 0#64) then 1#1 else 0#1)
+
+/--
+  This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
+-/
+def binv (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val ^^^ ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
+
+/--
+  This instruction returns rs1 with a single bit set at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
+-/
+def bset (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
