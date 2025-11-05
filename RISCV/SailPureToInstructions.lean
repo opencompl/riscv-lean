@@ -401,3 +401,20 @@ theorem divuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     simp [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (a := rs2.toNat / rs1.toNat) (b := 2 ^ 32) (by omega)]
 
 /-! # "B" Extension for Bit Manipulation -/
+
+theorem zbs_bclr_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BCLR = bclr rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.BitVec.extractLsb, bclr, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_bext_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BEXT = bext rs1_val rs2_val := by
+  simp only [SailRV64I.zbs_rtype, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
+    Nat.sub_zero, Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth,
+    BitVec.reduceSetWidth, Sail.BitVec.extractLsb, BitVec.shiftLeft_eq', BitVec.extractLsb_toNat,
+    Nat.shiftRight_zero, Nat.reducePow, LeanRV64D.Functions.zeros, BitVec.zero_eq, bext, bne_iff_ne,
+    ne_eq, ite_not]
+  split
+  <;> case _ b heq =>
+      simp at heq
+      simp [heq]
