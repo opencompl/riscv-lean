@@ -149,3 +149,13 @@ def zbs_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbs) : BitV
     | .BINV => (rs1_val ^^^ mask)
     | .BSET => (rs1_val ||| mask)
   result
+
+def zbs_iop (shamt : BitVec 6) (rs1_val : BitVec 64) (op : biop_zbs) : BitVec 64 :=
+  let mask : xlenbits := (Sail.shift_bits_left (zero_extend (m := 64) (0b1 : (BitVec 1))) shamt)
+  let result : xlenbits :=
+    match op with
+    | .BCLRI => (rs1_val &&& (Complement.complement mask))
+    | .BEXTI => (zero_extend (m := 64) (bool_to_bits (bne (rs1_val &&& mask) (zeros (n := 64)))))
+    | .BINVI => (rs1_val ^^^ mask)
+    | .BSETI => (rs1_val ||| mask)
+  result
