@@ -216,6 +216,7 @@ theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 
 /-! # "Zicond" Extension for Integer Conditional Operations -/
 
+set_option diagnostics true
 def rX_pure (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) (x : regidx) : BitVec 64 :=
   let regs := s.regs
   let i := match x.1 with
@@ -253,14 +254,53 @@ def rX_pure (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) 
     | _ => Register.x1
   match (regs.get? i) with
   | some rType =>
-    match i with
-    | .x21 => rX (.x21)
+    let monadic := rX (regno.Regno (x.1).toNat) s
+    sorry
   | _ => sorry
 
 @[simp]
 theorem run_eq :
     EStateM.run (rX_bits rs2) s = EStateM.Result.ok (rX_pure s rs2) s := by
-  sorry
+  simp [EStateM.run, rX_bits, rX]
+  split
+  · case _ r heq =>
+    rw [show 0 = (0#5).toNat by rfl, ← BitVec.toNat_eq] at heq
+    simp_all
+    sorry
+  · case _ r heq =>
+    rw [show 1 = (1#5).toNat by rfl, ← BitVec.toNat_eq] at heq
+
+    sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
 
 theorem zicond_rtype_eq (rs1 : regidx) (rs2 : regidx) (rs : regidx) (op : zicondop) :
   execute_ZICOND_RTYPE rs1 rs2 rd op
