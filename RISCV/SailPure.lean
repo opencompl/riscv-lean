@@ -21,13 +21,13 @@ def utype (imm : BitVec 20) (pc : BitVec 64) (op : uop) : BitVec 64 :=
 
 def itype (imm : BitVec 12) (rs1_val : BitVec 64) (op : iop) : BitVec 64 :=
   let immext : xlenbits := (sign_extend (m := 64) imm)
-   match op with
-   | iop.ADDI => rs1_val + immext
-   | iop.SLTI => zero_extend (m := 64) (bool_to_bits (zopz0zI_s rs1_val immext))
-   | iop.SLTIU => zero_extend (m := 64) (bool_to_bits (zopz0zI_u rs1_val immext))
-   | iop.ANDI =>  rs1_val &&& immext
-   | iop.ORI => rs1_val ||| immext
-   | iop.XORI => rs1_val ^^^ immext
+  match op with
+  | iop.ADDI => rs1_val + immext
+  | iop.SLTI => zero_extend (m := 64) (bool_to_bits (zopz0zI_s rs1_val immext))
+  | iop.SLTIU => zero_extend (m := 64) (bool_to_bits (zopz0zI_u rs1_val immext))
+  | iop.ANDI =>  rs1_val &&& immext
+  | iop.ORI => rs1_val ||| immext
+  | iop.XORI => rs1_val ^^^ immext
 
 def addiw (imm : BitVec 12) (rs1_val : BitVec 64) : BitVec 64 :=
   let result := rs1_val + (sign_extend (m := ((2 ^i 3) *i 8)) imm)
