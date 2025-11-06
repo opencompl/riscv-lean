@@ -416,3 +416,94 @@ def packh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64
     ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
+
+/-! ## Zbb: Basic bit-manipulation -/
+
+/--
+  This instruction performs the bitwise logical AND operation between rs1 and the bitwise inversion of rs2.
+-/
+def andn (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val &&& ~~~rs2_val
+
+/--
+  This instruction performs the bitwise logical OR operation between rs1 and the bitwise inversion of rs2.
+-/
+def orn (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val ||| ~~~rs2_val
+
+/--
+  This instruction performs the bit-wise exclusive-NOR operation on rs1 and rs2.
+-/
+def xnor (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := ~~~ (rs1_val ^^^ rs2_val)
+
+/--
+  This instruction returns the larger of two signed integers.
+-/
+def max (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb' 0 64 (if BitVec.slt rs2_val rs1_val then rs1_val else rs2_val)
+/--
+  This instruction returns the larger of two unsigned integers.
+-/
+def maxu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb' 0 64 (if BitVec.ult rs2_val rs1_val then rs1_val else rs2_val)
+
+/--
+  This instruction returns the smaller of two signed integers.
+-/
+def min (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb' 0 64 (if BitVec.slt rs1_val rs2_val then rs1_val else rs2_val)
+
+/--
+  This instruction returns the smaller of two unsigned integers.
+-/
+def minu (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb' 0 64 (if BitVec.ult rs1_val rs2_val then rs1_val else rs2_val)
+
+/--
+  This instruction performs a rotate left of rs1 by the amount in least-significant log2(XLEN) bits of rs2.
+-/
+def rol (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let shamt := BitVec.extractLsb 5 0 rs2_val
+  (rs1_val <<< shamt) ||| (rs1_val >>> (64#6 - shamt))
+
+/--
+  This instruction performs a rotate right of rs1 by the amount in least-significant log2(XLEN) bits of rs2.
+-/
+def ror (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let shamt := BitVec.extractLsb 5 0 rs2_val
+  (rs1_val >>> shamt) ||| (rs1_val <<< (64#6 - shamt))
+
+/--
+  This instruction performs a rotate left on the least-significant word of rs1 by the amount in
+  least-significant 5 bits of rs2.
+  The resulting word value is sign-extended by copying bit 31 to all of the more-significant bits.
+-/
+def rolw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  let shamt := BitVec.extractLsb 4 0 rs2_val
+  BitVec.signExtend 64 ((rs1 <<< shamt) ||| (rs1 >>> (32#5 - shamt)))
+
+/--
+  This instruction performs a rotate right on the least-significant word of rs1 by the amount in
+  least-significant 5 bits of rs2.
+  The resultant word is sign-extended by copying bit 31 to all of the more-significant bits.
+-/
+def rorw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  let shamt := BitVec.extractLsb 4 0 rs2_val
+  BitVec.signExtend 64 ((rs1 >>> shamt) ||| (rs1 <<< (32#5 - shamt)))
+
+/--
+  This instruction sign-extends the least-significant byte in the source to XLEN by copying the
+  most-significant bit in the byte (i.e., bit 7) to all of the more-significant bits.
+-/
+def sextb (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extractLsb 7 0 rs1_val)
+
+/--
+  This instruction sign-extends the least-significant halfword in rs to XLEN by copying the
+  most-significant bit in the halfword (i.e., bit 15) to all of the more-significant bits.
+-/
+def sexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extractLsb 15 0 rs1_val)
+
+/--
+  Zero-extend halfword.
+-/
+def zexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 15 0 rs1_val)
