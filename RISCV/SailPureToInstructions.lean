@@ -231,18 +231,16 @@ theorem remuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     rfl
 
 theorem mul_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
+    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.Low, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
       mul rs1_val rs2_val := by
   have h1: rs1_val.toInt = (rs1_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
   have h2 : rs2_val.toInt = (rs2_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
-  simp [SailRV64I.mul, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen,
+  simp [SailRV64I.mul, LeanRV64D.Functions.mult_to_bits_half, Sail.BitVec.extractLsb,
     LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, mul, BitVec.extractLsb,
     h2, h1, BitVec.ofInt_mul, extractLsb'_eq_setWidth, BitVec.setWidth_mul,
-    BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self, Sail.BitVec.toNatInt, LeanRV64D.Functions.mult_to_bits_half]
-  rw [BitVec.setWidth_eq_extractLsb' (by omega)]
-  sorry
+    BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self]
 
 
 theorem mulh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
