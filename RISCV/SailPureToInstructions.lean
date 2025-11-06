@@ -437,3 +437,26 @@ theorem zbs_bset_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BSET = bset rs1_val rs2_val := by
   simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
     Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, bset]
+
+theorem zbs_iop_bclri_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BCLRI = bclri shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, bclri, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_iop_bexti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BEXTI = bexti shamt rs1_val := by
+  simp only [SailRV64I.zbs_iop, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
+    BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth, BitVec.reduceSetWidth, BitVec.shiftLeft_eq',
+    LeanRV64D.Functions.zeros, BitVec.zero_eq, bexti, bne_iff_ne, ne_eq, ite_not]
+  split
+  <;> case _ b heq =>
+      simp at heq
+      simp [heq]
+
+theorem zbs_iop_binvi_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BINVI = binvi shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, binvi, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BSETI = bseti shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, bseti, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
