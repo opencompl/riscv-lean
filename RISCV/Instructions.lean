@@ -396,3 +396,23 @@ def binvi (shamt : BitVec 6) (rs1_val : BitVec 64) :=
 -/
 def bseti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
   rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< shamt)
+
+/--
+  Pack the low halves of rs1 and rs2 into rd.
+-/
+def pack (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb 31 0 rs2_val ++ BitVec.extractLsb 31 0 rs1_val
+
+/--
+  Pack the low bytes of rs1 and rs2 into rd.
+-/
+def packh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64
+    ((BitVec.extractLsb 7 0 rs2_val) ++ (BitVec.extractLsb 7 0 rs1_val))
+
+/--
+  Pack the low 16-bits of rs1 and rs2 into rd on RV64.
+-/
+def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.signExtend 64
+    ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
