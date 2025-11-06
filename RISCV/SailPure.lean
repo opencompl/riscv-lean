@@ -193,3 +193,11 @@ def zbb_extop (rs1_val : BitVec 64) (op : extop_zbb) : BitVec 64 :=
   | .SEXTB => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 7 0)
   | .SEXTH => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
   | .ZEXTH => zero_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
+
+/-! ## Zba: Address generation -/
+
+def zba_rtypeuw (rs2 : BitVec 64) (rs1 : BitVec 64) (shamt : BitVec 2) : BitVec 64 :=
+  (Sail.shift_bits_left (zero_extend (m := 64) (Sail.BitVec.extractLsb rs1 31 0)) shamt) + rs2
+
+def zba_rtype (rs2 : BitVec 64) (rs1 : BitVec 64) (shamt : BitVec 2) : BitVec 64 :=
+  (Sail.shift_bits_left rs1 shamt) + rs2

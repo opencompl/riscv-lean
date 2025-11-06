@@ -601,3 +601,35 @@ theorem zbb_extop_sexth_eq (rs1_val : BitVec 64) :
 theorem zbb_extop_zexth_eq (rs1_val : BitVec 64) :
     SailRV64I.zbb_extop rs1_val extop_zbb.ZEXTH  = zexth rs1_val := by
   simp [SailRV64I.zbb_extop, zexth, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb, Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 0#2 = adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 1#2 = sh1adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh1adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 2#2 = sh2adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh2adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 3#2 = sh3adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh3adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 1#2 = sh1add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh1add, Sail.shift_bits_left]
+
+theorem zba_rtype_sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 2#2 = sh2add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh2add, Sail.shift_bits_left]
+
+theorem zba_rtype_sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 3#2 = sh3add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh3add, Sail.shift_bits_left]
