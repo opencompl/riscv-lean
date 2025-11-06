@@ -416,3 +416,5 @@ def packh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64
     ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
+
+/-! ## Zbb: Basic bit-manipulation -/

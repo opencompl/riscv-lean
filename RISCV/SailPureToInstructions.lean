@@ -465,3 +465,5 @@ theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.zbkb_packw rs1_val rs2_val  = packw rs1_val rs2_val := by
   simp [SailRV64I.zbkb_packw, packw, Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend,
     Sail.BitVec.signExtend]
+
+/-! ## Zbb: Basic bit-manipulation -/

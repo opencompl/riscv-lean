@@ -165,3 +165,31 @@ def zbkb_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbkb) : Bi
 def zbkb_packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let result := ((Sail.BitVec.extractLsb rs2_val 15 0) ++ (Sail.BitVec.extractLsb rs1_val 15 0))
   sign_extend (m := 64) result
+
+/-! ## Zbb: Basic bit-manipulation -/
+
+def zbb_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbb) : BitVec 64 :=
+  match op with
+  | .ANDN => rs1_val &&& (Complement.complement rs2_val)
+  | .ORN => rs1_val ||| (Complement.complement rs2_val)
+  | .XNOR => Complement.complement (rs1_val ^^^ rs2_val)
+  | .MAX => if ((zopz0zK_s rs1_val rs2_val) : Bool) then rs1_val else rs2_val
+  | .MAXU => if ((zopz0zK_u rs1_val rs2_val) : Bool) then rs1_val else rs2_val
+  | .MIN => if ((zopz0zI_s rs1_val rs2_val) : Bool) then rs1_val else rs2_val
+  | .MINU => if ((zopz0zI_u rs1_val rs2_val) : Bool) then rs1_val else rs2_val
+  | .ROL => rotate_bits_left rs1_val (Sail.BitVec.extractLsb rs2_val 5 0)
+  | .ROR => rotate_bits_right rs1_val (Sail.BitVec.extractLsb rs2_val 5 0)
+
+def zbb_rtypew (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : bropw_zbb) : BitVec 64 :=
+  let shamt := Sail.BitVec.extractLsb (rs2_val) 4 0
+  let result : (BitVec 32) :=
+    match op with
+    | bropw_zbb.ROLW => rotate_bits_left rs1_val shamt
+    | bropw_zbb.RORW => rotate_bits_right rs1_val shamt
+  sign_extend (m := 64) result
+
+def zbb_extop (rs1_val : BitVec 64) (op : extop_zbb) : BitVec 64 :=
+    match op with
+    | .SEXTB => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 7 0)
+    | .SEXTH => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
+    | .ZEXTH => zero_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
