@@ -498,6 +498,25 @@ theorem zbb_rtype_minu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem zbb_rtype_rol_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.ROL  = rol rs1_val rs2_val := by
-  simp [SailRV64I.zbb_rtype, LeanRV64D.Functions.rotate_bits_left, LeanRV64D.Functions.rotatel,
-    Sail.shiftl, Sail.BitVec.toNatInt, Sail.BitVec.extractLsb, Sail.shiftr, rol]
-  sorry
+  simp only [SailRV64I.zbb_rtype, LeanRV64D.Functions.rotate_bits_left, LeanRV64D.Functions.rotatel,
+    Sail.shiftl, Sail.BitVec.toNatInt, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
+    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.shiftr, Sail.BitVec.length,
+    rol, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
+  by_cases hzero : rs1_val.toNat % 64 = 0
+  · simp only [hzero, Int.ofNat_eq_coe, Int.cast_ofNat_Int, Int.toNat_zero, BitVec.shiftLeft_zero,
+      Int.sub_zero, Int.reduceToNat, BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
+      Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd,
+      Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
+    have hzero' : rs2_val >>> 64 = 0#64 := by
+      ext i hi
+      simp
+    simp [hzero']
+  · have : (64#6 - BitVec.extractLsb 5 0 rs1_val).toNat = ((64 : Int) - (Int.ofNat (rs1_val.toNat % 64)).toNat).toNat := by
+      have : (64 - ((Int.ofNat (rs1_val.toNat % 64)).toNat : Int)).toNat = 64 - (Int.ofNat (rs1_val.toNat % 64)).toNat := by
+        simp only [Int.ofNat_eq_coe, Int.natCast_emod, Int.cast_ofNat_Int, Int.ofNat_toNat]
+        omega
+      simp only [this]
+      simp
+      omega
+    rw [this]
+    congr
