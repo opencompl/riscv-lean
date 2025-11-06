@@ -507,3 +507,52 @@ def sexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extr
   Zero-extend halfword.
 -/
 def zexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 15 0 rs1_val)
+
+/--
+  This instruction performs an XLEN-wide addition between rs2 and the zero-extended
+  least-significant word of rs1.
+-/
+def adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 0#2 + rs2_val
+
+/--
+ This instruction performs an XLEN-wide addition of two addends.
+ The first addend is rs2. The second addend is the unsigned value formed by extracting the
+ least-significant word of rs1 and shifting it left by 1 place.
+-/
+def sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 1#2 + rs2_val
+
+/--
+  This instruction performs an XLEN-wide addition of two addends.
+  The first addend is rs2. The second addend is the unsigned value formed by extracting the
+  least-significant word of rs1 and shifting it left by 2 places.
+-/
+def sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 2#2 + rs2_val
+
+/--
+    This instruction performs an XLEN-wide addition of two addends.
+    The first addend is rs2. The second addend is the unsigned value formed by extracting the
+    least-significant word of rs1 and shifting it left by 3 places.
+-/
+def sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 3#2 + rs2_val
+
+/--
+  This instruction shifts rs1 to the left by 1 bit and adds it to rs2.
+-/
+def sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 1#2 + rs2_val
+
+/--
+  This instruction shifts rs1 to the left by 2 places and adds it to rs2.
+-/
+def sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 2#2 + rs2_val
+
+/--
+  This instruction shifts rs1 to the left by 3 places and adds it to rs2.
+-/
+def sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 3#2 + rs2_val
