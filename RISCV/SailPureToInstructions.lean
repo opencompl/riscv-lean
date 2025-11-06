@@ -402,6 +402,8 @@ theorem divuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 /-! # "B" Extension for Bit Manipulation -/
 
+/-! ## Zbs: Single-bit instructions -/
+
 theorem zbs_bclr_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BCLR = bclr rs1_val rs2_val := by
   simp [SailRV64I.zbs_rtype, Sail.BitVec.extractLsb, bclr, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
@@ -451,6 +453,8 @@ theorem zbs_iop_binvi_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
 theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
     SailRV64I.zbs_iop shamt rs1_val biop_zbs.BSETI = bseti shamt rs1_val := by
   simp [SailRV64I.zbs_iop, bseti, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+/-! ## Zbkb: Bit-manipulation for Cryptography-/
 
 theorem zbkb_rtype_pack_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACK = pack rs1_val rs2_val := by

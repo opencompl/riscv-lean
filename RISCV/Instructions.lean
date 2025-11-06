@@ -335,6 +335,8 @@ def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 
 /-! # "B" Extension for Bit Manipulation -/
 
+/-! ## Zbs: Single-bit instructions -/
+
 /--
   This instruction returns rs1 with a single bit cleared at the index specified
   in rs2. The index is read from the lower log2(XLEN) bits of rs2.
@@ -397,6 +399,8 @@ def binvi (shamt : BitVec 6) (rs1_val : BitVec 64) :=
 def bseti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
   rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< shamt)
 
+/-! ## Zbkb: Bit-manipulation for Cryptography-/
+
 /--
   Pack the low halves of rs1 and rs2 into rd.
 -/
@@ -439,6 +443,7 @@ def xnor (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := ~~~ (rs1_val
 -/
 def max (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.extractLsb' 0 64 (if BitVec.slt rs2_val rs1_val then rs1_val else rs2_val)
+
 /--
   This instruction returns the larger of two unsigned integers.
 -/
