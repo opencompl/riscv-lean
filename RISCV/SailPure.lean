@@ -154,3 +154,14 @@ def zbs_iop (shamt : BitVec 6) (rs1_val : BitVec 64) (op : biop_zbs) : BitVec 64
     | .BINVI => (rs1_val ^^^ mask)
     | .BSETI => (rs1_val ||| mask)
   result
+
+def zbkb_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbkb) : BitVec 64 :=
+  match op with
+  | .PACK => (Sail.BitVec.extractLsb rs2_val ((LeanRV64D.Functions.xlen_bytes *i 4) -i 1) 0) ++
+              (Sail.BitVec.extractLsb rs1_val ((LeanRV64D.Functions.xlen_bytes *i 4) -i 1) 0)
+  | .PACKH => zero_extend (m := 64)
+              ((Sail.BitVec.extractLsb rs2_val 7 0) ++ (Sail.BitVec.extractLsb rs1_val 7 0))
+
+def zbkb_packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  let result := ((Sail.BitVec.extractLsb rs2_val 15 0) ++ (Sail.BitVec.extractLsb rs1_val 15 0))
+  sign_extend (m := 64) result

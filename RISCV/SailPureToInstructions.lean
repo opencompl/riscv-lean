@@ -451,3 +451,17 @@ theorem zbs_iop_binvi_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
 theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
     SailRV64I.zbs_iop shamt rs1_val biop_zbs.BSETI = bseti shamt rs1_val := by
   simp [SailRV64I.zbs_iop, bseti, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbkb_rtype_pack_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACK = pack rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_rtype, pack, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen_bytes]
+
+theorem zbkb_rtype_packh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACKH = packh rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_rtype, packh, Sail.BitVec.extractLsb, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend]
+
+theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_packw rs1_val rs2_val  = packw rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_packw, packw, Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend,
+    Sail.BitVec.signExtend]
