@@ -1,6 +1,7 @@
 import RISCV.SailPure
 import RISCV.Instructions
 import RISCV.ForLean
+import LeanRV64D.Arithmetic
 
 /-!
   Proofs of the equivalence between monad-free Sail specifications and bitvec-only semantics for
@@ -34,7 +35,7 @@ theorem itype_slti_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
 
 theorem itype_sltiu_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64I.itype imm rs1_val iop.SLTIU = sltiu imm rs1_val := by
-  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, LeanRV64D.Functions.zero_extend, LeanRV64D.Functions.bool_to_bits, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_u, sltiu]
+  simp [SailRV64I.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, LeanRV64D.Functions.zero_extend, LeanRV64D.Functions.bool_to_bits, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_u, sltiu, Sail.BitVec.toNatInt]
   split <;>
   case _ arg h =>
   apply BitVec.eq_of_toInt_eq
@@ -90,7 +91,12 @@ theorem rtype_slt_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.SLT rs2_val rs1_val = RV64I.slt rs2_val rs1_val := by rfl
 
 theorem rtype_sltu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.rtype rop.SLTU rs2_val rs1_val = RV64I.sltu rs2_val rs1_val := by rfl
+    SailRV64I.rtype rop.SLTU rs2_val rs1_val = RV64I.sltu rs2_val rs1_val := by
+  simp [SailRV64I.rtype, RV64I.sltu]
+  simp [LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_to_bits,
+    Sail.BitVec.toNatInt, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_u]
+  by_cases h : rs1_val.toNat < rs2_val.toNat <;>
+  simp [h, BitVec.ult]
 
 theorem rtype_xor_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.rtype rop.XOR rs2_val rs1_val = RV64I.xor rs2_val rs1_val := by rfl
@@ -161,7 +167,7 @@ theorem rtypew_sraw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
     LeanRV64D.Functions.shift_bits_right_arith, Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd,
     BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Nat.reduceDvd, Nat.mod_mod_of_dvd,
     sraw, BitVec.sshiftRight_eq', sshiftRight_eq_setWidth_extractLsb_signExtend,
-    Nat.add_one_sub_one]
+    Nat.add_one_sub_one, Sail.BitVec.toNatInt]
   rfl
 
 /-! # M Extension for Integer Multiplication and Division -/
@@ -225,38 +231,40 @@ theorem remuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     rfl
 
 theorem mul_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.mul rs1_val rs2_val {high := False, signed_rs1 := True, signed_rs2 := True} =
+    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.Low, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
       mul rs1_val rs2_val := by
   have h1: rs1_val.toInt = (rs1_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
   have h2 : rs2_val.toInt = (rs2_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
-  simp [SailRV64I.mul, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen,
+  simp [SailRV64I.mul, LeanRV64D.Functions.mult_to_bits_half, Sail.BitVec.extractLsb,
     LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, mul, BitVec.extractLsb,
     h2, h1, BitVec.ofInt_mul, extractLsb'_eq_setWidth, BitVec.setWidth_mul,
     BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self]
 
+
 theorem mulh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.mul rs1_val rs2_val {high := True, signed_rs1 := True, signed_rs2 := True} =
+    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
       mulh rs1_val rs2_val := by
   have h1 : rs1_val.toInt = (rs1_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
   have h2 : rs2_val.toInt = (rs2_val.signExtend 129).toInt := by
     simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
-  simp only [SailRV64I.mul, decide_true, ↓reduceIte, Sail.BitVec.extractLsb, BitVec.extractLsb,
-    LeanRV64D.Functions.xlen, Int.cast_ofNat_Int, Int.reduceMul, Int.reduceToNat, Int.reduceSub,
-    Nat.reduceSub, Nat.reduceAdd, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, h2, h1,
-    BitVec.ofInt_mul, BitVec.ofInt_toInt, extractLsb'_eq_setWidth, mulh]
-  rw [BitVec.extractLsb'_setWidth_of_le (by omega)]
+  simp only [SailRV64I.mul, LeanRV64D.Functions.mult_to_bits_half, Int.cast_ofNat_Int,
+    Int.reduceMul, Int.reduceSub, Int.reduceToNat, Nat.reduceSub, Nat.reduceAdd,
+    Sail.BitVec.extractLsb, BitVec.extractLsb, LeanRV64D.Functions.to_bits_truncate,
+    Sail.get_slice_int, h2, h1, BitVec.ofInt_mul, BitVec.ofInt_toInt, extractLsb'_eq_setWidth, mulh]
+  rw [BitVec.extractLsb'_setWidth_of_le (by omega), BitVec.setWidth_eq_extractLsb' (by omega)]
+  simp
+
 
 theorem mulhu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.mul rs1_val rs2_val {high := True, signed_rs1 := False, signed_rs2 := False} =
+    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Unsigned, signed_rs2 := Signedness.Unsigned} =
       mulhu rs1_val rs2_val := by
-    simp only [SailRV64I.mul, decide_true, ↓reduceIte, Sail.BitVec.extractLsb, BitVec.extractLsb,
-      LeanRV64D.Functions.xlen, Int.cast_ofNat_Int, Int.reduceMul, Int.reduceToNat, Int.reduceSub,
-      Nat.reduceSub, Nat.reduceAdd, LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int,
-      decide_false, Bool.false_eq_true, mulhu, BitVec.truncate_eq_setWidth,
-      BitVec.extractLsb'_eq_self]
+    simp only [SailRV64I.mul, Sail.BitVec.extractLsb, BitVec.extractLsb, Int.cast_ofNat_Int,
+      Int.reduceMul, Int.reduceToNat, Int.reduceSub, Nat.reduceSub, Nat.reduceAdd,
+      LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, mulhu, BitVec.truncate_eq_setWidth,
+      BitVec.extractLsb'_eq_self, LeanRV64D.Functions.mult_to_bits_half]
     rw [extractLsb'_ofInt_eq_ofInt (by omega)]
     congr
 
@@ -269,12 +277,13 @@ theorem extractLsb_setWidth_of_lt (x : BitVec w) (hi lo v : Nat) (hilo : lo < hi
   omega
 
 theorem mulhsu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.mul rs1_val rs2_val {high := True, signed_rs1 := True, signed_rs2 := False} =
+    SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Unsigned} =
       mulhsu rs1_val rs2_val := by
-  simp only [SailRV64I.mul, decide_true, ↓reduceIte, Sail.BitVec.extractLsb,
-    LeanRV64D.Functions.xlen, Int.cast_ofNat_Int, Int.reduceMul, Int.reduceToNat, Int.reduceSub,
-    LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, Nat.reduceAdd, decide_false,
-    Bool.false_eq_true, mulhsu, BitVec.truncate_eq_setWidth]
+  simp [SailRV64I.mul, LeanRV64D.Functions.mult_to_bits_half, Sail.BitVec.extractLsb,
+    Int.cast_ofNat_Int, Int.reduceMul, Int.reduceToNat, Int.reduceSub,
+    LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, Nat.reduceAdd,
+    mulhsu, BitVec.truncate_eq_setWidth, Sail.BitVec.toNatInt]
+
   have h1 : rs2_val.toInt = (rs2_val.signExtend 129).toInt := by
       simp only [Nat.reduceLeDiff, BitVec.toInt_signExtend_of_le]
   have h2 : rs1_val.toNat = (rs1_val.zeroExtend 129).toInt := by

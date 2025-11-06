@@ -86,6 +86,10 @@ theorem shiftiop_srai_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     = skeleton_unary rs1 rd (fun val => SailRV64I.shiftiop shamt sop.SRAI val) := by
   simp [execute_SHIFTIOP, shift_bits_right_arith, LeanRV64D.Functions.log2_xlen,
     Sail.BitVec.extractLsb, skeleton_unary, SailRV64I.shiftiop]
+  congr
+  ext a
+  congr
+  bv_decide
 
 theorem rtype_add_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_RTYPE rs2 rs1 rd rop.ADD
@@ -171,26 +175,22 @@ theorem rtypew_sraw_eq (rs1 : regidx) (rs2 : regidx) (rd : regidx) :
 
 /-! # M Extension for Integer Multiplication and Division -/
 
-/--
-  Due to a mistake in the Sail model, some proofs are currently broken.
-  We replace the proofs depending on mistaken definitions with an axiom.-/
-axiom rem_sail_error {p: Prop} : p
 
 theorem rem_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd true
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := rem_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem true val2 val1) := rfl
 
 theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := rem_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.rem false val2 val1) := rfl
 
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := rem_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw true val2 val1) := rfl
 
 theorem remw_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd false
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := rem_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.remw false val2 val1) := rfl
 
 theorem mulw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_MULW rs2 rs1 rd
@@ -200,18 +200,14 @@ theorem mul_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_MUL rs2 rs1 rd op
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.mul val2 val1 op) := by rfl
 
-/--
-  Due to a mistake in the Sail model, some proofs are currently broken.
-  We replace the proofs depending on mistaken definitions with an axiom.-/
-axiom div_sail_error {p: Prop} : p
 
 theorem div_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_DIV rs2 rs1 rd is_unsigned
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 is_unsigned) := div_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.div val2 val1 is_unsigned) := rfl
 
 theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_DIVW rs2 rs1 rd is_unsigned
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := div_sail_error
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.divw val2 val1 is_unsigned) := rfl
 
 theorem zbs_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_ZBS_RTYPE rs2 rs1 rd op
