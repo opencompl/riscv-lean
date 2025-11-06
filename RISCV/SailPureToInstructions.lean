@@ -467,3 +467,37 @@ theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     Sail.BitVec.signExtend]
 
 /-! ## Zbb: Basic bit-manipulation -/
+
+theorem zbb_rtype_andn_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.ANDN  = andn rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, andn]
+
+theorem zbb_rtype_orn_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.ORN  = orn rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, orn]
+
+theorem zbb_rtype_xorn_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.XNOR  = xnor rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, xnor]
+
+theorem zbb_rtype_max_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.MAX  = max rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, max, LeanRV64D.Functions.zopz0zK_s, BitVec.slt]
+
+theorem zbb_rtype_maxu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.MAXU  = maxu rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, maxu, LeanRV64D.Functions.zopz0zK_u, BitVec.ult, Sail.BitVec.toNatInt]
+
+theorem zbb_rtype_min_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.MIN  = min rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, min, LeanRV64D.Functions.zopz0zI_s, BitVec.slt]
+
+theorem zbb_rtype_minu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.MINU  = minu rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, minu, LeanRV64D.Functions.zopz0zI_u, BitVec.ult, Sail.BitVec.toNatInt]
+
+theorem zbb_rtype_rol_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rtype rs1_val rs2_val brop_zbb.ROL  = rol rs1_val rs2_val := by
+  simp [SailRV64I.zbb_rtype, LeanRV64D.Functions.rotate_bits_left, LeanRV64D.Functions.rotatel,
+    Sail.shiftl, Sail.BitVec.toNatInt, Sail.BitVec.extractLsb, Sail.shiftr, rol]
+  sorry
