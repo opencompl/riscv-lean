@@ -218,3 +218,11 @@ theorem zbs_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 theorem zbs_iop_eq (shamt : BitVec 6) (rs1 : regidx) (rd : regidx) :
     execute_ZBS_IOP shamt rs1 rd op
     = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbs_iop shamt val1 op) := by rfl
+
+theorem zbkb_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZBKB_RTYPE rs2 rs1 rd op
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbkb_rtype val2 val1 op) := by rfl
+
+theorem zbkb_packw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZBKB_PACKW rs2 rs1 rd
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbkb_packw val2 val1) := by rfl
