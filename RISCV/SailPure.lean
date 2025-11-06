@@ -189,7 +189,7 @@ def zbb_rtypew (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : bropw_zbb) : Bi
   sign_extend (m := 64) result
 
 def zbb_extop (rs1_val : BitVec 64) (op : extop_zbb) : BitVec 64 :=
-    match op with
-    | .SEXTB => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 7 0)
-    | .SEXTH => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
-    | .ZEXTH => zero_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
+  match op with
+  | .SEXTB => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 7 0)
+  | .SEXTH => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
+  | .ZEXTH => zero_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
