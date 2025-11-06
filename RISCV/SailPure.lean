@@ -105,13 +105,8 @@ def mulw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   result
 
 def mul (rs2_val : BitVec 64) (rs1_val : BitVec 64) (mul_op : mul_op) : BitVec 64 :=
-  let rs1_int : Int := if mul_op.signed_rs1 then BitVec.toInt rs1_val else BitVec.toNat rs1_val
-  let rs2_int : Int := if mul_op.signed_rs2 then BitVec.toInt rs2_val else BitVec.toNat rs2_val
-  let result_wide := to_bits_truncate (l := 2 *i LeanRV64D.Functions.xlen) (rs1_int *i rs2_int)
-  if (mul_op.high : Bool)
-    then Sail.BitVec.extractLsb
-      result_wide ((2 *i LeanRV64D.Functions.xlen) -i 1) LeanRV64D.Functions.xlen
-    else Sail.BitVec.extractLsb result_wide (LeanRV64D.Functions.xlen -i 1) 0
+  mult_to_bits_half (l := 64) mul_op.signed_rs1 mul_op.signed_rs2 rs1_val rs2_val
+      mul_op.result_part
 
 def div (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitVec 64 :=
   let rs1_int : Int := if is_unsigned then BitVec.toNat rs1_val else BitVec.toInt rs1_val
