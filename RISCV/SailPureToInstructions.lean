@@ -589,3 +589,15 @@ theorem zbb_rtypew_rorw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
       BitVec.zero_sub, BitVec.toNat_neg, Nat.reducePow, BitVec.toNat_setWidth, Int.ofNat_eq_coe,
       Int.natCast_emod, Int.cast_ofNat_Int, Int.ofNat_toNat] at this
     simp [BitVec.extractLsb, BitVec.extractLsb'_eq_setWidth, this]
+
+theorem zbb_extop_sextb_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_extop rs1_val extop_zbb.SEXTB  = sextb rs1_val := by
+  simp [SailRV64I.zbb_extop, sextb, LeanRV64D.Functions.sign_extend, Sail.BitVec.extractLsb, Sail.BitVec.signExtend]
+
+theorem zbb_extop_sexth_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_extop rs1_val extop_zbb.SEXTH  = sexth rs1_val := by
+  simp [SailRV64I.zbb_extop, sexth, LeanRV64D.Functions.sign_extend, Sail.BitVec.extractLsb, Sail.BitVec.signExtend]
+
+theorem zbb_extop_zexth_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_extop rs1_val extop_zbb.ZEXTH  = zexth rs1_val := by
+  simp [SailRV64I.zbb_extop, zexth, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb, Sail.BitVec.zeroExtend]
