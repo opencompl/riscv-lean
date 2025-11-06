@@ -133,6 +133,8 @@ def divw (rs2_val : BitVec 64) (rs1_val : BitVec 64) (is_unsigned : Bool) : BitV
 
 /-! # "B" Extension for Bit Manipulation -/
 
+/-! ## Zbs: Single-bit instructions -/
+
 def zbs_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbs) : BitVec 64 :=
   let mask : xlenbits :=
     (Sail.shift_bits_left (zero_extend (m := 64) (0b1 : (BitVec 1)))
@@ -154,6 +156,8 @@ def zbs_iop (shamt : BitVec 6) (rs1_val : BitVec 64) (op : biop_zbs) : BitVec 64
     | .BINVI => (rs1_val ^^^ mask)
     | .BSETI => (rs1_val ||| mask)
   result
+
+/-! ## Zbkb: Bit-manipulation for Cryptography-/
 
 def zbkb_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbkb) : BitVec 64 :=
   match op with
