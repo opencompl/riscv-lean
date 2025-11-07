@@ -169,6 +169,18 @@ def zbb_extop (rs1_val : BitVec 64) (op : extop_zbb) : BitVec 64 :=
   | .SEXTH => sign_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
   | .ZEXTH => zero_extend (m := 64) (Sail.BitVec.extractLsb rs1_val 15 0)
 
+def zbb_clz (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (Sail.BitVec.countLeadingZeros rs1)
+
+def zbb_clzw (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (Sail.BitVec.countLeadingZeros (Sail.BitVec.extractLsb rs1 31 0))
+
+def zbb_ctz (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (Sail.BitVec.countTrailingZeros rs1)
+
+def zbb_ctzw (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (Sail.BitVec.countTrailingZeros (Sail.BitVec.extractLsb rs1 31 0))
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/
