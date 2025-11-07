@@ -507,6 +507,22 @@ def ctz (rs1_val : BitVec 64) : BitVec 64 := BitVec.ctz rs1_val
 -/
 def ctzw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ctz (BitVec.extractLsb 31 0 rs1_val))
 
+/--
+  This instruction performs a rotate right on the least-significant word of rs1 by the amount in the
+  least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
+  copying bit 31 to all of the more-significant bits.
+-/
+def roriw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
+  let rs1 := BitVec.extractLsb 31 0 rs1_val
+  BitVec.signExtend 64 ((rs1 >>> shamt) ||| (rs1 <<< (32 - shamt)))
+
+/--
+  This instruction performs a rotate right of rs1 by the amount in the least-significant log2(XLEN)
+  bits of shamt. For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+-/
+def rori (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
+  ((rs1_val >>> shamt) ||| (rs1_val <<< (64 - shamt)))
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/
