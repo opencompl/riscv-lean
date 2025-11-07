@@ -591,6 +591,37 @@ theorem zbb_ctzw_eq (rs1_val : BitVec 64) :
     Sail.BitVec.countTrailingZeros, Sail.BitVec.countLeadingZeros, BitVec.extractLsb'_eq_setWidth,
     Sail.BitVec.extractLsb]
 
+theorem zbb_roriw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_roriw shamt rs1_val = roriw shamt rs1_val := by
+  simp only [SailRV64I.zbb_roriw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
+    Sail.shiftr, Sail.BitVec.extractLsb, Sail.BitVec.toNatInt, Int.ofNat_eq_coe, Int.toNat_natCast,
+    Int.cast_ofNat_Int, Int.toNat_sub', Int.reduceToNat, BitVec.signExtend_or, roriw,
+    BitVec.ushiftRight_eq', BitVec.ofNat_eq_ofNat, BitVec.reduceOfNat, BitVec.zero_sub,
+    BitVec.shiftLeft_eq', BitVec.toNat_neg, Nat.reducePow, Sail.shiftl]
+  by_cases hzero : shamt.toNat = 0
+  · simp [hzero]
+  · congr
+    rw [Nat.mod_eq_of_lt (by omega)]
+
+theorem zbb_rori_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
+    SailRV64I.zbb_rori shamt rs1_val = rori shamt rs1_val := by
+  simp only [SailRV64I.zbb_rori, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
+    Sail.shiftr, Sail.BitVec.toNatInt, LeanRV64D.Functions.log2_xlen, Int.cast_ofNat_Int,
+    Int.reduceSub, Int.reduceToNat, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
+    BitVec.extractLsb_toNat, BitVec.toNat_setWidth, Nat.reducePow, Nat.shiftRight_zero,
+    Nat.dvd_refl, Nat.mod_mod_of_dvd, Int.ofNat_eq_coe, Int.natCast_emod, Sail.shiftl,
+    rori, BitVec.ushiftRight_eq', BitVec.ofNat_eq_ofNat, BitVec.shiftLeft_eq',
+    BitVec.toNat_sub, BitVec.toNat_ofNat, Nat.reduceMod]
+  by_cases hzero : shamt.toNat = 0
+  · simp [hzero]
+  · have : ((64 : Int) - (((shamt.toNat : Int) % 64) : Int).toNat).toNat = ((64 - shamt.toNat % 64) % 64) := by
+      rw [Int.emod_eq_of_lt (by omega) (by omega), Int.toNat_natCast, Int.toNat_sub',
+        Nat.mod_eq_of_lt (a := shamt.toNat) (by omega), Nat.mod_eq_of_lt (by omega)]
+      simp
+    rw [this]
+    congr
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/

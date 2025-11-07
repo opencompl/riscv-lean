@@ -181,6 +181,13 @@ def zbb_ctz (rs1 : BitVec 64) : BitVec 64 :=
 def zbb_ctzw (rs1 : BitVec 64) : BitVec 64 :=
   to_bits (l := 64) (Sail.BitVec.countTrailingZeros (Sail.BitVec.extractLsb rs1 31 0))
 
+def zbb_roriw (shamt : BitVec 5) (rs1 : BitVec 64) :=
+  sign_extend (m := 64) (rotate_bits_right (Sail.BitVec.extractLsb rs1 31 0) shamt)
+
+def zbb_rori (shamt : BitVec 6) (rs1 : BitVec 64) :=
+  let shamt := (Sail.BitVec.extractLsb shamt (LeanRV64D.Functions.log2_xlen -i 1) 0)
+  rotate_bits_right rs1 shamt
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/

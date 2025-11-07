@@ -251,6 +251,14 @@ theorem zbb_ctzw_eq (rs1 : regidx) (rd : regidx) :
     execute_CTZW rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_ctzw val1) := by rfl
 
+theorem zbb_roriw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_RORIW shamt rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_roriw shamt val1) := by rfl
+
+theorem zbb_rori_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+    execute_RORI shamt rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_rori shamt val1) := by rfl
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/
