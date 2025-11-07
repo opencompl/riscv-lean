@@ -3,7 +3,7 @@
   Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
-namespace RV64I
+namespace RV64
 
 /-! # RV64I Base Integer Instruction Set -/
 

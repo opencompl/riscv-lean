@@ -9,16 +9,16 @@ import LeanRV64D.Arithmetic
   Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
-namespace RV64I
+namespace RV64
 
 /-! # RV64I Base Integer Instruction Set -/
 
 theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
-    SailRV64.utype imm pc (uop.LUI) = RV64I.lui imm pc := by
+    SailRV64.utype imm pc (uop.LUI) = lui imm pc := by
   simp [SailRV64.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, lui]
 
 theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
-    SailRV64.utype imm pc (uop.AUIPC) = RV64I.auipc imm pc := by
+    SailRV64.utype imm pc (uop.AUIPC) = auipc imm pc := by
   simp [SailRV64.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, auipc, BitVec.add_comm]
 
 theorem itype_addi_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
@@ -54,9 +54,9 @@ theorem itype_xori_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
   simp [SailRV64.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, xori]
 
 theorem addiw_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
-    SailRV64.addiw imm rs1_val = RV64I.addiw imm rs1_val := by
+    SailRV64.addiw imm rs1_val = addiw imm rs1_val := by
   simp only [SailRV64.addiw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, Nat.sub_zero,
-    Nat.reduceAdd, Sail.BitVec.extractLsb, RV64I.addiw]
+    Nat.reduceAdd, Sail.BitVec.extractLsb, addiw]
   rw [BitVec.extractLsb, BitVec.setWidth_eq_extractLsb' (by omega)]
   unfold instHPowInt_leanRV64D
   bv_decide
@@ -79,43 +79,43 @@ theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
   rfl
 
 theorem rtype_add_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.ADD rs2_val rs1_val = RV64I.add rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.ADD rs2_val rs1_val = add rs2_val rs1_val := by rfl
 
 theorem rtype_sub_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SUB rs2_val rs1_val = RV64I.sub rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.SUB rs2_val rs1_val = sub rs2_val rs1_val := by rfl
 
 theorem rtype_sll_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SLL rs2_val rs1_val = RV64I.sll rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.SLL rs2_val rs1_val = sll rs2_val rs1_val := by rfl
 
 theorem rtype_slt_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SLT rs2_val rs1_val = RV64I.slt rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.SLT rs2_val rs1_val = slt rs2_val rs1_val := by rfl
 
 theorem rtype_sltu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SLTU rs2_val rs1_val = RV64I.sltu rs2_val rs1_val := by
-  simp [SailRV64.rtype, RV64I.sltu]
+    SailRV64.rtype rop.SLTU rs2_val rs1_val = sltu rs2_val rs1_val := by
+  simp [SailRV64.rtype, sltu]
   simp [LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_to_bits,
     Sail.BitVec.toNatInt, LeanRV64D.Functions.bool_bits_forwards, LeanRV64D.Functions.zopz0zI_u]
   by_cases h : rs1_val.toNat < rs2_val.toNat <;>
   simp [h, BitVec.ult]
 
 theorem rtype_xor_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.XOR rs2_val rs1_val = RV64I.xor rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.XOR rs2_val rs1_val = xor rs2_val rs1_val := by rfl
 
 theorem rtype_srl_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SRL rs2_val rs1_val = RV64I.srl rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.SRL rs2_val rs1_val = srl rs2_val rs1_val := by rfl
 
 theorem rtype_sra_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.SRA rs2_val rs1_val = RV64I.sra rs2_val rs1_val := by
+    SailRV64.rtype rop.SRA rs2_val rs1_val = sra rs2_val rs1_val := by
   simp only [SailRV64.rtype, Nat.sub_zero, sra, Nat.reduceAdd, BitVec.sshiftRight_eq',
     BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow,
     BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
   rfl
 
 theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.OR rs2_val rs1_val = RV64I.or rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.OR rs2_val rs1_val = or rs2_val rs1_val := by rfl
 
 theorem rtype_and_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64.rtype rop.AND rs2_val rs1_val = RV64I.and rs2_val rs1_val := by rfl
+    SailRV64.rtype rop.AND rs2_val rs1_val = and rs2_val rs1_val := by rfl
 
 theorem shiftiwop_slliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.shiftiwop shamt sopw.SLLIW rs1_val = slliw shamt rs1_val := by
