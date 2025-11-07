@@ -242,7 +242,6 @@ theorem mul_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     h2, h1, BitVec.ofInt_mul, BitVec.extractLsb'_eq_setWidth, BitVec.setWidth_mul,
     BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self]
 
-
 theorem mulh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
       mulh rs1_val rs2_val := by
@@ -256,7 +255,6 @@ theorem mulh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     Sail.get_slice_int, h2, h1, BitVec.ofInt_mul, BitVec.ofInt_toInt, BitVec.extractLsb'_eq_setWidth, mulh]
   rw [BitVec.extractLsb'_setWidth_of_le (by omega), BitVec.setWidth_eq_extractLsb' (by omega)]
   simp
-
 
 theorem mulhu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64I.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Unsigned, signed_rs2 := Signedness.Unsigned} =
@@ -402,73 +400,39 @@ theorem divuw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 /-! # "B" Extension for Bit Manipulation -/
 
-/-! ## Zbs: Single-bit instructions -/
+/-! ## Zba: Address generation -/
 
-theorem zbs_bclr_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BCLR = bclr rs1_val rs2_val := by
-  simp [SailRV64I.zbs_rtype, Sail.BitVec.extractLsb, bclr, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
-
-theorem zbs_bext_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BEXT = bext rs1_val rs2_val := by
-  simp only [SailRV64I.zbs_rtype, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
-    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
-    Nat.sub_zero, Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth,
-    BitVec.reduceSetWidth, Sail.BitVec.extractLsb, BitVec.shiftLeft_eq', BitVec.extractLsb_toNat,
-    Nat.shiftRight_zero, Nat.reducePow, LeanRV64D.Functions.zeros, BitVec.zero_eq, bext, bne_iff_ne,
-    ne_eq, ite_not]
-  split
-  <;> case _ b heq =>
-      simp at heq
-      simp [heq]
-
-theorem zbs_binv_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BINV = binv rs1_val rs2_val := by
-  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
-    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, binv]
-
-theorem zbs_bset_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BSET = bset rs1_val rs2_val := by
-  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
-    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, bset]
-
-theorem zbs_iop_bclri_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BCLRI = bclri shamt rs1_val := by
-  simp [SailRV64I.zbs_iop, bclri, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
-
-theorem zbs_iop_bexti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BEXTI = bexti shamt rs1_val := by
-  simp only [SailRV64I.zbs_iop, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
-    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
-    BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth, BitVec.reduceSetWidth, BitVec.shiftLeft_eq',
-    LeanRV64D.Functions.zeros, BitVec.zero_eq, bexti, bne_iff_ne, ne_eq, ite_not]
-  split
-  <;> case _ b heq =>
-      simp at heq
-      simp [heq]
-
-theorem zbs_iop_binvi_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BINVI = binvi shamt rs1_val := by
-  simp [SailRV64I.zbs_iop, binvi, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
-
-theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
-    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BSETI = bseti shamt rs1_val := by
-  simp [SailRV64I.zbs_iop, bseti, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
-
-/-! ## Zbkb: Bit-manipulation for Cryptography-/
-
-theorem zbkb_rtype_pack_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACK = pack rs1_val rs2_val := by
-  simp [SailRV64I.zbkb_rtype, pack, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen_bytes]
-
-theorem zbkb_rtype_packh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACKH = packh rs1_val rs2_val := by
-  simp [SailRV64I.zbkb_rtype, packh, Sail.BitVec.extractLsb, LeanRV64D.Functions.zero_extend,
+theorem zba_rtypeuw_adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 0#2 = adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
     Sail.BitVec.zeroExtend]
 
-theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zbkb_packw rs1_val rs2_val  = packw rs1_val rs2_val := by
-  simp [SailRV64I.zbkb_packw, packw, Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend,
-    Sail.BitVec.signExtend]
+theorem zba_rtypeuw_sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 1#2 = sh1adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh1adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 2#2 = sh2adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh2adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtypeuw rs2_val rs1_val 3#2 = sh3adduw rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtypeuw, sh3adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+    Sail.BitVec.zeroExtend]
+
+theorem zba_rtypeuw_sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 1#2 = sh1add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh1add, Sail.shift_bits_left]
+
+theorem zba_rtype_sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 2#2 = sh2add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh2add, Sail.shift_bits_left]
+
+theorem zba_rtype_sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zba_rtype rs2_val rs1_val 3#2 = sh3add rs2_val rs1_val := by
+  simp [SailRV64I.zba_rtype, sh3add, Sail.shift_bits_left]
 
 /-! ## Zbb: Basic bit-manipulation -/
 
@@ -606,34 +570,76 @@ theorem zbb_extop_zexth_eq (rs1_val : BitVec 64) :
     SailRV64I.zbb_extop rs1_val extop_zbb.ZEXTH  = zexth rs1_val := by
   simp [SailRV64I.zbb_extop, zexth, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb, Sail.BitVec.zeroExtend]
 
-theorem zba_rtypeuw_adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtypeuw rs2_val rs1_val 0#2 = adduw rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtypeuw, adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
+/-! ## Zbc: Carry-less multiplication -/
+
+/-! ## Zbs: Single-bit instructions -/
+
+theorem zbs_bclr_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BCLR = bclr rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.BitVec.extractLsb, bclr, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_bext_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BEXT = bext rs1_val rs2_val := by
+  simp only [SailRV64I.zbs_rtype, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
+    Nat.sub_zero, Nat.reduceAdd, BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth,
+    BitVec.reduceSetWidth, Sail.BitVec.extractLsb, BitVec.shiftLeft_eq', BitVec.extractLsb_toNat,
+    Nat.shiftRight_zero, Nat.reducePow, LeanRV64D.Functions.zeros, BitVec.zero_eq, bext, bne_iff_ne,
+    ne_eq, ite_not]
+  split
+  <;> case _ b heq =>
+      simp at heq
+      simp [heq]
+
+theorem zbs_binv_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BINV = binv rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, binv]
+
+theorem zbs_bset_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_rtype rs1_val rs2_val brop_zbs.BSET = bset rs1_val rs2_val := by
+  simp [SailRV64I.zbs_rtype, Sail.shift_bits_left, Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb, bset]
+
+theorem zbs_iop_bclri_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BCLRI = bclri shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, bclri, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_iop_bexti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BEXTI = bexti shamt rs1_val := by
+  simp only [SailRV64I.zbs_iop, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bits, LeanRV64D.Functions.bool_bits_forwards, Sail.shift_bits_left,
+    BitVec.ofNat_eq_ofNat, BitVec.truncate_eq_setWidth, BitVec.reduceSetWidth, BitVec.shiftLeft_eq',
+    LeanRV64D.Functions.zeros, BitVec.zero_eq, bexti, bne_iff_ne, ne_eq, ite_not]
+  split
+  <;> case _ b heq =>
+      simp at heq
+      simp [heq]
+
+theorem zbs_iop_binvi_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BINVI = binvi shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, binvi, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
+    SailRV64I.zbs_iop shamt rs1_val biop_zbs.BSETI = bseti shamt rs1_val := by
+  simp [SailRV64I.zbs_iop, bseti, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.zeroExtend]
+
+/-! ## Zbkb: Bit-manipulation for Cryptography-/
+
+theorem zbkb_rtype_pack_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACK = pack rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_rtype, pack, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen_bytes]
+
+theorem zbkb_rtype_packh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_rtype rs1_val rs2_val brop_zbkb.PACKH = packh rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_rtype, packh, Sail.BitVec.extractLsb, LeanRV64D.Functions.zero_extend,
     Sail.BitVec.zeroExtend]
 
-theorem zba_rtypeuw_sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtypeuw rs2_val rs1_val 1#2 = sh1adduw rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtypeuw, sh1adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
-    Sail.BitVec.zeroExtend]
+theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64I.zbkb_packw rs1_val rs2_val  = packw rs1_val rs2_val := by
+  simp [SailRV64I.zbkb_packw, packw, Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend,
+    Sail.BitVec.signExtend]
 
-theorem zba_rtypeuw_sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtypeuw rs2_val rs1_val 2#2 = sh2adduw rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtypeuw, sh2adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
-    Sail.BitVec.zeroExtend]
+/-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
-theorem zba_rtypeuw_sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtypeuw rs2_val rs1_val 3#2 = sh3adduw rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtypeuw, sh3adduw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb,
-    Sail.BitVec.zeroExtend]
-
-theorem zba_rtypeuw_sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtype rs2_val rs1_val 1#2 = sh1add rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtype, sh1add, Sail.shift_bits_left]
-
-theorem zba_rtype_sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtype rs2_val rs1_val 2#2 = sh2add rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtype, sh2add, Sail.shift_bits_left]
-
-theorem zba_rtype_sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
-    SailRV64I.zba_rtype rs2_val rs1_val 3#2 = sh3add rs2_val rs1_val := by
-  simp [SailRV64I.zba_rtype, sh3add, Sail.shift_bits_left]
+/-! ## Zbkx: Carry-less multiplication for Cryptography -/

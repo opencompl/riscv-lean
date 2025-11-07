@@ -211,6 +211,32 @@ theorem divw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 
 /-! # "B" Extension for Bit Manipulation -/
 
+/-! ## Zba: Address generation -/
+
+theorem zba_rtypeuw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) (shamt : BitVec 2):
+    execute_ZBA_RTYPEUW rs2 rs1 rd shamt
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zba_rtypeuw val2 val1 shamt) := by rfl
+
+theorem zba_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) (shamt : BitVec 2):
+    execute_ZBA_RTYPE rs2 rs1 rd shamt
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zba_rtype val2 val1 shamt) := by rfl
+
+/-! ## Zbb: Basic bit-manipulation -/
+
+theorem zbb_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZBB_RTYPE rs2 rs1 rd op
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbb_rtype val2 val1 op) := by rfl
+
+theorem zbb_rtypew_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZBB_RTYPEW rs2 rs1 rd op
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbb_rtypew val2 val1 op) := by rfl
+
+theorem zbb_extop_eq (rs1 : regidx) (rd : regidx) :
+    execute_ZBB_EXTOP rs1 rd op
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_extop val1 op) := by rfl
+
+/-! ## Zbc: Carry-less multiplication -/
+
 /-! ## Zbs: Single-bit instructions -/
 
 theorem zbs_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
@@ -231,26 +257,6 @@ theorem zbkb_packw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_ZBKB_PACKW rs2 rs1 rd
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbkb_packw val2 val1) := by rfl
 
-/-! ## Zbb: Basic bit-manipulation -/
+/-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
-theorem zbb_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
-    execute_ZBB_RTYPE rs2 rs1 rd op
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbb_rtype val2 val1 op) := by rfl
-
-theorem zbb_rtypew_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
-    execute_ZBB_RTYPEW rs2 rs1 rd op
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zbb_rtypew val2 val1 op) := by rfl
-
-theorem zbb_extop_eq (rs1 : regidx) (rd : regidx) :
-    execute_ZBB_EXTOP rs1 rd op
-    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_extop val1 op) := by rfl
-
-/-! ## Zba: Address generation -/
-
-theorem zba_rtypeuw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) (shamt : BitVec 2):
-    execute_ZBA_RTYPEUW rs2 rs1 rd shamt
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zba_rtypeuw val2 val1 shamt) := by rfl
-
-theorem zba_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) (shamt : BitVec 2):
-    execute_ZBA_RTYPE rs2 rs1 rd shamt
-    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64I.zba_rtype val2 val1 shamt) := by rfl
+/-! ## Zbkx: Carry-less multiplication for Cryptography -/
