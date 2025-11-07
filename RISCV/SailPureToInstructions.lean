@@ -240,7 +240,7 @@ theorem mul_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   simp [SailRV64.mul, LeanRV64D.Functions.mult_to_bits_half, Sail.BitVec.extractLsb,
     LeanRV64D.Functions.to_bits_truncate, Sail.get_slice_int, mul, BitVec.extractLsb,
     h2, h1, BitVec.ofInt_mul, BitVec.extractLsb'_eq_setWidth, BitVec.setWidth_mul,
-    BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self]
+    BitVec.setWidth_setWidth_of_le, BitVec.setWidth_signExtend_eq_self, BitVec.mul_comm]
 
 theorem mulh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.mul rs1_val rs2_val {result_part := VectorHalf.High, signed_rs1 := Signedness.Signed, signed_rs2 := Signedness.Signed} =
