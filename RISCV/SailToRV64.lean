@@ -223,7 +223,7 @@ theorem zba_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) (shamt : BitVec
 
 theorem zba_slliuw_eq (rs1 : regidx) (rd : regidx) (shamt: BitVec 6) :
     execute_SLLIUW shamt rs1 rd
-    = skeleton_unary rs1 rs2 (fun val1 => SailRV64.zba_slliuw val1 shamt) := by rfl
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zba_slliuw shamt val1) := by rfl
 
 /-! ## Zbb: Basic bit-manipulation -/
 
