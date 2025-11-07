@@ -478,6 +478,35 @@ def sexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extr
 -/
 def zexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 15 0 rs1_val)
 
+/--
+  This instruction counts the number of 0’s before the first 1, starting at the most-significant bit
+  (i.e., XLEN-1) and progressing to bit 0. Accordingly, if the input is 0, the output is XLEN, and
+  if the most-significant bit of the input is a 1, the output is 0.
+-/
+def clz (rs1_val : BitVec 64) : BitVec 64 := BitVec.clz rs1_val
+
+/--
+  This instruction counts the number of 0’s before the first 1 starting at bit 31 and progressing
+  to bit 0. Accordingly, if the least-significant word is 0, the output is 32, and if the
+  most-significant bit of the word (i.e., bit 31) is a 1, the output is 0.
+-/
+def clzw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.clz (BitVec.extractLsb 31 0 rs1_val))
+
+/--
+  This instruction counts the number of 0’s before the first 1, starting at the least-significant
+  bit (i.e., 0) and progressing to the most-significant bit (i.e., XLEN-1). Accordingly, if the
+  input is 0, the output is XLEN, and if the least-significant bit of the input is a 1, the output is 0.
+-/
+def ctz (rs1_val : BitVec 64) : BitVec 64 := BitVec.ctz rs1_val
+
+/--
+  This instruction counts the number of 0’s before the first 1, starting at the least-significant
+  bit (i.e., 0) and progressing to the most-significant bit of the least-significant word (i.e., 31).
+  Accordingly, if the least-significant word is 0, the output is 32, and if the least-significant
+  bit of the input is a 1, the output is 0.
+-/
+def ctzw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ctz (BitVec.extractLsb 31 0 rs1_val))
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/

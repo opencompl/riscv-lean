@@ -235,6 +235,22 @@ theorem zbb_extop_eq (rs1 : regidx) (rd : regidx) :
     execute_ZBB_EXTOP rs1 rd op
     = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_extop val1 op) := by rfl
 
+theorem zbb_clz_eq (rs1 : regidx) (rd : regidx) :
+    execute_CLZ rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_clz val1) := by rfl
+
+theorem zbb_clzw_eq (rs1 : regidx) (rd : regidx) :
+    execute_CLZW rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_clzw val1) := by rfl
+
+theorem zbb_ctz_eq (rs1 : regidx) (rd : regidx) :
+    execute_CTZ rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_ctz val1) := by rfl
+
+theorem zbb_ctzw_eq (rs1 : regidx) (rd : regidx) :
+    execute_CTZW rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64I.zbb_ctzw val1) := by rfl
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/

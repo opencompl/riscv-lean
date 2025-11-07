@@ -570,6 +570,27 @@ theorem zbb_extop_zexth_eq (rs1_val : BitVec 64) :
     SailRV64I.zbb_extop rs1_val extop_zbb.ZEXTH  = zexth rs1_val := by
   simp [SailRV64I.zbb_extop, zexth, LeanRV64D.Functions.zero_extend, Sail.BitVec.extractLsb, Sail.BitVec.zeroExtend]
 
+theorem zbb_clz_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_clz rs1_val = clz rs1_val := by
+  simp [SailRV64I.zbb_clz, clz, LeanRV64D.Functions.to_bits, Sail.get_slice_int,
+    Sail.BitVec.countLeadingZeros, BitVec.extractLsb'_eq_setWidth]
+
+theorem zbb_clzw_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_clzw rs1_val = clzw rs1_val := by
+  simp [SailRV64I.zbb_clzw, clzw, LeanRV64D.Functions.to_bits, Sail.get_slice_int,
+    Sail.BitVec.countLeadingZeros, BitVec.extractLsb'_eq_setWidth, Sail.BitVec.extractLsb]
+
+theorem zbb_ctz_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_ctz rs1_val = ctz rs1_val := by
+  simp [SailRV64I.zbb_ctz, ctz, LeanRV64D.Functions.to_bits, Sail.get_slice_int, BitVec.ctz,
+    Sail.BitVec.countTrailingZeros, Sail.BitVec.countLeadingZeros, BitVec.extractLsb'_eq_setWidth]
+
+theorem zbb_ctzw_eq (rs1_val : BitVec 64) :
+    SailRV64I.zbb_ctzw rs1_val = ctzw rs1_val := by
+  simp [SailRV64I.zbb_ctzw, ctzw, LeanRV64D.Functions.to_bits, Sail.get_slice_int, BitVec.ctz,
+    Sail.BitVec.countTrailingZeros, Sail.BitVec.countLeadingZeros, BitVec.extractLsb'_eq_setWidth,
+    Sail.BitVec.extractLsb]
+
 /-! ## Zbc: Carry-less multiplication -/
 
 /-! ## Zbs: Single-bit instructions -/
