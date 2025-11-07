@@ -9,7 +9,7 @@ open LeanRV64D.Functions
   Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
 
-namespace SailRV64I
+namespace SailRV64
 
 /-! # RV64I Base Integer Instruction Set -/
 
