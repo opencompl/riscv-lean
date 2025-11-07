@@ -386,6 +386,13 @@ def sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 def sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   rs1_val <<< 3#2 + rs2_val
 
+/--
+  This instruction takes the least-significant word of rs1, zero-extends it,
+  and shifts it left by the immediate.
+-/
+def slliuw (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
+  (BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val)) <<< shamt
+
 /-! ## Zbb: Basic bit-manipulation -/
 
 /--

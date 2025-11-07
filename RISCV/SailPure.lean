@@ -141,6 +141,9 @@ def zba_rtypeuw (rs2 : BitVec 64) (rs1 : BitVec 64) (shamt : BitVec 2) : BitVec 
 def zba_rtype (rs2 : BitVec 64) (rs1 : BitVec 64) (shamt : BitVec 2) : BitVec 64 :=
   (Sail.shift_bits_left rs1 shamt) + rs2
 
+def zba_slliuw (shamt : BitVec 6) (rs1 : BitVec 64) : BitVec 64 :=
+  Sail.shift_bits_left (zero_extend (m := 64) (Sail.BitVec.extractLsb rs1 31 0)) shamt
+
 /-! ## Zbb: Basic bit-manipulation -/
 
 def zbb_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbb) : BitVec 64 :=
