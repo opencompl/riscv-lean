@@ -335,91 +335,56 @@ def divuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 
 /-! # "B" Extension for Bit Manipulation -/
 
-/-! ## Zbs: Single-bit instructions -/
+/-! ## Zba: Address generation -/
 
 /--
-  This instruction returns rs1 with a single bit cleared at the index specified
-  in rs2. The index is read from the lower log2(XLEN) bits of rs2.
+  This instruction performs an XLEN-wide addition between rs2 and the zero-extended
+  least-significant word of rs1.
 -/
-def bclr (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val &&& (~~~((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)))
+def adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 0#2 + rs2_val
 
 /--
-  This instruction returns a single bit extracted from rs1 at the index specified in rs2.
-  The index is read from the lower log2(XLEN) bits of rs2.
+ This instruction performs an XLEN-wide addition of two addends.
+ The first addend is rs2. The second addend is the unsigned value formed by extracting the
+ least-significant word of rs1 and shifting it left by 1 place.
 -/
-def bext (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.setWidth 64
-    (if (rs1_val &&&
-      ((BitVec.setWidth 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)) != 0#64) then 1#1 else 0#1)
+def sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 1#2 + rs2_val
 
 /--
-  This instruction returns rs1 with a single bit inverted at the index specified in rs2.
-  The index is read from the lower log2(XLEN) bits of rs2.
+  This instruction performs an XLEN-wide addition of two addends.
+  The first addend is rs2. The second addend is the unsigned value formed by extracting the
+  least-significant word of rs1 and shifting it left by 2 places.
 -/
-def binv (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val ^^^ ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
+def sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 2#2 + rs2_val
 
 /--
-  This instruction returns rs1 with a single bit set at the index specified in rs2.
-  The index is read from the lower log2(XLEN) bits of rs2.
+    This instruction performs an XLEN-wide addition of two addends.
+    The first addend is rs2. The second addend is the unsigned value formed by extracting the
+    least-significant word of rs1 and shifting it left by 3 places.
 -/
-def bset (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
+def sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 3#2 + rs2_val
 
 /--
-  This instruction returns rs1 with a single bit cleared at the index specified in shamt.
-  The index is read from the lower log2(XLEN) bits of shamt.
-  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+  This instruction shifts rs1 to the left by 1 bit and adds it to rs2.
 -/
-def bclri (shamt : BitVec 6) (rs1_val : BitVec 64) :=
-  rs1_val &&& (~~~((BitVec.setWidth 64 1#1) <<< shamt))
+def sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 1#2 + rs2_val
 
 /--
-  This instruction returns a single bit extracted from rs1 at the index specified in shamt.
-  The index is read from the lower log2(XLEN) bits of shamt.
-  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+  This instruction shifts rs1 to the left by 2 places and adds it to rs2.
 -/
-def bexti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
-  BitVec.setWidth 64 (if (rs1_val &&& ((BitVec.setWidth 64 1#1) <<< shamt)) != 0#64 then 1#1 else 0#1)
+def sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 2#2 + rs2_val
 
 /--
-  This instruction returns rs1 with a single bit inverted at the index specified in shamt.
-  The index is read from the lower log2(XLEN) bits of shamt.
-  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+  This instruction shifts rs1 to the left by 3 places and adds it to rs2.
 -/
-def binvi (shamt : BitVec 6) (rs1_val : BitVec 64) :=
-  rs1_val ^^^ ((BitVec.zeroExtend 64 1#1) <<< shamt)
-
-/--
-  This instruction returns rs1 with a single bit set at the index specified in shamt.
-  The index is read from the lower log2(XLEN) bits of shamt.
-  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
--/
-def bseti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
-  rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< shamt)
-
-/-! ## Zbkb: Bit-manipulation for Cryptography-/
-
-/--
-  Pack the low halves of rs1 and rs2 into rd.
--/
-def pack (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.extractLsb 31 0 rs2_val ++ BitVec.extractLsb 31 0 rs1_val
-
-/--
-  Pack the low bytes of rs1 and rs2 into rd.
--/
-def packh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.zeroExtend 64
-    ((BitVec.extractLsb 7 0 rs2_val) ++ (BitVec.extractLsb 7 0 rs1_val))
-
-/--
-  Pack the low 16-bits of rs1 and rs2 into rd on RV64.
--/
-def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.signExtend 64
-    ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
+def sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val <<< 3#2 + rs2_val
 
 /-! ## Zbb: Basic bit-manipulation -/
 
@@ -513,51 +478,94 @@ def sexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extr
 -/
 def zexth (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 15 0 rs1_val)
 
-/--
-  This instruction performs an XLEN-wide addition between rs2 and the zero-extended
-  least-significant word of rs1.
--/
-def adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 0#2 + rs2_val
+/-! ## Zbc: Carry-less multiplication -/
+
+/-! ## Zbs: Single-bit instructions -/
 
 /--
- This instruction performs an XLEN-wide addition of two addends.
- The first addend is rs2. The second addend is the unsigned value formed by extracting the
- least-significant word of rs1 and shifting it left by 1 place.
+  This instruction returns rs1 with a single bit cleared at the index specified
+  in rs2. The index is read from the lower log2(XLEN) bits of rs2.
 -/
-def sh1adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 1#2 + rs2_val
+def bclr (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val &&& (~~~((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)))
 
 /--
-  This instruction performs an XLEN-wide addition of two addends.
-  The first addend is rs2. The second addend is the unsigned value formed by extracting the
-  least-significant word of rs1 and shifting it left by 2 places.
+  This instruction returns a single bit extracted from rs1 at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
 -/
-def sh2adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 2#2 + rs2_val
+def bext (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.setWidth 64
+    (if (rs1_val &&&
+      ((BitVec.setWidth 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val)) != 0#64) then 1#1 else 0#1)
 
 /--
-    This instruction performs an XLEN-wide addition of two addends.
-    The first addend is rs2. The second addend is the unsigned value formed by extracting the
-    least-significant word of rs1 and shifting it left by 3 places.
+  This instruction returns rs1 with a single bit inverted at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
 -/
-def sh3adduw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val) <<< 3#2 + rs2_val
+def binv (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val ^^^ ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
 
 /--
-  This instruction shifts rs1 to the left by 1 bit and adds it to rs2.
+  This instruction returns rs1 with a single bit set at the index specified in rs2.
+  The index is read from the lower log2(XLEN) bits of rs2.
 -/
-def sh1add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val <<< 1#2 + rs2_val
+def bset (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< (BitVec.extractLsb 5 0 rs2_val))
 
 /--
-  This instruction shifts rs1 to the left by 2 places and adds it to rs2.
+  This instruction returns rs1 with a single bit cleared at the index specified in shamt.
+  The index is read from the lower log2(XLEN) bits of shamt.
+  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 -/
-def sh2add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val <<< 2#2 + rs2_val
+def bclri (shamt : BitVec 6) (rs1_val : BitVec 64) :=
+  rs1_val &&& (~~~((BitVec.setWidth 64 1#1) <<< shamt))
 
 /--
-  This instruction shifts rs1 to the left by 3 places and adds it to rs2.
+  This instruction returns a single bit extracted from rs1 at the index specified in shamt.
+  The index is read from the lower log2(XLEN) bits of shamt.
+  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 -/
-def sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
-  rs1_val <<< 3#2 + rs2_val
+def bexti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
+  BitVec.setWidth 64 (if (rs1_val &&& ((BitVec.setWidth 64 1#1) <<< shamt)) != 0#64 then 1#1 else 0#1)
+
+/--
+  This instruction returns rs1 with a single bit inverted at the index specified in shamt.
+  The index is read from the lower log2(XLEN) bits of shamt.
+  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+-/
+def binvi (shamt : BitVec 6) (rs1_val : BitVec 64) :=
+  rs1_val ^^^ ((BitVec.zeroExtend 64 1#1) <<< shamt)
+
+/--
+  This instruction returns rs1 with a single bit set at the index specified in shamt.
+  The index is read from the lower log2(XLEN) bits of shamt.
+  For RV32, the encodings corresponding to shamt[5]=1 are reserved.
+-/
+def bseti (shamt : BitVec 6) (rs1_val : BitVec 64) :=
+  rs1_val ||| ((BitVec.zeroExtend 64 1#1) <<< shamt)
+
+/-! ## Zbkb: Bit-manipulation for Cryptography-/
+
+/--
+  Pack the low halves of rs1 and rs2 into rd.
+-/
+def pack (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb 31 0 rs2_val ++ BitVec.extractLsb 31 0 rs1_val
+
+/--
+  Pack the low bytes of rs1 and rs2 into rd.
+-/
+def packh (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.zeroExtend 64
+    ((BitVec.extractLsb 7 0 rs2_val) ++ (BitVec.extractLsb 7 0 rs1_val))
+
+/--
+  Pack the low 16-bits of rs1 and rs2 into rd on RV64.
+-/
+def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.signExtend 64
+    ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
+
+/-! ## Zbkc: Carry-less multiplication for Cryptography -/
+
+/-! ## Zbkx: Carry-less multiplication for Cryptography -/
