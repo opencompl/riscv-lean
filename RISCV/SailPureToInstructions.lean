@@ -14,7 +14,7 @@ namespace RV64
 /-! # RV64I Base Integer Instruction Set -/
 
 theorem utype_lui_eq (imm : BitVec 20) (pc : BitVec 64) :
-    SailRV64.utype imm pc (uop.LUI) = lui imm pc := by
+    SailRV64.utype imm pc (uop.LUI) = lui imm := by
   simp [SailRV64.utype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, lui]
 
 theorem utype_auipc_eq (imm : BitVec 20) (pc : BitVec 64) :
