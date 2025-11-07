@@ -521,7 +521,8 @@ def roriw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   bits of shamt. For RV32, the encodings corresponding to shamt[5]=1 are reserved.
 -/
 def rori (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
-  ((rs1_val >>> shamt) ||| (rs1_val <<< (64 - shamt)))
+    (rs1_val >>> shamt) ||| (rs1_val <<< (64 - shamt))
+
 
 /-! ## Zbc: Carry-less multiplication -/
 
