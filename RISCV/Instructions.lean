@@ -170,14 +170,14 @@ def and (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val &&& r
   Performs logical left shift on the 32-bit of value in register rs1 by the shift amount held in
   the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
 -/
-def slliw (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
+def slliw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 ((BitVec.extractLsb' 0 32 rs1_val) <<< shamt)
 
 /--
   Performs logical right shift on the 32-bit of value in register rs1 by the shift amount held in
   the lower 5 bits of the immediate. Encodings with $imm[5] neq 0$ are reserved.
 -/
-def srliw (shamt : BitVec 6) (rs1_val : BitVec 64) : BitVec 64 :=
+def srliw (shamt : BitVec 5) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64 ((BitVec.extractLsb' 0 32 rs1_val) >>> shamt)
 
 /--
