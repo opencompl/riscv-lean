@@ -271,7 +271,7 @@ def remuw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   Performs an XLEN-bit * XLEN-bit multiplication of signed rs1 by signed rs2 and places
   the lower XLEN bits in the destination register.
 -/
-def mul (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs1_val * rs2_val
+def mul (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 := rs2_val * rs1_val
 
 /--
   Performs an XLEN-bit * XLEN-bit multiplication of signed rs1 by signed rs2 and places the upper XLEN bits in the destination register.
