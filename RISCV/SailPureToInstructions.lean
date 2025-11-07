@@ -434,6 +434,11 @@ theorem zba_rtype_sh3add (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zba_rtype rs2_val rs1_val 3#2 = sh3add rs2_val rs1_val := by
   simp [SailRV64.zba_rtype, sh3add, Sail.shift_bits_left]
 
+theorem zba_rtypew_slliuw (rs1_val : BitVec 64) (shamt : BitVec 6) :
+    SailRV64.zba_slliuw shamt rs1_val = slliuw shamt rs1_val := by
+  simp [SailRV64.zba_slliuw, slliuw, Sail.shift_bits_left, LeanRV64D.Functions.zero_extend,
+    Sail.BitVec.zeroExtend, Sail.BitVec.extractLsb]
+
 /-! ## Zbb: Basic bit-manipulation -/
 
 theorem zbb_rtype_andn_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
