@@ -1,8 +1,9 @@
+import Std.Tactic.BVDecide
+
 /-!
   BitVec-only semantics of the RISCV operations.
   Ordered as in https://docs.riscv.org/reference/isa/unpriv/rv64.html
 -/
-
 namespace RV64
 
 /-! # RV64I Base Integer Instruction Set -/
@@ -621,3 +622,7 @@ def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
+
+example {a b : BitVec 64} : add a b = add b a := by
+  unfold add
+  bv_decide

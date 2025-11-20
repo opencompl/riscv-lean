@@ -184,6 +184,12 @@ theorem rem_signed_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REM rs2 rs1 rd false
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.rem false val2 val1) := rfl
 
+theorem rem_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_REM rs2 rs1 rd unsigned
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.rem unsigned val2 val1) := rfl
+
+
+
 theorem remw_unsigned_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_REMW rs2 rs1 rd true
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.remw true val2 val1) := rfl
