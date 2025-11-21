@@ -1,5 +1,7 @@
 /-! Lean theorems to be upstreamed. -/
 
+open BitVec
+
 theorem BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat) (x : BitVec w) :
     x.sshiftRight n = ((x.signExtend (w + n)).extractLsb (w - 1 + n) n).setWidth w := by
   ext i hi
@@ -91,3 +93,48 @@ theorem BitVec.setWidth_signExtend_eq_self {w w' : Nat} {x : BitVec w} (h : w �
   ext i hi
   simp  [hi, BitVec.getLsbD_signExtend]
   omega
+
+theorem reverse_cons_reverse_eq_concat {x : BitVec w} {b : Bool} :
+    ((x.reverse).cons b).reverse = BitVec.concat x b:= by
+  ext i hi
+  simp only [← getLsbD_eq_getElem, getLsbD_concat, getLsbD_reverse, getMsbD_eq_getLsbD, hi,
+    decide_true, Nat.add_one_sub_one, getLsbD_cons, Bool.true_and]
+  by_cases hzero : i = 0
+  · simp [hzero]
+  · simp [hzero, show ¬ w - i = w by omega, show w - i < w by omega,
+          show w - 1 - (w - i) = i - 1 by omega]
+
+theorem reverse_eq_msb_cons_reverse {x : BitVec (w + 1)}:
+    x.reverse = cons (x.getLsbD 0) ((x.extractLsb' 1 w).reverse) := by
+  ext i hi
+  simp only [getElem_reverse, getMsbD_eq_getLsbD, Nat.add_one_sub_one, Nat.zero_lt_succ,
+    getLsbD_eq_getElem, getElem_cons, getLsbD_extractLsb', dite_eq_ite]
+  by_cases hiw : i = w
+  · simp [hiw]
+  · simp [hiw, hi, show i < w by omega, show w - 1 - i < w by omega,
+      show 1 + (w - 1 - i) = w - i by omega]
+
+@[simp]
+theorem reverse_reverse (x : BitVec w) :
+   x.reverse.reverse = x := by
+  ext i hi
+  simp [← BitVec.getLsbD_eq_getElem]
+
+theorem exctractLsb'_extractLsb'_eq_extractLsb'_of_le {m n w : Nat} {x : BitVec w} (h : m ≤ n) :
+    BitVec.extractLsb' 0 m (BitVec.extractLsb' 0 n x) = BitVec.extractLsb' 0 m x := by
+  ext i hi
+  simp [getElem_extractLsb', Nat.zero_add, show i < n by omega]
+
+@[simp]
+theorem extractLsb'_cons (x : BitVec w) :
+    (x.cons y).extractLsb' 0 w = x := by
+  simp [BitVec.toNat_eq, Nat.or_mod_two_pow, Nat.shiftLeft_eq]
+
+theorem extractLsb'_concat (x : BitVec (w+1)) (y : Bool):
+    BitVec.extractLsb' 0 (t+1) (x.concat y) = (BitVec.extractLsb' 0 t x).concat y := by
+  ext i hi
+  simp only [← getLsbD_eq_getElem, getLsbD_extractLsb', hi, decide_true, Nat.zero_add,
+    getLsbD_concat, Bool.true_and]
+  split
+  · simp
+  · simp [show i - 1 < t by omega]
