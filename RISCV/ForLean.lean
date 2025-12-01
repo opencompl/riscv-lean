@@ -138,3 +138,8 @@ theorem extractLsb'_concat (x : BitVec (w+1)) (y : Bool):
   split
   · simp
   · simp [show i - 1 < t by omega]
+
+theorem toNat_ofNat_of_le {w n : Nat} (h : n ≤ w) :
+    (BitVec.ofNat w n).toNat = n := by
+  have := Nat.lt_pow_self (a := 2) (n := w)
+  rw [toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
