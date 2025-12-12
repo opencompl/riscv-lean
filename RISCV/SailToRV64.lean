@@ -14,7 +14,7 @@ theorem utype_lui_eq (imm : BitVec 20) (rd : regidx) :
     execute_UTYPE imm rd uop.LUI = skeleton_utype_lui imm rd
     (fun imm' pc => SailRV64.utype imm' pc uop.LUI) := by
   simp only [execute_UTYPE, sign_extend, Sail.BitVec.signExtend, Nat.reduceAdd,
-    BitVec.ofNat_eq_ofNat, bind_pure_comp, pure_bind, skeleton_utype_lui, imp_self, implies_true,
+    bind_pure_comp, pure_bind, skeleton_utype_lui, imp_self, implies_true,
     map_inj_right_of_nonempty]
   rfl
 
