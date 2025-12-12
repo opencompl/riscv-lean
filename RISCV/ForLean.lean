@@ -46,13 +46,13 @@ theorem Int.tmod_lt_of_neg (a : Int) {b : Int} (H : b < 0) : Int.tmod a b < -b :
   match a, b, Int.eq_negSucc_of_lt_zero H with
   | Int.ofNat _, _, ⟨n, rfl⟩ => by
     rename_i aas
-    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_coe, natCast_emod, natCast_add, cast_ofNat_Int,
+    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_natCast, natCast_emod, natCast_add, cast_ofNat_Int,
       neg_negSucc]
     norm_cast
     apply Nat.mod_lt
     omega
   | Int.negSucc _, _, ⟨n, rfl⟩ => by
-    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_coe, natCast_emod, natCast_add, cast_ofNat_Int,
+    simp only [tmod, Nat.succ_eq_add_one, ofNat_eq_natCast, natCast_emod, natCast_add, cast_ofNat_Int,
       neg_negSucc]
     norm_cast
     omega
