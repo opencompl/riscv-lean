@@ -21,7 +21,8 @@ Hand-polished, bitblastable semantics for RISC-V (RV64) in Lean 4, proven equiva
 | File | Description |
 |------|-------------|
 | `ForLean.lean` | Useful theorems to be upstreamed to Lean |
-| `Instructions.lean` | Bitblasted RISC-V semantics |
+| `Instructions.lean` | Bitblastable RISC-V semantics |
+
 | `SailPure.lean` | Purified (i.e., monad-free) Sail specifications |
 | `SailPureToInstructions.lean` | Equivalence proofs between monad-free Sail specification and bitblastable RISC-V semantics |
 | `SailToRV64.lean` | Equivalence proofs between monadic and monad-free Sail Specifications |
