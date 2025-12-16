@@ -6,15 +6,15 @@ Hand-polished, bitblastable semantics for RISC-V (RV64) in Lean 4, proven equiva
 
 | Extension | Description | Status |
 |-----------|-------------|--------|
-| **RV64I** | Base Integer Instruction Set | ✓ |
-| **M** | Integer Multiplication and Division | ✓ |
-| **Zba** | Address generation | ✓ |
-| **Zbb** | Basic bit-manipulation | ✓ |
-| **Zbs** | Single-bit instructions | ✓ |
-| **Zbkb** | Bit-manipulation for Cryptography | ✓ |
-| **Zbc** | Carry-less multiplication | ✗ |
-| **Zbkc** | Carry-less multiplication for Cryptography | ✗ |
-| **Zbkx** | Crossbar permutations for Cryptography | ✗ |
+| **RV64I** | Base Integer Instruction Set | ✅ |
+| **M** | Integer Multiplication and Division | ✅ |
+| **Zba** | Address generation | ✅ |
+| **Zbb** | Basic bit-manipulation | ✅ |
+| **Zbs** | Single-bit instructions | ✅ |
+| **Zbkb** | Bit-manipulation for Cryptography | ✅ |
+| **Zbc** | Carry-less multiplication | 🚧 |
+| **Zbkc** | Carry-less multiplication for Cryptography | 🚧 |
+| **Zbkx** | Crossbar permutations for Cryptography | 🚧 |
 
 ## Project Structure
 
