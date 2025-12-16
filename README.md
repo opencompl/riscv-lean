@@ -29,13 +29,6 @@ Hand-polished, bitblastable semantics for RISC-V (RV64) in Lean 4, proven equiva
 
 ## Building
 
-### Prerequisites
-
-- [Lean 4](https://lean-lang.org/)
-- [Lake](https://github.com/leanprover/lake) (Lean's build system, bundled with Lean)
-
-### Build Instructions
-
 ```bash
 # Clone the repository
 git clone https://github.com/opencompl/riscv-lean.git
