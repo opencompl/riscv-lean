@@ -8,21 +8,21 @@ Hand-polished, bitblastable semantics for RISC-V (RV64) in Lean 4, proven equiva
 |-----------|-------------|--------|
 | **RV64I** | Base Integer Instruction Set | ✅ |
 | **M** | Integer Multiplication and Division | ✅ |
-| **Zba** | Address generation | ✅ |
-| **Zbb** | Basic bit-manipulation | ✅ |
-| **Zbs** | Single-bit instructions | ✅ |
-| **Zbkb** | Bit-manipulation for Cryptography | ✅ |
-| **Zbc** | Carry-less multiplication | 🚧 |
-| **Zbkc** | Carry-less multiplication for Cryptography | 🚧 |
-| **Zbkx** | Crossbar permutations for Cryptography | 🚧 |
+| **B - Zba** | Address generation | ✅ |
+| **B - Zbb** | Basic bit-manipulation | ✅ |
+| **B - Zbs** | Single-bit instructions | ✅ |
+| **B - Zbkb** | Bit-manipulation for Cryptography | ✅ |
+| **B - Zbc** | Carry-less multiplication | 🚧 |
+| **B - Zbkc** | Carry-less multiplication for Cryptography | 🚧 |
+| **B - Zbkx** | Crossbar permutations for Cryptography | 🚧 |
 
 ## Project Structure
 
 | File | Description |
 |------|-------------|
-| `ForLean.lean` | Useful Bit Vector theorems |
+| `ForLean.lean` | Useful theorems to be upstreamed to Lean |
 | `Instructions.lean` | Bitblasted RISC-V semantics |
-| `SailPure.lean` | Monad-free Sail-style specifications |
+| `SailPure.lean` | Purified (i.e., monad-free) Sail specifications |
 | `SailPureToInstructions.lean` | Equivalence proofs between monad-free Sail specification and bitblastable RISC-V semantics |
 | `SailToRV64.lean` | Equivalence proofs between monadic and monad-free Sail Specifications |
 | `Skeleton.lean` | Core infrastructure and type definitions |
