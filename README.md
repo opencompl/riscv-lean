@@ -18,11 +18,12 @@ Hand-polished, bitblastable semantics for RISC-V (RV64) in Lean 4, proven equiva
 
 ## Project Structure
 
+Core files are in the `RISCV/` directory:
+
 | File | Description |
 |------|-------------|
-| `ForLean.lean` | Useful theorems to be upstreamed to Lean |
+| `ForLean.lean` | Theorems to be upstreamed to Lean |
 | `Instructions.lean` | Bitblastable RISC-V semantics |
-
 | `SailPure.lean` | Purified (i.e., monad-free) Sail specifications |
 | `SailPureToInstructions.lean` | Equivalence proofs between monad-free Sail specification and bitblastable RISC-V semantics |
 | `SailToRV64.lean` | Equivalence proofs between monadic and monad-free Sail Specifications |
@@ -63,5 +64,5 @@ This project is developed and maintained by [Tobias Grosser](https://grosser.sci
 ## Related Projects
 
 - [sail-riscv](https://github.com/riscv/sail-riscv) — Official Sail RISC-V specification
-- [sail-riscv-lean](https://github.com/opencompl/sail-riscv-lean) — Auto-generated Lean 4 translation of the official Sail RISC-V model
+- [sail-riscv-lean](https://github.com/opencompl/sail-riscv-lean) — Semantics of Sail RISC-V specification in Lean 4
 
