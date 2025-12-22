@@ -143,3 +143,21 @@ theorem toNat_ofNat_of_le {w n : Nat} (h : n ≤ w) :
     (BitVec.ofNat w n).toNat = n := by
   have := Nat.lt_pow_self (a := 2) (n := w)
   rw [toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+
+@[simp]
+theorem signExtend_signExtend_of_le {x : BitVec w} (h : w ≤ v) :
+    (x.signExtend v).signExtend v' = x.signExtend v' := by
+  ext k hk
+  simp only [getElem_signExtend, dite_eq_ite, ite_eq_left_iff, Nat.not_lt]
+  intros h
+  by_cases hv0 : 0 < v
+  · simp only [msb_signExtend, hv0, decide_true, ge_iff_le, Bool.true_and]
+    split
+    · have : v = w := by omega
+      subst this
+      simp [BitVec.msb]
+      omega
+    · simp [show ¬ k < w by omega]
+  · have : w = 0 := by omega
+    subst this
+    simp [msb_signExtend, of_length_zero]
