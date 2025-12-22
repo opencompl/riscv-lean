@@ -144,7 +144,6 @@ theorem toNat_ofNat_of_le {w n : Nat} (h : n ≤ w) :
   have := Nat.lt_pow_self (a := 2) (n := w)
   rw [toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
 
-
 @[simp]
 theorem signExtend_signExtend_of_le {x : BitVec w} (h : w ≤ v) :
     (x.signExtend v).signExtend v' = x.signExtend v' := by
