@@ -146,7 +146,7 @@ theorem toNat_ofNat_of_le {w n : Nat} (h : n ≤ w) :
 
 
 @[simp]
-theorem signExtend_signExtend_of_le (x : BitVec w) (h : w ≤ v) :
+theorem signExtend_signExtend_of_le {x : BitVec w} (h : w ≤ v) :
     (x.signExtend v).signExtend v' = x.signExtend v' := by
   ext k hk
   simp only [getElem_signExtend, dite_eq_ite, ite_eq_left_iff, Nat.not_lt]
