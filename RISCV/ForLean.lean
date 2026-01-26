@@ -132,7 +132,7 @@ theorem signExtend_signExtend_of_le {x : BitVec w} (h : w ≤ v) :
     subst this
     simp [msb_signExtend, of_length_zero]
 
-theorem BitVec.extractLsb_setWidth_of_lt' (x : BitVec w) (hi lo v : Nat) (h : lo + hi < v):
+theorem BitVec.extractLsb_setWidth_of_lt' {x : BitVec w} {hi lo v : Nat} (h : lo < v) (h' : hi < v):
     BitVec.extractLsb hi lo (BitVec.setWidth v x) = BitVec.extractLsb hi lo x := by
   simp only [BitVec.extractLsb]
   ext k
