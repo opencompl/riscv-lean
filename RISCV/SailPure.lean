@@ -1,5 +1,4 @@
-import LeanRV64D.Sail.Sail
-import LeanRV64D.Sail.BitVec
+import LeanRV64D.Defs
 import LeanRV64D
 
 open LeanRV64D.Functions
@@ -23,8 +22,8 @@ def itype (imm : BitVec 12) (rs1_val : BitVec 64) (op : iop) : BitVec 64 :=
   let immext : xlenbits := (sign_extend (m := 64) imm)
   match op with
   | iop.ADDI => rs1_val + immext
-  | iop.SLTI => zero_extend (m := 64) (bool_to_bits (zopz0zI_s rs1_val immext))
-  | iop.SLTIU => zero_extend (m := 64) (bool_to_bits (zopz0zI_u rs1_val immext))
+  | iop.SLTI => zero_extend (m := 64) (bool_to_bit (zopz0zI_s rs1_val immext))
+  | iop.SLTIU => zero_extend (m := 64) (bool_to_bit (zopz0zI_u rs1_val immext))
   | iop.ANDI =>  rs1_val &&& immext
   | iop.ORI => rs1_val ||| immext
   | iop.XORI => rs1_val ^^^ immext
@@ -46,8 +45,8 @@ def rtype (op : rop) (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   | rop.SLL =>
     (Sail.shift_bits_left rs1_val
         (Sail.BitVec.extractLsb rs2_val (LeanRV64D.Functions.log2_xlen -i 1) 0))
-  | rop.SLT => (zero_extend (m := 64) (bool_to_bits (zopz0zI_s rs1_val rs2_val)))
-  | rop.SLTU => (zero_extend (m := 64) (bool_to_bits (zopz0zI_u rs1_val rs2_val)))
+  | rop.SLT => (zero_extend (m := 64) (bool_to_bit (zopz0zI_s rs1_val rs2_val)))
+  | rop.SLTU => (zero_extend (m := 64) (bool_to_bit (zopz0zI_u rs1_val rs2_val)))
   | rop.XOR => rs1_val ^^^ rs2_val
   | rop.SRL =>
     (Sail.shift_bits_right rs1_val
@@ -202,7 +201,7 @@ def zbs_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : brop_zbs) : BitV
   let result : xlenbits :=
     match op with
     | .BCLR => (rs1_val &&& (Complement.complement mask))
-    | .BEXT => (zero_extend (m := 64) (bool_to_bits (bne (rs1_val &&& mask) (zeros (n := 64)))))
+    | .BEXT => (zero_extend (m := 64) (bool_to_bit (bne (rs1_val &&& mask) (zeros (n := 64)))))
     | .BINV => (rs1_val ^^^ mask)
     | .BSET => (rs1_val ||| mask)
   result
@@ -212,7 +211,7 @@ def zbs_iop (shamt : BitVec 6) (rs1_val : BitVec 64) (op : biop_zbs) : BitVec 64
   let result : xlenbits :=
     match op with
     | .BCLRI => (rs1_val &&& (Complement.complement mask))
-    | .BEXTI => (zero_extend (m := 64) (bool_to_bits (bne (rs1_val &&& mask) (zeros (n := 64)))))
+    | .BEXTI => (zero_extend (m := 64) (bool_to_bit (bne (rs1_val &&& mask) (zeros (n := 64)))))
     | .BINVI => (rs1_val ^^^ mask)
     | .BSETI => (rs1_val ||| mask)
   result
