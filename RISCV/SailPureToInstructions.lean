@@ -286,15 +286,7 @@ theorem mulhsu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   simp only [BitVec.truncate_eq_setWidth, BitVec.toInt_setWidth, Nat.reducePow, BitVec.ofInt_mul,
     BitVec.ofInt_toInt]
   rw [Int.bmod_eq_of_le (n := (rs1_val.toNat : Int)) (by omega) (by omega), BitVec.ofInt_natCast,
-    BitVec.extractLsb'_eq_setWidth]
-  have : BitVec.extractLsb 127 64
-          (BitVec.setWidth 128 (BitVec.signExtend 129 rs2_val * BitVec.ofNat 129 ((rs1_val.toNat : Int)).toNat)) =
-        BitVec.extractLsb 127 64
-          (BitVec.signExtend 129 rs2_val * BitVec.ofNat 129 ((rs1_val.toNat : Int)).toNat) := by
-      ext k hk
-      simp
-      omega
-  rw [this]
+    BitVec.extractLsb'_eq_setWidth, BitVec.extractLsb_setWidth_of_lt']
   simp only [Int.toNat_natCast, BitVec.ofNat_toNat]
 
 theorem mulw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :

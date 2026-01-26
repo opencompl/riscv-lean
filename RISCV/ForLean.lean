@@ -11,13 +11,9 @@ theorem BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend {w : Nat} (n : Nat)
   by_cases hni : (n + i) < w
   <;> (simp [hni]; omega)
 
-theorem BitVec.extractLsb'_eq_setWidth {x : BitVec w} : x.extractLsb' 0 n = x.setWidth n := by
-  ext i hi
-  simp
-
 theorem BitVec.extractLsb'_ofInt_eq_ofInt {x : Int} {w w' : Nat} (h : w ≤ w') :
     (BitVec.extractLsb' 0 w (BitVec.ofInt w' x)) = (BitVec.ofInt w x) := by
-  simp only [extractLsb'_eq_setWidth, ← BitVec.signExtend_eq_setWidth_of_le _ (by omega)]
+  rw [← BitVec.setWidth_eq_extractLsb' (by omega), ← BitVec.signExtend_eq_setWidth_of_le _ (by omega)]
   apply BitVec.eq_of_toInt_eq
   simp only [BitVec.toInt_signExtend, BitVec.toInt_ofInt, h, Nat.min_eq_left]
   rw [Int.bmod_bmod_of_dvd]
@@ -113,25 +109,6 @@ theorem reverse_reverse (x : BitVec w) :
   ext i hi
   simp [← BitVec.getLsbD_eq_getElem]
 
-theorem exctractLsb'_extractLsb'_eq_extractLsb'_of_le {m n w : Nat} {x : BitVec w} (h : m ≤ n) :
-    BitVec.extractLsb' 0 m (BitVec.extractLsb' 0 n x) = BitVec.extractLsb' 0 m x := by
-  ext i hi
-  simp [getElem_extractLsb', Nat.zero_add, show i < n by omega]
-
-@[simp]
-theorem extractLsb'_cons (x : BitVec w) :
-    (x.cons y).extractLsb' 0 w = x := by
-  simp [BitVec.toNat_eq, Nat.or_mod_two_pow, Nat.shiftLeft_eq]
-
-theorem extractLsb'_concat (x : BitVec (w+1)) (y : Bool):
-    BitVec.extractLsb' 0 (t+1) (x.concat y) = (BitVec.extractLsb' 0 t x).concat y := by
-  ext i hi
-  simp only [← getLsbD_eq_getElem, getLsbD_extractLsb', hi, decide_true, Nat.zero_add,
-    getLsbD_concat, Bool.true_and]
-  split
-  · simp
-  · simp [show i - 1 < t by omega]
-
 theorem toNat_ofNat_of_le {w n : Nat} (h : n ≤ w) :
     (BitVec.ofNat w n).toNat = n := by
   have := Nat.lt_pow_self (a := 2) (n := w)
@@ -154,3 +131,11 @@ theorem signExtend_signExtend_of_le {x : BitVec w} (h : w ≤ v) :
   · have : w = 0 := by omega
     subst this
     simp [msb_signExtend, of_length_zero]
+
+theorem BitVec.extractLsb_setWidth_of_lt' (x : BitVec w) (hi lo v : Nat) (h : lo + hi < v):
+    BitVec.extractLsb hi lo (BitVec.setWidth v x) = BitVec.extractLsb hi lo x := by
+  simp only [BitVec.extractLsb]
+  ext k
+  simp only [BitVec.getElem_extractLsb', BitVec.getLsbD_setWidth, Bool.and_eq_right_iff_imp,
+    decide_eq_true_eq]
+  omega
