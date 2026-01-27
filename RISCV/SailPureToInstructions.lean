@@ -182,8 +182,7 @@ theorem rem_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   rw [BitVec.extractLsb'_ofInt_eq_ofInt (h := by simp)]
   by_cases h : rs1_val = 0#64
   · simp [h]
-  · have h' := h
-    simp only [← BitVec.toInt_inj, BitVec.toInt_zero] at h
+  · simp only [← BitVec.toInt_inj, BitVec.toInt_zero] at h
     simp only [h, reduceIte, ← BitVec.toInt_inj, BitVec.toInt_srem, BitVec.ofInt_toInt_tmod_toInt]
 
 theorem remu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
@@ -485,10 +484,6 @@ theorem zbb_rtype_rol_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
       simp
     simp [hzero']
   · have : (64#6 - BitVec.extractLsb 5 0 rs1_val).toNat = ((64 : Int) - (Int.ofNat (rs1_val.toNat % 64)).toNat).toNat := by
-      have : (64 - ((Int.ofNat (rs1_val.toNat % 64)).toNat : Int)).toNat = 64 - (Int.ofNat (rs1_val.toNat % 64)).toNat := by
-        rw [Int.ofNat_toNat]
-        omega
-      simp only [this]
       simp
       omega
     rw [this]
@@ -527,8 +522,6 @@ theorem zbb_rtypew_rolw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     rw [this, BitVec.setWidth_eq_extractLsb' (by omega), BitVec.extractLsb'_eq_extractLsb (h := by omega)]
     simp
   · have : (32#5 - BitVec.extractLsb 5 0 rs1_val).toNat = ((32 : Int) - (Int.ofNat (rs1_val.toNat % 32)).toNat).toNat := by
-      have : (32 - ((Int.ofNat (rs1_val.toNat % 32)).toNat : Int)).toNat = 32 - (Int.ofNat (rs1_val.toNat % 32)).toNat := by
-        omega
       simp
       omega
     congr
@@ -546,8 +539,6 @@ theorem zbb_rtypew_rorw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   by_cases hzero : rs1_val.toNat % 32 = 0
   · simp [hzero, BitVec.extractLsb, ← BitVec.setWidth_eq_extractLsb']
   · have : (32#5 - BitVec.extractLsb 5 0 rs1_val).toNat = ((32 : Int) - (Int.ofNat (rs1_val.toNat % 32)).toNat).toNat := by
-      have : (32 - ((Int.ofNat (rs1_val.toNat % 32)).toNat : Int)).toNat = 32 - (Int.ofNat (rs1_val.toNat % 32)).toNat := by
-        omega
       simp
       omega
     congr
@@ -613,12 +604,9 @@ theorem zbb_rori_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     BitVec.toNat_sub, BitVec.toNat_ofNat, Nat.reduceMod]
   by_cases hzero : shamt.toNat = 0
   · simp [hzero]
-  · have : ((64 : Int) - (((shamt.toNat : Int) % 64) : Int).toNat).toNat = ((64 - shamt.toNat % 64) % 64) := by
-      rw [Int.emod_eq_of_lt (by omega) (by omega), Int.toNat_natCast, Int.toNat_sub',
-        Nat.mod_eq_of_lt (a := shamt.toNat) (by omega), Nat.mod_eq_of_lt (by omega)]
-      simp
-    rw [this]
-    congr
+  · congr
+    simp only [Int.ofNat_toNat, Nat.add_zero]
+    omega
 
 /-! ## Zbc: Carry-less multiplication -/
 
