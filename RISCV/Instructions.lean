@@ -8,6 +8,13 @@ namespace RV64
 /-! # RV64I Base Integer Instruction Set -/
 
 /--
+  Load a 64-wide immediate into the destination register rd
+-/
+def li (imm : BitVec 64) : BitVec 64 :=
+  imm
+
+
+/--
   Build 32-bit constants and uses the U-type format. LUI places the U-immediate value in the top 20
   bits of the destination register rd, filling in the lowest 12 bits with zeros.
 -/
