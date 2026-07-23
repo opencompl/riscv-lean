@@ -1,4 +1,5 @@
 import LeanRV64D
+open LeanRV64D.Defs
 open LeanRV64D.Functions
 
 /-!

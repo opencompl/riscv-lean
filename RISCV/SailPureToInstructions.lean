@@ -3,6 +3,8 @@ import RISCV.Instructions
 import RISCV.ForLean
 import LeanRV64D.Defs
 
+open LeanRV64D.Defs
+
 /-!
   Proofs of the equivalence between monad-free Sail specifications and bitvec-only semantics for
   RISCV operations.
@@ -10,6 +12,44 @@ import LeanRV64D.Defs
 -/
 
 namespace RV64
+
+/-! Bridge lemmas relating Sail's `Int`-indexed bitvector shifts to `Nat`-indexed ones. -/
+
+theorem shiftLeft_int_eq_toNat {w : Nat} (b : BitVec w) (i : Int) (h : 0 ≤ i) :
+    b <<< i = b <<< i.toNat := by
+  cases i with
+  | ofNat n => rfl
+  | negSucc n => omega
+
+theorem shiftRight_int_eq_toNat {w : Nat} (b : BitVec w) (i : Int) (h : 0 ≤ i) :
+    b >>> i = b >>> i.toNat := by
+  rcases i with (_ | n) | n
+  · show BitVec.shiftLeft b 0 = BitVec.ushiftRight b 0
+    simp
+  · rfl
+  · omega
+
+theorem rotatel_eq {w : Nat} (v : BitVec w) (s : Nat) (h : s < w) :
+    LeanRV64D.Functions.rotatel v s = (v <<< s) ||| (v >>> ((w - s) % w)) := by
+  unfold LeanRV64D.Functions.rotatel
+  rw [shiftRight_int_eq_toNat _ _ (by simp only [Sail.BitVec.length]; omega)]
+  by_cases hs : s = 0
+  · simp [hs, Sail.BitVec.length, BitVec.ushiftRight_eq_zero]
+  · congr 2
+    rw [Nat.mod_eq_of_lt (by omega)]
+    simp only [Sail.BitVec.length]
+    omega
+
+theorem rotater_eq {w : Nat} (v : BitVec w) (s : Nat) (h : s < w) :
+    LeanRV64D.Functions.rotater v s = (v >>> s) ||| (v <<< ((w - s) % w)) := by
+  unfold LeanRV64D.Functions.rotater
+  rw [shiftLeft_int_eq_toNat _ _ (by simp only [Sail.BitVec.length]; omega)]
+  by_cases hs : s = 0
+  · simp [hs, Sail.BitVec.length, BitVec.shiftLeft_eq_zero]
+  · congr 2
+    rw [Nat.mod_eq_of_lt (by omega)]
+    simp only [Sail.BitVec.length]
+    omega
 
 /-! # RV64I Base Integer Instruction Set -/
 
@@ -30,10 +70,7 @@ theorem itype_slti_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
   simp only [SailRV64.itype, zero_extend, Sail.BitVec.zeroExtend, LeanRV64D.Functions.bool_to_bit,
     LeanRV64D.Functions.bool_bit_forwards, LeanRV64D.Functions.zopz0zI_s,
     LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, BitVec.truncate_eq_setWidth, slti]
-  split <;>
-  case _ arg h =>
-  apply BitVec.eq_of_toInt_eq
-  simp [BitVec.slt, h]
+  by_cases h : rs1_val.toInt < (BitVec.signExtend 64 imm).toInt <;> simp [BitVec.slt, h]
 
 theorem itype_sltiu_eq (imm : BitVec 12) (rs1_val : BitVec 64) :
     SailRV64.itype imm rs1_val iop.SLTIU = sltiu imm rs1_val := by
@@ -76,12 +113,8 @@ theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
 
 theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
     SailRV64.shiftiop shamt sop.SRAI rs1_val = srai shamt rs1_val := by
-  simp only [SailRV64.shiftiop, LeanRV64D.Functions.shift_bits_right_arith,
-    LeanRV64D.Functions.shift_right_arith, Int.cast_ofNat_Int, Int.reduceSub,
-    Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, srai,
-    BitVec.sshiftRight_eq', BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one,
-    BitVec.signExtend_eq]
-  rfl
+  simp [SailRV64.shiftiop, LeanRV64D.Functions.shift_bits_right_arith, Sail.BitVec.toNatInt,
+    srai, BitVec.sshiftRight']
 
 theorem rtype_add_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.rtype rop.ADD rs2_val rs1_val = add rs2_val rs1_val := by rfl
@@ -111,10 +144,9 @@ theorem rtype_srl_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem rtype_sra_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.rtype rop.SRA rs2_val rs1_val = sra rs2_val rs1_val := by
-  simp only [SailRV64.rtype, Nat.sub_zero, sra, Nat.reduceAdd, BitVec.sshiftRight_eq',
-    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow,
-    BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
-  rfl
+  simp [SailRV64.rtype, sra, LeanRV64D.Functions.shift_bits_right_arith, Sail.BitVec.toNatInt,
+    BitVec.sshiftRight', Sail.BitVec.extractLsb, LeanRV64D.Functions.log2_xlen]
+  congr 1
 
 theorem rtype_or_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.rtype rop.OR rs2_val rs1_val = or rs2_val rs1_val := by rfl
@@ -134,11 +166,9 @@ theorem shiftiwop_srliw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
 
 theorem shiftiwop_sraiw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.shiftiwop shamt sopw.SRAIW rs1_val = sraiw shamt rs1_val := by
-  simp only [SailRV64.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    LeanRV64D.Functions.shift_bits_right_arith, LeanRV64D.Functions.shift_right_arith,
-    Sail.BitVec.extractLsb, Int.cast_ofNat_Int, Int.reduceSub, sraiw, Nat.sub_zero, Nat.reduceAdd,
-    BitVec.sshiftRight_eq', BitVec.sshiftRight_eq_setWidth_extractLsb_signExtend, Nat.add_one_sub_one]
-  rfl
+  simp [SailRV64.shiftiwop, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    LeanRV64D.Functions.shift_bits_right_arith, Sail.BitVec.toNatInt, Sail.BitVec.extractLsb,
+    sraiw, BitVec.sshiftRight']
 theorem rtypew_addw_eq (rs1_val : BitVec 64) (rs2_val : BitVec 64) :
     SailRV64.rtypew ropw.ADDW rs1_val rs2_val = addw rs1_val rs2_val := by
   simp only [SailRV64.rtypew, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
@@ -471,81 +501,39 @@ theorem zbb_rtype_minu_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem zbb_rtype_rol_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtype rs1_val rs2_val brop_zbb.ROL  = rol rs1_val rs2_val := by
-  simp only [SailRV64.zbb_rtype, LeanRV64D.Functions.rotate_bits_left, LeanRV64D.Functions.rotatel,
-    Sail.shiftl, Sail.BitVec.toNatInt, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
-    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.shiftr, Sail.BitVec.length,
+  simp only [SailRV64.zbb_rtype, LeanRV64D.Functions.rotate_bits_left, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd, Int.ofNat_eq_natCast, Int.toNat_natCast,
     rol, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
-  by_cases hzero : rs1_val.toNat % 64 = 0
-  · simp only [hzero, Int.cast_ofNat_Int, BitVec.shiftLeft_zero, BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
-      Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd,
-      Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
-    have hzero' : rs2_val >>> 64 = 0#64 := by
-      ext i hi
-      simp
-    simp [hzero']
-  · have : (64#6 - BitVec.extractLsb 5 0 rs1_val).toNat = ((64 : Int) - (Int.ofNat (rs1_val.toNat % 64)).toNat).toNat := by
-      simp
-      omega
-    rw [this]
-    congr
+  rw [rotatel_eq _ _ (by omega)]
+  congr 2
+
 
 theorem zbb_rtype_ror_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtype rs1_val rs2_val brop_zbb.ROR  = ror rs1_val rs2_val := by
-  simp only [SailRV64.zbb_rtype, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
-    Sail.shiftr, Sail.BitVec.toNatInt, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
-    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.shiftl, Sail.BitVec.length,
+  simp only [SailRV64.zbb_rtype, LeanRV64D.Functions.rotate_bits_right, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd, Int.ofNat_eq_natCast, Int.toNat_natCast,
     ror, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
-  by_cases hzero : rs1_val.toNat % 64 = 0
-  · simp [hzero]
-  · have : (64#6 - BitVec.extractLsb 5 0 rs1_val).toNat = ((64 : Int) - (Int.ofNat (rs1_val.toNat % 64)).toNat).toNat := by
-      have : (64 - ((Int.ofNat (rs1_val.toNat % 64)).toNat : Int)).toNat = 64 - (Int.ofNat (rs1_val.toNat % 64)).toNat := by
-        omega
-      simp
-      omega
-    rw [this]
-    congr
+  rw [rotater_eq _ _ (by omega)]
+  congr 2
+
 
 theorem zbb_rtypew_rolw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtypew rs1_val rs2_val bropw_zbb.ROLW  = rolw rs1_val rs2_val := by
-  simp only [SailRV64.zbb_rtypew, LeanRV64D.Functions.rotate_bits_left, LeanRV64D.Functions.rotatel,
-    Sail.shiftl, Sail.BitVec.toNatInt, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
-    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.shiftr, Sail.BitVec.length,
-    rolw, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq', LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend]
-  by_cases hzero : rs1_val.toNat % 32 = 0
-  · simp only [hzero, Int.ofNat_eq_natCast, Int.cast_ofNat_Int, Int.toNat_zero,
-    BitVec.shiftLeft_zero, Int.sub_zero, Int.reduceToNat, BitVec.signExtend_or, BitVec.reduceOfNat,
-    BitVec.zero_sub, BitVec.toNat_neg, Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero,
-    Nat.sub_zero, Nat.reduceAdd, Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
-    have : BitVec.setWidth 32 rs2_val >>> 32 = 0#32 := by
-      ext i hi
-      simp
-    rw [this, BitVec.setWidth_eq_extractLsb' (by omega), BitVec.extractLsb'_eq_extractLsb (h := by omega)]
-    simp
-  · have : (32#5 - BitVec.extractLsb 5 0 rs1_val).toNat = ((32 : Int) - (Int.ofNat (rs1_val.toNat % 32)).toNat).toNat := by
-      simp
-      omega
-    congr
-    simp only [BitVec.reduceOfNat, Nat.sub_zero, Nat.reduceAdd, BitVec.extractLsb,
-      ← BitVec.setWidth_eq_extractLsb', Nat.reduceLeDiff, BitVec.setWidth_setWidth_of_le,
-      BitVec.zero_sub, BitVec.toNat_neg, Nat.reducePow, BitVec.toNat_setWidth, Int.ofNat_toNat] at this
-    simp [BitVec.extractLsb, ← BitVec.setWidth_eq_extractLsb', this]
+  simp only [SailRV64.zbb_rtypew, LeanRV64D.Functions.rotate_bits_left, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd, Int.ofNat_eq_natCast, Int.toNat_natCast,
+    rolw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, BitVec.extractLsb,
+    BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
+  rw [rotatel_eq _ _ (by omega)]
+  congr 3
 
 theorem zbb_rtypew_rorw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtypew rs1_val rs2_val bropw_zbb.RORW  = rorw rs1_val rs2_val := by
-  simp only [SailRV64.zbb_rtypew, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
-    Sail.shiftl, Sail.BitVec.toNatInt, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
-    BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.shiftr, Sail.BitVec.length,
-    rorw, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq', LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend]
-  by_cases hzero : rs1_val.toNat % 32 = 0
-  · simp [hzero, BitVec.extractLsb, ← BitVec.setWidth_eq_extractLsb']
-  · have : (32#5 - BitVec.extractLsb 5 0 rs1_val).toNat = ((32 : Int) - (Int.ofNat (rs1_val.toNat % 32)).toNat).toNat := by
-      simp
-      omega
-    congr
-    simp only [BitVec.reduceOfNat, Nat.sub_zero, Nat.reduceAdd, BitVec.extractLsb,
-      ← BitVec.setWidth_eq_extractLsb', Nat.reduceLeDiff, BitVec.setWidth_setWidth_of_le,
-      BitVec.zero_sub, BitVec.toNat_neg, Nat.reducePow, BitVec.toNat_setWidth, Int.ofNat_toNat] at this
-    simp [BitVec.extractLsb, ← BitVec.setWidth_eq_extractLsb', this]
+  simp only [SailRV64.zbb_rtypew, LeanRV64D.Functions.rotate_bits_right, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd, Int.ofNat_eq_natCast, Int.toNat_natCast,
+    rorw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, BitVec.extractLsb,
+    BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
+  rw [rotater_eq _ _ (by omega)]
+  congr 3
 
 theorem zbb_extop_sextb_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_extop rs1_val extop_zbb.SEXTB  = sextb rs1_val := by
@@ -582,31 +570,20 @@ theorem zbb_ctzw_eq (rs1_val : BitVec 64) :
 
 theorem zbb_roriw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.zbb_roriw shamt rs1_val = roriw shamt rs1_val := by
-  simp only [SailRV64.zbb_roriw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
-    Nat.sub_zero, Nat.reduceAdd, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
-    Sail.shiftr, Sail.BitVec.extractLsb, Sail.BitVec.toNatInt, Int.ofNat_eq_natCast, Int.toNat_natCast,
-    Int.cast_ofNat_Int, Int.toNat_sub', Int.reduceToNat, BitVec.signExtend_or, roriw,
-    BitVec.ushiftRight_eq', BitVec.ofNat_eq_ofNat, BitVec.reduceOfNat, BitVec.zero_sub,
-    BitVec.shiftLeft_eq', BitVec.toNat_neg, Nat.reducePow, Sail.shiftl]
-  by_cases hzero : shamt.toNat = 0
-  · simp [hzero]
-  · congr
-    rw [Nat.mod_eq_of_lt (by omega)]
+  simp only [SailRV64.zbb_roriw, LeanRV64D.Functions.rotate_bits_right, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, Nat.sub_zero, Nat.reduceAdd, Int.ofNat_eq_natCast, Int.toNat_natCast,
+    roriw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, BitVec.extractLsb,
+    BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
+  rw [rotater_eq _ _ (by omega)]
+  congr 3
 
 theorem zbb_rori_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.zbb_rori shamt rs1_val = rori shamt rs1_val := by
-  simp only [SailRV64.zbb_rori, LeanRV64D.Functions.rotate_bits_right, LeanRV64D.Functions.rotater,
-    Sail.shiftr, Sail.BitVec.toNatInt, LeanRV64D.Functions.log2_xlen, Int.cast_ofNat_Int,
-    Int.reduceSub, Int.reduceToNat, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb,
-    BitVec.extractLsb_toNat, BitVec.toNat_setWidth, Nat.reducePow, Nat.shiftRight_zero,
-    Nat.dvd_refl, Nat.mod_mod_of_dvd, Int.ofNat_eq_natCast, Int.natCast_emod, Sail.shiftl,
-    rori, BitVec.ushiftRight_eq', BitVec.ofNat_eq_ofNat, BitVec.shiftLeft_eq',
-    BitVec.toNat_sub, BitVec.toNat_ofNat, Nat.reduceMod]
-  by_cases hzero : shamt.toNat = 0
-  · simp [hzero]
-  · congr
-    simp only [Int.ofNat_toNat, Nat.add_zero]
-    omega
+  simp [SailRV64.zbb_rori, LeanRV64D.Functions.rotate_bits_right, Sail.BitVec.toNatInt,
+    Sail.BitVec.extractLsb, LeanRV64D.Functions.log2_xlen, rori,
+    BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
+  rw [rotater_eq _ _ (by omega)]
+  congr 2 <;> simp [BitVec.toNat_sub] <;> omega
 
 /-! ## Zbc: Carry-less multiplication -/
 
@@ -667,6 +644,7 @@ theorem zbs_iop_bseti_eq (shamt : BitVec 6) (rs1_val : BitVec 64) :
 theorem zbkb_rtype_pack_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbkb_rtype rs1_val rs2_val brop_zbkb.PACK = pack rs1_val rs2_val := by
   simp [SailRV64.zbkb_rtype, pack, Sail.BitVec.extractLsb, LeanRV64D.Functions.xlen_bytes]
+  rfl
 
 theorem zbkb_rtype_packh_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbkb_rtype rs1_val rs2_val brop_zbkb.PACKH = packh rs1_val rs2_val := by
