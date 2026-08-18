@@ -2,6 +2,7 @@ import LeanRV64D.Defs
 import LeanRV64D
 
 open LeanRV64D.Functions
+open LeanRV64D.Defs
 
 /-!
   Monad-free Sail-style specification
