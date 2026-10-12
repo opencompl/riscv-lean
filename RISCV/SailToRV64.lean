@@ -255,9 +255,48 @@ theorem zbb_ctzw_eq (rs1 : regidx) (rd : regidx) :
     execute_CTZW rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_ctzw val1) := by rfl
 
+/-- A Sail `IntRange` loop whose body is always `pure` (under an invariant `P`) equals
+  the corresponding pure loop. -/
+theorem IntRange.forIn'_loop_eq_pure {m : Type u → Type v} [Monad m] [LawfulMonad m]
+    (range : IntRange) (P : Int → β → Prop)
+    (f : (i : Int) → i ∈ range → β → m (ForInStep β)) (g : (i : Int) → i ∈ range → β → β)
+    (hf : ∀ i h b, P i b → f i h b = pure (.yield (g i h b)))
+    (hP : ∀ i h b, P i b → P (i + range.step) (g i h b))
+    (b : β) (i : Int) (hs : (i - range.start) % range.step = 0) (hb : P i b) :
+    IntRange.forIn'.loop range f b i hs
+      = pure (IntRange.forIn'.loop (m := Id) range (fun i h b => pure (.yield (g i h b))) b i hs).run := by
+  induction b, i, hs using IntRange.forIn'.loop.induct range with
+  | case1 b i hs hmem ih =>
+    rw [IntRange.forIn'.loop, IntRange.forIn'.loop]
+    simp only [hmem, ↓reduceDIte, hf i hmem b hb, pure_bind]
+    exact ih _ (hP i hmem b hb)
+  | case2 b i hs hmem =>
+    rw [IntRange.forIn'.loop, IntRange.forIn'.loop]
+    simp [hmem]
+
 theorem zbb_cpop_eq (rs1 : regidx) (rd : regidx) :
     execute_CPOP rs1 rd
-    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpop val1) := by sorry
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpop val1) := by
+  unfold execute_CPOP SailRV64.zbb_cpop count_ones SailRV64.count_ones_pure skeleton_unary
+  simp only [Int.cast_ofNat_Int, Int.reduceSub, beq_iff_eq, bind_pure_comp, map_pure,
+    Functor.map_map, Int.toNat_natCast_add_one, Int.toNat_natCast, bind_pure]
+  congr
+  funext x
+  simp only [forIn, forIn', IntRange.forIn']
+  rw [IntRange.forIn'_loop_eq_pure (m := SailM) _ (fun i (b : Nat) => 0 ≤ i ∧ (b : Int) ≤ i)
+    (g := fun i _ r => if Sail.BitVec.access x i.toNat = 1#1 then r + 1 else r)]
+  · simp
+  · intro i h b hb
+    simp only [IntRange.instMemIntRange] at h
+    split
+    · have : (b : Int) + 1 ≤ 64 := by simp at h; omega
+      simp [PreSail.assert, this]
+    · rfl
+  · intro i h b hb
+    simp only [IntRange.instMemIntRange] at h
+    simp
+    split <;> omega
+  · simp
 
 theorem zbb_cpopw_eq (rs1 : regidx) (rd : regidx) :
     execute_CPOPW rs1 rd
@@ -269,7 +308,7 @@ theorem zbb_orcb_eq (rs1 : regidx) (rd : regidx) :
 
 theorem zbb_rev8_eq (rs1 : regidx) (rd : regidx) :
     execute_REV8 rs1 rd
-    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_rev8 val1) := by sorry
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_rev8 val1) := by rfl
 
 theorem zbb_roriw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     execute_RORIW shamt rs1 rd
@@ -323,7 +362,7 @@ theorem neg_eq (rs1 : regidx) (rd : regidx) :
 
 theorem negw_eq (rs1 : regidx) (rd : regidx) :
     execute_RTYPEW rs1 zreg rd ropw.SUBW
-    = skeleton_unary rs1 rd (fun val1 => SailRV64.negw val1) := by sorry
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.negw val1) := by rfl
 
 theorem not_eq (rs1 : regidx) (rd : regidx) :
     execute_ITYPE 0xFFF#12 rs1 rd iop.XORI
@@ -347,7 +386,7 @@ theorem sgtz_eq (rs1 : regidx) (rd : regidx) :
 
 theorem sextw_eq (rs1 : regidx) (rd : regidx) :
     execute_ADDIW 0#12 rs1 rd
-    = skeleton_unary rs1 rd (fun val1 => SailRV64.sextw val1) := by sorry
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.sextw val1) := by rfl
 
 theorem zextb_eq (rs1 : regidx) (rd : regidx) :
     execute_ITYPE 0xFF#12 rs1 rd iop.ANDI
@@ -355,4 +394,4 @@ theorem zextb_eq (rs1 : regidx) (rd : regidx) :
 
 theorem zextw_eq (rs1 : regidx) (rd : regidx) :
     execute_ZBA_RTYPEUW zreg rs1 rd 0#2
-    = skeleton_unary rs1 rd (fun val1 => SailRV64.zextw val1) := by sorry
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zextw val1) := by rfl
