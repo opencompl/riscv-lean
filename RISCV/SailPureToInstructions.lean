@@ -580,21 +580,101 @@ theorem zbb_ctzw_eq (rs1_val : BitVec 64) :
     Sail.BitVec.countTrailingZeros, Sail.BitVec.countLeadingZeros, ← BitVec.setWidth_eq_extractLsb',
     Sail.BitVec.extractLsb]
 
+/-- One iteration of a pure Sail `IntRange` loop whose index is in range. -/
+theorem IntRange.forIn'_loop_id_mem (range : IntRange) (g : Int → β → β) (b : β) (i : Int)
+    (hs : (i - range.start) % range.step = 0) (h : i ∈ range) :
+    IntRange.forIn'.loop (m := Id) range (fun i _ b => pure (.yield (g i b))) b i hs
+      = IntRange.forIn'.loop (m := Id) range (fun i _ b => pure (.yield (g i b))) (g i b)
+          (i + range.step) (by rw [Int.add_comm, Int.add_sub_assoc]; simp [hs]) := by
+  rw [IntRange.forIn'.loop]
+  simp [h]
+
+/-- A pure Sail `IntRange` loop whose index is out of range returns its accumulator. -/
+theorem IntRange.forIn'_loop_id_not_mem (range : IntRange) (g : Int → β → β) (b : β) (i : Int)
+    (hs : (i - range.start) % range.step = 0) (h : ¬ i ∈ range) :
+    IntRange.forIn'.loop (m := Id) range (fun i _ b => pure (.yield (g i b))) b i hs = b := by
+  rw [IntRange.forIn'.loop]
+  simp [h]
+  rfl
+
+theorem Sail.BitVec.access_eq_one_iff (x : BitVec w) (i : Nat) :
+    Sail.BitVec.access x i = 1#1 ↔ x.getLsbD i = true := by
+  simp only [Sail.BitVec.access]
+  by_cases hi : i < w
+  · simp only [hi, getElem!_pos, BitVec.getLsbD_eq_getElem]
+    cases x[i] <;> decide
+  · simp [hi, getElem!_neg, BitVec.getLsbD_of_ge x i (by omega)]
+
+/-- The Sail bit-counting loop over `[k, w - 1]`, started with the count of the bits below `k`,
+  computes the count of all bits of `x`. -/
+theorem count_ones_loop (x : BitVec w) (range : IntRange) (hstart : range.start = 0)
+    (hstep : range.step = 1) (hstop : range.stop = (w : Int) - 1) (k : Nat) (hk : k ≤ w)
+    (hs : ((k : Int) - range.start) % range.step = 0) :
+    IntRange.forIn'.loop (m := Id) range
+      (fun i _ r => pure (.yield (if Sail.BitVec.access x i.toNat = 1#1 then r + 1 else r)))
+      (x.cpopNatRec k 0) k hs = x.cpopNatRec w 0 := by
+  induction h : w - k generalizing k with
+  | zero =>
+    have : k = w := by omega
+    subst this
+    rw [IntRange.forIn'_loop_id_not_mem]
+    simp [IntRange.instMemIntRange, hstart, hstep, hstop]
+    omega
+  | succ n ih =>
+    rw [IntRange.forIn'_loop_id_mem]
+    · have := ih (k + 1) (by omega) (by simp [hstep]) (by omega)
+      simp only [Int.toNat_natCast, hstep] at this ⊢
+      rw [← this]
+      congr 1
+      rw [BitVec.cpopNatRec_succ, Nat.zero_add, BitVec.cpopNatRec_eq (x.getLsbD k).toNat]
+      by_cases hb : x.getLsbD k <;> simp [Sail.BitVec.access_eq_one_iff, hb]
+    · simp [IntRange.instMemIntRange, hstart, hstep, hstop]; omega
+
+theorem count_ones_pure_eq (x : BitVec w) : SailRV64.count_ones_pure x = x.cpopNatRec w 0 := by
+  have := count_ones_loop x { stop := (w : Int) - 1, step_pos := Int.one_ne_zero } rfl rfl rfl 0
+    (Nat.zero_le _) (by simp)
+  simp only [BitVec.cpopNatRec_zero_self, Int.natCast_zero] at this
+  rw [← this]
+  simp [SailRV64.count_ones_pure, Id.run, forIn, forIn', IntRange.forIn', Sail.BitVec.length]
+
 theorem zbb_cpop_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_cpop rs1_val = cpop rs1_val := by
-  sorry
+  simp only [SailRV64.zbb_cpop, cpop, LeanRV64D.Functions.to_bits, Sail.get_slice_int, BitVec.cpop,
+    count_ones_pure_eq]
+  have := BitVec.cpopNatRec_le (x := rs1_val) (acc := 0) 64
+  generalize rs1_val.cpopNatRec 64 0 = n at this ⊢
+  apply BitVec.eq_of_toNat_eq
+  simp
 
 theorem zbb_cpopw_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_cpopw rs1_val = cpopw rs1_val := by
-  sorry
+  simp only [SailRV64.zbb_cpopw, cpopw, LeanRV64D.Functions.to_bits, Sail.get_slice_int, BitVec.cpop,
+    count_ones_pure_eq, Sail.BitVec.extractLsb]
+  have := BitVec.cpopNatRec_le (x := BitVec.extractLsb 31 0 rs1_val) (acc := 0) 32
+  generalize (BitVec.extractLsb 31 0 rs1_val).cpopNatRec 32 0 = n at this ⊢
+  apply BitVec.eq_of_toNat_eq
+  simp
+  omega
 
 theorem zbb_orcb_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_orcb rs1_val = orcb rs1_val := by
-  sorry
+  simp only [SailRV64.zbb_orcb, Id.run, forIn, forIn', IntRange.forIn', pure_bind, bind_pure,
+    LeanRV64D.Functions.xlen]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [IntRange.instMemIntRange])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [IntRange.instMemIntRange])]
+  simp [Sail.BitVec.updateSubrange, Sail.BitVec.updateSubrange', Sail.BitVec.extractLsb,
+    LeanRV64D.Functions.zeros, orcb, orcByte]
+  bv_decide
 
 theorem zbb_rev8_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_rev8 rs1_val = rev8 rs1_val := by
-  sorry
+  simp only [SailRV64.zbb_rev8, LeanRV64D.Functions.rev8, Id.run, forIn, forIn', IntRange.forIn',
+    pure_bind, bind_pure, Sail.BitVec.length]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [IntRange.instMemIntRange])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [IntRange.instMemIntRange])]
+  simp [Sail.BitVec.updateSubrange, Sail.BitVec.updateSubrange', Sail.BitVec.extractLsb,
+    LeanRV64D.Functions.zeros, rev8]
+  bv_decide
 
 theorem zbb_roriw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.zbb_roriw shamt rs1_val = roriw shamt rs1_val := by
@@ -702,54 +782,103 @@ theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 
 theorem zicond_czeroeqz_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zicond_rtype rs2_val rs1_val zicondop.CZERO_EQZ = czeroeqz rs2_val rs1_val := by
-  sorry
+  simp [SailRV64.zicond_rtype, LeanRV64D.Functions.zeros, czeroeqz]
 
 theorem zicond_czeronez_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zicond_rtype rs2_val rs1_val zicondop.CZERO_NEZ = czeronez rs2_val rs1_val := by
-  sorry
+  simp [SailRV64.zicond_rtype, LeanRV64D.Functions.zeros, czeronez]
 
 /-! # Pseudo-instructions -/
 
 theorem mv_eq (rs1_val : BitVec 64) :
     SailRV64.mv rs1_val = mv rs1_val := by
-  sorry
+  simp [SailRV64.mv, SailRV64.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, mv]
 
 theorem neg_eq (rs1_val : BitVec 64) :
     SailRV64.neg rs1_val = neg rs1_val := by
-  sorry
+  simp [SailRV64.neg, neg, SailRV64.rtype, LeanRV64D.Functions.zeros]
 
 theorem negw_eq (rs1_val : BitVec 64) :
     SailRV64.negw rs1_val = negw rs1_val := by
-  sorry
+  simp [SailRV64.negw, negw, SailRV64.rtypew, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.BitVec.extractLsb, LeanRV64D.Functions.zeros]
 
 theorem not_eq (rs1_val : BitVec 64) :
     SailRV64.not rs1_val = not rs1_val := by
-  sorry
+  simp [SailRV64.not, SailRV64.itype, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend, not]
+  bv_decide
 
 theorem seqz_eq (rs1_val : BitVec 64) :
     SailRV64.seqz rs1_val = seqz rs1_val := by
-  sorry
+  simp only [SailRV64.seqz, SailRV64.itype, zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bit, LeanRV64D.Functions.bool_bit_forwards,
+    LeanRV64D.Functions.zopz0zI_u, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
+    Sail.BitVec.toNatInt, BitVec.truncate_eq_setWidth, seqz]
+  split
+  · case _ h =>
+    simp only [Int.ofNat_eq_natCast, BitVec.reduceSignExtend, BitVec.toNat_ofNat, Nat.reducePow,
+      Nat.one_mod, Int.cast_ofNat_Int, decide_eq_true_eq] at h
+    have h' : rs1_val.toNat = 0 := by omega
+    rw [← BitVec.toNat_zero (w := 64), ← BitVec.toNat_eq] at h'
+    simp [h']
+  · case _ h =>
+    simp only [Int.ofNat_eq_natCast, BitVec.reduceSignExtend, BitVec.toNat_ofNat, Nat.reducePow,
+      Nat.one_mod, Int.cast_ofNat_Int, decide_eq_false_iff_not, Int.not_lt] at h
+    have h' : ¬ rs1_val.toNat = 0 := by omega
+    rw [← BitVec.toNat_zero (w := 64), ← BitVec.toNat_eq] at h'
+    simp [show ¬ rs1_val == 0#64 by grind]
 
 theorem snez_eq (rs1_val : BitVec 64) :
     SailRV64.snez rs1_val = snez rs1_val := by
-  sorry
+  simp only [SailRV64.snez, SailRV64.rtype, zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bit, LeanRV64D.Functions.bool_bit_forwards,
+    LeanRV64D.Functions.zopz0zI_u, LeanRV64D.Functions.zeros, BitVec.zero_eq, Sail.BitVec.toNatInt,
+    BitVec.truncate_eq_setWidth, snez]
+  split
+  · case _ h =>
+    simp only [BitVec.toNat_ofNat, Nat.reducePow, Nat.zero_mod, Int.ofNat_eq_natCast,
+      Int.cast_ofNat_Int, Int.natCast_pos, decide_eq_true_eq] at h
+    rw [← BitVec.toNat_zero (w := 64), ← BitVec.lt_def] at h
+    simp [show rs1_val != 0#64 by grind]
+  · case _ h =>
+    simp only [BitVec.toNat_ofNat, Nat.reducePow, Nat.zero_mod, Int.ofNat_eq_natCast,
+      Int.cast_ofNat_Int, Int.natCast_pos, decide_eq_false_iff_not, Nat.not_lt, Nat.le_zero_eq] at h
+    simp [show rs1_val = 0#64 by grind]
 
 theorem sltz_eq (rs1_val : BitVec 64) :
     SailRV64.sltz rs1_val = sltz rs1_val := by
-  sorry
+  simp only [SailRV64.sltz, SailRV64.rtype, zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bit, LeanRV64D.Functions.bool_bit_forwards,
+    LeanRV64D.Functions.zopz0zI_s, LeanRV64D.Functions.zeros, BitVec.zero_eq, BitVec.toInt_zero,
+    BitVec.truncate_eq_setWidth, sltz]
+  split <;> case _ h => simp [BitVec.slt, h]
 
 theorem sgtz_eq (rs1_val : BitVec 64) :
     SailRV64.sgtz rs1_val = sgtz rs1_val := by
-  sorry
+  simp only [SailRV64.sgtz, SailRV64.rtype, zero_extend, Sail.BitVec.zeroExtend,
+    LeanRV64D.Functions.bool_to_bit, LeanRV64D.Functions.bool_bit_forwards,
+    LeanRV64D.Functions.zopz0zI_s, LeanRV64D.Functions.zeros, BitVec.zero_eq, BitVec.toInt_zero,
+    BitVec.truncate_eq_setWidth, sgtz]
+  split <;> case _ h => simp [BitVec.slt, h]
 
 theorem sextw_eq (rs1_val : BitVec 64) :
     SailRV64.sextw rs1_val = sextw rs1_val := by
-  sorry
+  simp only [SailRV64.sextw, SailRV64.addiw, LeanRV64D.Functions.sign_extend,
+    Sail.BitVec.signExtend, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb, sextw]
+  rw [show ((2 : Int) ^ (3 : Int) * (8 : Int)).toNat = 64 by omega]
+  simp
 
 theorem zextb_eq (rs1_val : BitVec 64) :
     SailRV64.zextb rs1_val = zextb rs1_val := by
-  sorry
+  simp only [SailRV64.zextb, SailRV64.itype, LeanRV64D.Functions.sign_extend,
+    Sail.BitVec.signExtend, BitVec.reduceSignExtend, zextb, Nat.sub_zero, Nat.reduceAdd,
+    BitVec.truncate_eq_setWidth]
+  bv_decide
 
 theorem zextw_eq (rs1_val : BitVec 64) :
     SailRV64.zextw rs1_val = zextw rs1_val := by
-  sorry
+  simp only [SailRV64.zextw, SailRV64.zba_rtypeuw, Sail.shift_bits_left, zero_extend,
+    Sail.BitVec.zeroExtend, Nat.sub_zero, Nat.reduceAdd, BitVec.truncate_eq_setWidth,
+    BitVec.shiftLeft_eq', BitVec.toNat_ofNat, Nat.reducePow, Nat.zero_mod, BitVec.shiftLeft_zero,
+    LeanRV64D.Functions.zeros, BitVec.zero_eq, BitVec.add_zero, zextw]
+  rfl
