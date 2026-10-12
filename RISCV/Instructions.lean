@@ -522,6 +522,43 @@ def ctz (rs1_val : BitVec 64) : BitVec 64 := BitVec.ctz rs1_val
 def ctzw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ctz (BitVec.extractLsb 31 0 rs1_val))
 
 /--
+  This instruction counts the number of 1’s (i.e., set bits) in the source register.
+-/
+def cpop (rs1_val : BitVec 64) : BitVec 64 := BitVec.cpop rs1_val
+
+/--
+  This instruction counts the number of 1’s (i.e., set bits) in the least-significant word of the
+  source register.
+-/
+def cpopw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.cpop (BitVec.extractLsb 31 0 rs1_val))
+
+/--
+  Bitwise OR-combine of a single byte: the result is all zeros if the input byte is zero,
+  and all ones otherwise.
+-/
+def orcByte (b : BitVec 8) : BitVec 8 := if b = 0#8 then 0#8 else BitVec.allOnes 8
+
+/--
+  Combines the bits within each byte using bitwise logical OR. This sets the bits of each byte in
+  the result rd to all zeros if no bit within the respective byte of rs is set, or to all ones if
+  any bit within the respective byte of rs is set.
+-/
+def orcb (rs1_val : BitVec 64) : BitVec 64 :=
+  orcByte (BitVec.extractLsb 63 56 rs1_val) ++ orcByte (BitVec.extractLsb 55 48 rs1_val) ++
+  orcByte (BitVec.extractLsb 47 40 rs1_val) ++ orcByte (BitVec.extractLsb 39 32 rs1_val) ++
+  orcByte (BitVec.extractLsb 31 24 rs1_val) ++ orcByte (BitVec.extractLsb 23 16 rs1_val) ++
+  orcByte (BitVec.extractLsb 15 8 rs1_val) ++ orcByte (BitVec.extractLsb 7 0 rs1_val)
+
+/--
+  This instruction reverses the order of the bytes in rs.
+-/
+def rev8 (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.extractLsb 7 0 rs1_val ++ BitVec.extractLsb 15 8 rs1_val ++
+  BitVec.extractLsb 23 16 rs1_val ++ BitVec.extractLsb 31 24 rs1_val ++
+  BitVec.extractLsb 39 32 rs1_val ++ BitVec.extractLsb 47 40 rs1_val ++
+  BitVec.extractLsb 55 48 rs1_val ++ BitVec.extractLsb 63 56 rs1_val
+
+/--
   This instruction performs a rotate right on the least-significant word of rs1 by the amount in the
   least-significant log2(XLEN) bits of shamt. The resulting word value is sign-extended by
   copying bit 31 to all of the more-significant bits.
@@ -628,3 +665,78 @@ def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+/--
+  If rs2 contains the value zero, this instruction writes the value zero to rd. Otherwise, this
+  instruction copies the contents of rs1 to rd.
+-/
+def czeroeqz (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0#64 then 0#64 else rs1_val
+
+/--
+  If rs2 contains a nonzero value, this instruction writes the value zero to rd. Otherwise, this
+  instruction copies the contents of rs1 to rd.
+-/
+def czeronez (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
+  if rs2_val = 0#64 then rs1_val else 0#64
+
+/-! # Pseudo-instructions -/
+
+/--
+  Copy register rs1 into rd (`addi rd, rs1, 0`).
+-/
+def mv (rs1_val : BitVec 64) : BitVec 64 := rs1_val
+
+/--
+  Two's complement negation (`sub rd, x0, rs1`).
+-/
+def neg (rs1_val : BitVec 64) : BitVec 64 := 0#64 - rs1_val
+
+/--
+  Two's complement negation of the least-significant word, sign-extended to 64 bits
+  (`subw rd, x0, rs1`).
+-/
+def negw (rs1_val : BitVec 64) : BitVec 64 :=
+  BitVec.signExtend 64 (0#32 - BitVec.extractLsb 31 0 rs1_val)
+
+/--
+  One's complement (`xori rd, rs1, -1`).
+-/
+def not (rs1_val : BitVec 64) : BitVec 64 := ~~~rs1_val
+
+/--
+  Set rd to 1 if rs1 is equal to zero, else 0 (`sltiu rd, rs1, 1`).
+-/
+def seqz (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ofBool (rs1_val == 0#64))
+
+/--
+  Set rd to 1 if rs1 is not equal to zero, else 0 (`sltu rd, x0, rs1`).
+-/
+def snez (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ofBool (rs1_val != 0#64))
+
+/--
+  Set rd to 1 if rs1 is less than zero (signed), else 0 (`slt rd, rs1, x0`).
+-/
+def sltz (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ofBool (rs1_val.slt 0#64))
+
+/--
+  Set rd to 1 if rs1 is greater than zero (signed), else 0 (`slt rd, x0, rs1`).
+-/
+def sgtz (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.ofBool ((0#64).slt rs1_val))
+
+/--
+  Sign-extend the least-significant word of rs1 (`addiw rd, rs1, 0`).
+-/
+def sextw (rs1_val : BitVec 64) : BitVec 64 := BitVec.signExtend 64 (BitVec.extractLsb 31 0 rs1_val)
+
+/--
+  Zero-extend the least-significant byte of rs1 (`andi rd, rs1, 255`).
+-/
+def zextb (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 7 0 rs1_val)
+
+/--
+  Zero-extend the least-significant word of rs1 (`add.uw rd, rs1, x0`).
+-/
+def zextw (rs1_val : BitVec 64) : BitVec 64 := BitVec.zeroExtend 64 (BitVec.extractLsb 31 0 rs1_val)

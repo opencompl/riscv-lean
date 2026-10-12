@@ -580,6 +580,22 @@ theorem zbb_ctzw_eq (rs1_val : BitVec 64) :
     Sail.BitVec.countTrailingZeros, Sail.BitVec.countLeadingZeros, ← BitVec.setWidth_eq_extractLsb',
     Sail.BitVec.extractLsb]
 
+theorem zbb_cpop_eq (rs1_val : BitVec 64) :
+    SailRV64.zbb_cpop rs1_val = cpop rs1_val := by
+  sorry
+
+theorem zbb_cpopw_eq (rs1_val : BitVec 64) :
+    SailRV64.zbb_cpopw rs1_val = cpopw rs1_val := by
+  sorry
+
+theorem zbb_orcb_eq (rs1_val : BitVec 64) :
+    SailRV64.zbb_orcb rs1_val = orcb rs1_val := by
+  sorry
+
+theorem zbb_rev8_eq (rs1_val : BitVec 64) :
+    SailRV64.zbb_rev8 rs1_val = rev8 rs1_val := by
+  sorry
+
 theorem zbb_roriw_eq (shamt : BitVec 5) (rs1_val : BitVec 64) :
     SailRV64.zbb_roriw shamt rs1_val = roriw shamt rs1_val := by
   simp only [SailRV64.zbb_roriw, LeanRV64D.Functions.sign_extend, Sail.BitVec.signExtend,
@@ -681,3 +697,59 @@ theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+theorem zicond_czeroeqz_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64.zicond_rtype rs2_val rs1_val zicondop.CZERO_EQZ = czeroeqz rs2_val rs1_val := by
+  sorry
+
+theorem zicond_czeronez_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
+    SailRV64.zicond_rtype rs2_val rs1_val zicondop.CZERO_NEZ = czeronez rs2_val rs1_val := by
+  sorry
+
+/-! # Pseudo-instructions -/
+
+theorem mv_eq (rs1_val : BitVec 64) :
+    SailRV64.mv rs1_val = mv rs1_val := by
+  sorry
+
+theorem neg_eq (rs1_val : BitVec 64) :
+    SailRV64.neg rs1_val = neg rs1_val := by
+  sorry
+
+theorem negw_eq (rs1_val : BitVec 64) :
+    SailRV64.negw rs1_val = negw rs1_val := by
+  sorry
+
+theorem not_eq (rs1_val : BitVec 64) :
+    SailRV64.not rs1_val = not rs1_val := by
+  sorry
+
+theorem seqz_eq (rs1_val : BitVec 64) :
+    SailRV64.seqz rs1_val = seqz rs1_val := by
+  sorry
+
+theorem snez_eq (rs1_val : BitVec 64) :
+    SailRV64.snez rs1_val = snez rs1_val := by
+  sorry
+
+theorem sltz_eq (rs1_val : BitVec 64) :
+    SailRV64.sltz rs1_val = sltz rs1_val := by
+  sorry
+
+theorem sgtz_eq (rs1_val : BitVec 64) :
+    SailRV64.sgtz rs1_val = sgtz rs1_val := by
+  sorry
+
+theorem sextw_eq (rs1_val : BitVec 64) :
+    SailRV64.sextw rs1_val = sextw rs1_val := by
+  sorry
+
+theorem zextb_eq (rs1_val : BitVec 64) :
+    SailRV64.zextb rs1_val = zextb rs1_val := by
+  sorry
+
+theorem zextw_eq (rs1_val : BitVec 64) :
+    SailRV64.zextw rs1_val = zextw rs1_val := by
+  sorry

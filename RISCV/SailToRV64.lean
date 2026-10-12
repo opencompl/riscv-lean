@@ -255,6 +255,22 @@ theorem zbb_ctzw_eq (rs1 : regidx) (rd : regidx) :
     execute_CTZW rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_ctzw val1) := by rfl
 
+theorem zbb_cpop_eq (rs1 : regidx) (rd : regidx) :
+    execute_CPOP rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpop val1) := by sorry
+
+theorem zbb_cpopw_eq (rs1 : regidx) (rd : regidx) :
+    execute_CPOPW rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpopw val1) := by sorry
+
+theorem zbb_orcb_eq (rs1 : regidx) (rd : regidx) :
+    execute_ORCB rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_orcb val1) := by sorry
+
+theorem zbb_rev8_eq (rs1 : regidx) (rd : regidx) :
+    execute_REV8 rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_rev8 val1) := by sorry
+
 theorem zbb_roriw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     execute_RORIW shamt rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_roriw shamt val1) := by rfl
@@ -288,3 +304,55 @@ theorem zbkb_packw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+theorem zicond_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
+    execute_ZICOND_RTYPE rs2 rs1 rd op
+    = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.zicond_rtype val2 val1 op) := by sorry
+
+/-! # Pseudo-instructions -/
+
+theorem mv_eq (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE 0#12 rs1 rd iop.ADDI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.mv val1) := by sorry
+
+theorem neg_eq (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs1 zreg rd rop.SUB
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.neg val1) := by sorry
+
+theorem negw_eq (rs1 : regidx) (rd : regidx) :
+    execute_RTYPEW rs1 zreg rd ropw.SUBW
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.negw val1) := by sorry
+
+theorem not_eq (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE 0xFFF#12 rs1 rd iop.XORI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.not val1) := by sorry
+
+theorem seqz_eq (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE 1#12 rs1 rd iop.SLTIU
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.seqz val1) := by sorry
+
+theorem snez_eq (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs1 zreg rd rop.SLTU
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.snez val1) := by sorry
+
+theorem sltz_eq (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE zreg rs1 rd rop.SLT
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.sltz val1) := by sorry
+
+theorem sgtz_eq (rs1 : regidx) (rd : regidx) :
+    execute_RTYPE rs1 zreg rd rop.SLT
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.sgtz val1) := by sorry
+
+theorem sextw_eq (rs1 : regidx) (rd : regidx) :
+    execute_ADDIW 0#12 rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.sextw val1) := by sorry
+
+theorem zextb_eq (rs1 : regidx) (rd : regidx) :
+    execute_ITYPE 0xFF#12 rs1 rd iop.ANDI
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zextb val1) := by sorry
+
+theorem zextw_eq (rs1 : regidx) (rd : regidx) :
+    execute_ZBA_RTYPEUW zreg rs1 rd 0#2
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zextw val1) := by sorry
