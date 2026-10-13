@@ -302,7 +302,7 @@ theorem zbb_cpop_eq (rs1 : regidx) (rd : regidx) :
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpop val1) := by
   unfold execute_CPOP SailRV64.zbb_cpop count_ones SailRV64.count_ones_pure skeleton_unary
   simp only [Int.cast_ofNat_Int, Int.reduceSub, beq_iff_eq, bind_pure_comp, map_pure,
-    Functor.map_map, Int.toNat_natCast_add_one, Int.toNat_natCast, bind_pure]
+    Functor.map_map, Int.toNat_natCast_add_one, bind_pure]
   congr
   funext x
   simp only [forIn, forIn', IntRange.forIn']
@@ -310,10 +310,10 @@ theorem zbb_cpop_eq (rs1 : regidx) (rd : regidx) :
     (g := fun i _ r => if Sail.BitVec.access x i.toNat = 1#1 then r + 1 else r)]
   · simp
   · intro i h b hb
-    simp only [IntRange.instMemIntRange] at h
+    simp only [Membership.mem] at h
     split
     · have : (b : Int) + 1 ≤ 64 := by simp at h; omega
-      simp [PreSail.assert, this]
+      simp [LeanRV64D.assert, Sail.ConcurrencyInterfaceV1.PreSail.assert, this]
     · rfl
   · intros
     simp
@@ -325,7 +325,7 @@ theorem zbb_cpopw_eq (rs1 : regidx) (rd : regidx) :
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_cpopw val1) := by
   unfold execute_CPOPW SailRV64.zbb_cpopw count_ones SailRV64.count_ones_pure skeleton_unary
   simp only [beq_iff_eq, bind_pure_comp, map_pure, Functor.map_map, Int.toNat_natCast_add_one,
-    Int.toNat_natCast, bind_pure]
+    bind_pure]
   congr
   funext x
   simp only [forIn, forIn', IntRange.forIn']
@@ -334,10 +334,10 @@ theorem zbb_cpopw_eq (rs1 : regidx) (rd : regidx) :
       if Sail.BitVec.access (Sail.BitVec.extractLsb x 31 0) i.toNat = 1#1 then r + 1 else r)]
   · simp
   · intro i h b hb
-    simp only [IntRange.instMemIntRange] at h
+    simp only [Membership.mem] at h
     split
     · have : (b : Int) + 1 ≤ 32 := by simp at h; omega
-      simp [PreSail.assert, this]
+      simp [LeanRV64D.assert, Sail.ConcurrencyInterfaceV1.PreSail.assert, this]
     · rfl
   · intro i h b hb
     simp
@@ -348,7 +348,7 @@ theorem zbb_orcb_eq (rs1 : regidx) (rd : regidx) :
     execute_ORCB rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_orcb val1) := by
   unfold execute_ORCB SailRV64.zbb_orcb skeleton_unary
-  simp only [forIn, forIn', IntRange.forIn', bind_pure, pure_bind]
+  simp only [forIn, forIn', IntRange.forIn', bind_pure]
   congr 1
   funext x
   rw [IntRange.forIn'_loop_pure_body, pure_bind]
@@ -394,39 +394,39 @@ theorem zbkb_packw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
 /-! # "Zicond" Extension for Integer Conditional Operations -/
 
 theorem readReg_ok_state {r : Register}
-    {s s' : PreSail.SequentialState RegisterType Sail.trivialChoiceSource} {a}
-    (h : (PreSail.readReg r : SailM _) s = .ok a s') : s' = s := by
-  simp only [PreSail.readReg, bind, EStateM.bind, get, getThe, MonadStateOf.get, EStateM.get] at h
+    {s s' : Sail.ConcurrencyInterfaceV1.SequentialState RegisterType Sail.ConcurrencyInterfaceV1.trivialChoiceSource} {a}
+    (h : (Sail.ConcurrencyInterfaceV1.PreSail.readReg r : SailM _) s = .ok a s') : s' = s := by
+  simp only [Sail.ConcurrencyInterfaceV1.PreSail.readReg, bind, EStateM.bind, get, getThe, MonadStateOf.get, EStateM.get] at h
   revert h
   cases s.regs.get? r <;>
     simp [pure, EStateM.pure, throw, throwThe, MonadExceptOf.throw, EStateM.throw] <;> simp_all
 
 theorem readReg_error_state {r : Register}
-    {s s' : PreSail.SequentialState RegisterType Sail.trivialChoiceSource} {e}
-    (h : (PreSail.readReg r : SailM _) s = .error e s') : s' = s := by
-  simp only [PreSail.readReg, bind, EStateM.bind, get, getThe, MonadStateOf.get, EStateM.get] at h
+    {s s' : Sail.ConcurrencyInterfaceV1.SequentialState RegisterType Sail.ConcurrencyInterfaceV1.trivialChoiceSource} {e}
+    (h : (Sail.ConcurrencyInterfaceV1.PreSail.readReg r : SailM _) s = .error e s') : s' = s := by
+  simp only [Sail.ConcurrencyInterfaceV1.PreSail.readReg, bind, EStateM.bind, get, getThe, MonadStateOf.get, EStateM.get] at h
   revert h
   cases s.regs.get? r <;>
     simp [pure, EStateM.pure, throw, throwThe, MonadExceptOf.throw, EStateM.throw] <;> simp_all
 
 /-- The value of register `x` in state `s`, or `0` if reading it fails. -/
-def rX_pure (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) (x : regidx) :
+def rX_pure (s : Sail.ConcurrencyInterfaceV1.SequentialState RegisterType Sail.ConcurrencyInterfaceV1.trivialChoiceSource) (x : regidx) :
     BitVec 64 :=
   match (rX_bits x).run s with
   | .ok v _ => v
   | .error _ _ => 0
 
 /-- Reading a register never changes the state. -/
-theorem rX_bits_run (x : regidx) (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource) :
+theorem rX_bits_run (x : regidx) (s : Sail.ConcurrencyInterfaceV1.SequentialState RegisterType Sail.ConcurrencyInterfaceV1.trivialChoiceSource) :
     (rX_bits x).run s = .ok (rX_pure s x) s ∨ ∃ e, (rX_bits x).run s = .error e s := by
   unfold rX_pure
   rcases x with ⟨i⟩
   simp only [rX_bits, rX, EStateM.run]
-  split <;> simp [bind, EStateM.bind, pure, EStateM.pure, Sail.readReg] <;> split <;> simp <;>
+  split <;> simp [bind, EStateM.bind, pure, EStateM.pure, Sail.ConcurrencyInterfaceV1.PreSail.readReg] <;> split <;> simp <;>
     first | exact readReg_ok_state ‹_› | exact readReg_error_state ‹_›
 
 theorem zicond_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx)
-    (s : PreSail.SequentialState RegisterType Sail.trivialChoiceSource)
+    (s : Sail.ConcurrencyInterfaceV1.SequentialState RegisterType Sail.ConcurrencyInterfaceV1.trivialChoiceSource)
     (h : (rX_bits rs1).run s = .ok (rX_pure s rs1) s) :
     (execute_ZICOND_RTYPE rs2 rs1 rd op).run s
     = (skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.zicond_rtype val2 val1 op)).run s := by
@@ -434,7 +434,7 @@ theorem zicond_rtype_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx)
   unfold execute_ZICOND_RTYPE SailRV64.zicond_rtype skeleton_binary
   rcases rX_bits_run rs2 s with h2 | ⟨e, h2⟩ <;> simp only [EStateM.run] at h2 <;>
   cases op <;> simp [bind, EStateM.bind, pure, EStateM.pure, h, h2]
-  all_goals by_cases hc : rX_pure s rs2 = zeros <;> simp [hc, h, EStateM.pure]
+  all_goals by_cases hc : rX_pure s rs2 = zeros <;> simp [hc, h, EStateM.pure, EStateM.bind]
 
 /-! # Pseudo-instructions -/
 

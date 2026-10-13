@@ -496,21 +496,24 @@ theorem zbb_rtype_rol_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.BitVec.length,
     rol, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
   by_cases hzero : rs1_val.toNat % 64 = 0
-  · simp only [hzero, Int.cast_ofNat_Int, BitVec.shiftLeft_zero, BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
-      Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd,
-      Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
-    have hzero' : rs2_val >>> 64 = 0#64 := by
+  · simp only [hzero, Int.ofNat_eq_natCast, Int.cast_ofNat_Int, Int.toNat_zero,
+    BitVec.shiftLeft_zero, Int.sub_zero, BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
+    Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd,
+    Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
+    have hzero' : rs2_val >>> (64 : Int) = 0#64 := by
       ext i hi
-      simp
-    rw [show ((Int.ofNat 0).toNat) = 0 from rfl, BitVec.shiftLeft_zero,
-      show ((64 : Int) - ((0 : Nat) : Int)) = ((64 : Nat) : Int) from by simp,
-      bv_shiftRight_intCast, hzero', BitVec.or_zero]
-  · rw [show (Int.ofNat (rs1_val.toNat % 64)).toNat = rs1_val.toNat % 64 from rfl,
-        bv_shiftRight_intSub rs2_val 64 (rs1_val.toNat % 64) (by omega)]
-    congr 2
-    simp only [BitVec.toNat_sub, BitVec.extractLsb_toNat, Nat.shiftRight_zero, BitVec.reduceToNat,
-      Nat.reducePow]
-    omega
+      simp only [BitVec.getElem_zero, show rs2_val >>> (64 : Int) = rs2_val >>> 64 by exact UInt64.toBitVec_ofBitVec (rs2_val >>> 64)]
+      simp [BitVec.getElem_ushiftRight]
+    simp [hzero']
+  · simp only [Int.ofNat_eq_natCast, Int.natCast_emod, Int.cast_ofNat_Int,
+      BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
+      Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd]
+    congr 1
+    rw [Nat.mod_eq_of_lt (by omega), Int.toNat_emod (by simp) (by omega)]
+    simp only [Int.toNat_natCast, Int.reduceToNat, Int.natCast_emod, Int.cast_ofNat_Int]
+    rw [show (64 - ↑rs1_val.toNat % 64 : Int) = (64 - rs1_val.toNat % 64 : Nat)
+      by grind]
+    exact bv_shiftRight_intCast rs2_val (64 - rs1_val.toNat % 64)
 
 theorem zbb_rtype_ror_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtype rs1_val rs2_val brop_zbb.ROR  = ror rs1_val rs2_val := by
@@ -519,21 +522,27 @@ theorem zbb_rtype_ror_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.reducePow, Sail.BitVec.length,
     ror, BitVec.shiftLeft_eq', BitVec.ushiftRight_eq']
   by_cases hzero : rs1_val.toNat % 64 = 0
-  · have hzero' : rs2_val <<< (64 : Nat) = 0#64 := by
-      apply BitVec.eq_of_toNat_eq
+  · simp only [hzero, Int.ofNat_eq_natCast, Int.cast_ofNat_Int, Int.toNat_zero,
+    BitVec.shiftLeft_zero, Int.sub_zero, BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
+    Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd,
+    Nat.mod_self, BitVec.ushiftRight_zero, BitVec.or_self]
+    have hzero' : rs2_val <<< (64 : Int) = 0#64 := by
+      ext i hi
+      simp only [BitVec.getElem_zero, show rs2_val <<< (64 : Int) = rs2_val <<< 64 by exact UInt64.toBitVec_ofBitVec (rs2_val <<< 64)]
+      rw [BitVec.getElem_shiftLeft]
       simp
-    simp only [hzero, Int.cast_ofNat_Int, BitVec.ushiftRight_zero, BitVec.reduceOfNat,
-      BitVec.zero_sub, BitVec.toNat_neg, Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero,
-      Nat.sub_zero, Nat.reduceAdd, Nat.mod_self, BitVec.shiftLeft_zero, BitVec.or_self]
-    rw [show ((Int.ofNat 0).toNat) = 0 from rfl, BitVec.ushiftRight_zero,
-      show ((64 : Int) - ((0 : Nat) : Int)) = ((64 : Nat) : Int) from by simp,
-      bv_shiftLeft_intCast, hzero', BitVec.or_zero]
-  · rw [show (Int.ofNat (rs1_val.toNat % 64)).toNat = rs1_val.toNat % 64 from rfl,
-        bv_shiftLeft_intSub rs2_val 64 (rs1_val.toNat % 64) (by omega)]
-    congr 2
-    simp only [BitVec.toNat_sub, BitVec.extractLsb_toNat, Nat.shiftRight_zero, BitVec.reduceToNat,
-      Nat.reducePow]
-    omega
+      intros
+      omega
+    simp [hzero']
+  · simp only [Int.ofNat_eq_natCast, Int.natCast_emod, Int.cast_ofNat_Int,
+      BitVec.reduceOfNat, BitVec.zero_sub, BitVec.toNat_neg,
+      Nat.reducePow, BitVec.extractLsb_toNat, Nat.shiftRight_zero, Nat.sub_zero, Nat.reduceAdd]
+    congr 1
+    rw [Nat.mod_eq_of_lt (by omega), Int.toNat_emod (by simp) (by omega)]
+    simp only [Int.toNat_natCast, Int.reduceToNat, Int.natCast_emod, Int.cast_ofNat_Int]
+    rw [show (64 - ↑rs1_val.toNat % 64 : Int) = (64 - rs1_val.toNat % 64 : Nat)
+      by grind]
+    exact bv_shiftLeft_intCast rs2_val (64 - rs1_val.toNat % 64)
 
 theorem zbb_rtypew_rolw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
     SailRV64.zbb_rtypew rs1_val rs2_val bropw_zbb.ROLW  = rolw rs1_val rs2_val := by
@@ -660,7 +669,7 @@ theorem count_ones_loop (x : BitVec w) (range : IntRange) (hstart : range.start 
     have : k = w := by omega
     subst this
     rw [IntRange.forIn'_loop_id_not_mem]
-    simp [IntRange.instMemIntRange, hstart, hstep, hstop]
+    simp [Membership.mem, hstart, hstep, hstop]
     omega
   | succ n ih =>
     rw [IntRange.forIn'_loop_id_mem]
@@ -670,7 +679,7 @@ theorem count_ones_loop (x : BitVec w) (range : IntRange) (hstart : range.start 
       congr 1
       rw [BitVec.cpopNatRec_succ, Nat.zero_add, BitVec.cpopNatRec_eq (x.getLsbD k).toNat]
       by_cases hb : x.getLsbD k <;> simp [Sail.BitVec.access_eq_one_iff, hb]
-    · simp [IntRange.instMemIntRange, hstart, hstep, hstop]; omega
+    · simp [Membership.mem, hstart, hstep, hstop]; omega
 
 theorem count_ones_pure_eq (x : BitVec w) : SailRV64.count_ones_pure x = x.cpopNatRec w 0 := by
   have := count_ones_loop x { stop := (w : Int) - 1, step_pos := Int.one_ne_zero } rfl rfl rfl 0
@@ -700,10 +709,10 @@ theorem zbb_cpopw_eq (rs1_val : BitVec 64) :
 
 theorem zbb_orcb_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_orcb rs1_val = orcb rs1_val := by
-  simp only [SailRV64.zbb_orcb, Id.run, forIn, forIn', IntRange.forIn', pure_bind, bind_pure,
-    LeanRV64D.Functions.xlen]
-  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [IntRange.instMemIntRange])]
-  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [IntRange.instMemIntRange])]
+  simp only [SailRV64.zbb_orcb, Id.run, forIn, forIn', IntRange.forIn', bind_pure,
+    LeanRV64D.Functions.xlen, beq_iff_eq]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [Membership.mem])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [Membership.mem])]
   simp [Sail.BitVec.updateSubrange, Sail.BitVec.updateSubrange', Sail.BitVec.extractLsb,
     LeanRV64D.Functions.zeros, orcb, orcByte]
   bv_decide
@@ -711,9 +720,9 @@ theorem zbb_orcb_eq (rs1_val : BitVec 64) :
 theorem zbb_rev8_eq (rs1_val : BitVec 64) :
     SailRV64.zbb_rev8 rs1_val = rev8 rs1_val := by
   simp only [SailRV64.zbb_rev8, LeanRV64D.Functions.rev8, Id.run, forIn, forIn', IntRange.forIn',
-    pure_bind, bind_pure, Sail.BitVec.length]
-  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [IntRange.instMemIntRange])]
-  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [IntRange.instMemIntRange])]
+    bind_pure, Sail.BitVec.length]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [Membership.mem])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [Membership.mem])]
   simp [Sail.BitVec.updateSubrange, Sail.BitVec.updateSubrange', Sail.BitVec.extractLsb,
     LeanRV64D.Functions.zeros, rev8]
   bv_decide
@@ -921,7 +930,8 @@ theorem sextw_eq (rs1_val : BitVec 64) :
   simp only [SailRV64.sextw, SailRV64.addiw, LeanRV64D.Functions.sign_extend,
     Sail.BitVec.signExtend, Nat.sub_zero, Nat.reduceAdd, Sail.BitVec.extractLsb, sextw]
   rw [show ((2 : Int) ^ (3 : Int) * (8 : Int)).toNat = 64 by omega]
-  simp
+  congr 2
+  exact BitVec.add_zero rs1_val
 
 theorem zextb_eq (rs1_val : BitVec 64) :
     SailRV64.zextb rs1_val = zextb rs1_val := by
