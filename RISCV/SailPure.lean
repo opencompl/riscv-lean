@@ -184,6 +184,42 @@ def zbb_ctz (rs1 : BitVec 64) : BitVec 64 :=
 def zbb_ctzw (rs1 : BitVec 64) : BitVec 64 :=
   to_bits (l := 64) (Sail.BitVec.countTrailingZeros (Sail.BitVec.extractLsb rs1 31 0))
 
+
+
+/-- Monad-free version of `LeanRV64D.Functions.count_ones` (without the overflow assertion). -/
+def count_ones_pure (x : BitVec k_n) : Nat := Id.run do
+  let count : Nat := 0
+  let loop_i_lower := 0
+  let loop_i_upper := ((Sail.BitVec.length x) -i 1)
+  let mut loop_vars := count
+  for i in [loop_i_lower:loop_i_upper:1]i do
+    let count := loop_vars
+    loop_vars := if (((Sail.BitVec.access x i) == 1#1) : Bool) then (count +i 1) else count
+  pure loop_vars
+
+def zbb_cpop (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (count_ones_pure rs1)
+
+def zbb_cpopw (rs1 : BitVec 64) : BitVec 64 :=
+  to_bits (l := 64) (count_ones_pure (Sail.BitVec.extractLsb rs1 31 0))
+
+def zbb_orcb (rs1_val : BitVec 64) : BitVec 64 := Id.run do
+  let result : xlenbits := (zeros (n := 64))
+  let loop_i_lower := 0
+  let loop_i_upper := (LeanRV64D.Functions.xlen -i 8)
+  let mut loop_vars := result
+  for i in [loop_i_lower:loop_i_upper:8]i do
+    let result := loop_vars
+    loop_vars :=
+      (Sail.BitVec.updateSubrange result (i +i 7) i
+        (if (((Sail.BitVec.extractLsb rs1_val (i +i 7) i) == (zeros (n := (((i +i 7) -i i) +i 1)))) : Bool)
+        then 0x00#8
+        else 0xFF#8))
+  pure loop_vars
+
+def zbb_rev8 (rs1_val : BitVec 64) : BitVec 64 :=
+  rev8 rs1_val
+
 def zbb_roriw (shamt : BitVec 5) (rs1 : BitVec 64) :=
   sign_extend (m := 64) (rotate_bits_right (Sail.BitVec.extractLsb rs1 31 0) shamt)
 
@@ -233,3 +269,47 @@ def zbkb_packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
+
+/-! # "Zicond" Extension for Integer Conditional Operations -/
+
+def zicond_rtype (rs2_val : BitVec 64) (rs1_val : BitVec 64) (op : zicondop) : BitVec 64 :=
+  let condition : Bool :=
+    match op with
+    | .CZERO_EQZ => rs2_val == (zeros (n := 64))
+    | .CZERO_NEZ => rs2_val != (zeros (n := 64))
+  if condition then (zeros (n := 64)) else rs1_val
+
+/-! # Pseudo-instructions -/
+
+def mv (rs1_val : BitVec 64) : BitVec 64 :=
+  itype 0#12 rs1_val iop.ADDI
+
+def neg (rs1_val : BitVec 64) : BitVec 64 :=
+  rtype rop.SUB rs1_val (zeros (n := 64))
+
+def negw (rs1_val : BitVec 64) : BitVec 64 :=
+  rtypew ropw.SUBW rs1_val (zeros (n := 64))
+
+def not (rs1_val : BitVec 64) : BitVec 64 :=
+  itype 0xFFF#12 rs1_val iop.XORI
+
+def seqz (rs1_val : BitVec 64) : BitVec 64 :=
+  itype 1#12 rs1_val iop.SLTIU
+
+def snez (rs1_val : BitVec 64) : BitVec 64 :=
+  rtype rop.SLTU rs1_val (zeros (n := 64))
+
+def sltz (rs1_val : BitVec 64) : BitVec 64 :=
+  rtype rop.SLT (zeros (n := 64)) rs1_val
+
+def sgtz (rs1_val : BitVec 64) : BitVec 64 :=
+  rtype rop.SLT rs1_val (zeros (n := 64))
+
+def sextw (rs1_val : BitVec 64) : BitVec 64 :=
+  addiw 0#12 rs1_val
+
+def zextb (rs1_val : BitVec 64) : BitVec 64 :=
+  itype 0xFF#12 rs1_val iop.ANDI
+
+def zextw (rs1_val : BitVec 64) : BitVec 64 :=
+  zba_rtypeuw (zeros (n := 64)) rs1_val 0#2
