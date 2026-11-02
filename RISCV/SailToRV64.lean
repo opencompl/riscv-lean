@@ -69,12 +69,12 @@ theorem itype_xori_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
 theorem addiw_eq (imm : BitVec 12) (rs1 : regidx) (rd : regidx) :
     execute_ADDIW  imm rs1 rd = skeleton_unary rs1 rd (SailRV64.addiw imm) := by rfl
 
-theorem shiftiop_slli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+theorem shiftiop_slli_eq (shamt : BitVec 6) (rs1 : regidx) (rd : regidx) :
     execute_SHIFTIOP shamt rs1 rd sop.SLLI
     = skeleton_unary rs1 rd (fun val => SailRV64.shiftiop shamt sop.SLLI val) := by
-  have hf : (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a <<< BitVec.setWidth 6 shamt))
-          = (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a <<< (shamt.toNat % 64))) := by
-    funext a; rw [BitVec.shiftLeft_eq', BitVec.toNat_setWidth]
+  have hf : (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a <<< shamt))
+          = (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a <<< shamt.toNat)) := by
+    funext a; rw [BitVec.shiftLeft_eq']
   have he : BitVec.extractLsb 5 0 shamt = BitVec.setWidth 6 shamt := by
     apply BitVec.eq_of_toNat_eq
     simp only [BitVec.extractLsb_toNat, Nat.shiftRight_zero, BitVec.toNat_setWidth]
@@ -82,12 +82,12 @@ theorem shiftiop_slli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     Sail.BitVec.extractLsb, skeleton_unary, SailRV64.shiftiop, he]
   exact congrArg (rX_bits rs1 >>= ·) hf
 
-theorem shiftiop_srli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+theorem shiftiop_srli_eq (shamt : BitVec 6) (rs1 : regidx) (rd : regidx) :
     execute_SHIFTIOP shamt rs1 rd sop.SRLI
     = skeleton_unary rs1 rd (fun val => SailRV64.shiftiop shamt sop.SRLI val) := by
-  have hf : (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a >>> BitVec.setWidth 6 shamt))
-          = (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a >>> (shamt.toNat % 64))) := by
-    funext a; rw [BitVec.ushiftRight_eq', BitVec.toNat_setWidth]
+  have hf : (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a >>> shamt))
+          = (fun a : BitVec 64 => (fun _ => RETIRE_SUCCESS) <$> wX_bits rd (a >>> shamt.toNat)) := by
+    funext a; rw [BitVec.ushiftRight_eq']
   have he : BitVec.extractLsb 5 0 shamt = BitVec.setWidth 6 shamt := by
     apply BitVec.eq_of_toNat_eq
     simp only [BitVec.extractLsb_toNat, Nat.shiftRight_zero, BitVec.toNat_setWidth]
@@ -95,7 +95,7 @@ theorem shiftiop_srli_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     Sail.BitVec.extractLsb, skeleton_unary, SailRV64.shiftiop, he]
   exact congrArg (rX_bits rs1 >>= ·) hf
 
-theorem shiftiop_srai_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+theorem shiftiop_srai_eq (shamt : BitVec 6) (rs1 : regidx) (rd : regidx) :
     execute_SHIFTIOP shamt rs1 rd sop.SRAI
     = skeleton_unary rs1 rd (fun val => SailRV64.shiftiop shamt sop.SRAI val) := by
   simp [execute_SHIFTIOP, shift_bits_right_arith, LeanRV64D.Functions.log2_xlen,
@@ -361,7 +361,7 @@ theorem zbb_roriw_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
     execute_RORIW shamt rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_roriw shamt val1) := by rfl
 
-theorem zbb_rori_eq (shamt : BitVec 5) (rs1 : regidx) (rd : regidx) :
+theorem zbb_rori_eq (shamt : BitVec 6) (rs1 : regidx) (rd : regidx) :
     execute_RORI shamt rs1 rd
     = skeleton_unary rs1 rd (fun val1 => SailRV64.zbb_rori shamt val1) := by rfl
 
