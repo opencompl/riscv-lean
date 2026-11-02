@@ -266,6 +266,9 @@ def zbkb_packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   let result := ((Sail.BitVec.extractLsb rs2_val 15 0) ++ (Sail.BitVec.extractLsb rs1_val 15 0))
   sign_extend (m := 64) result
 
+def zbkb_brev8 (rs1_val : BitVec 64) : BitVec 64 :=
+  brev8 rs1_val
+
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/

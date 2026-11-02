@@ -662,6 +662,24 @@ def packw (rs2_val : BitVec 64) (rs1_val : BitVec 64) : BitVec 64 :=
   BitVec.signExtend 64
     ((BitVec.extractLsb 15 0 rs2_val) ++ (BitVec.extractLsb 15 0 rs1_val))
 
+/--
+  Reverses the order of the bits of a single byte.
+-/
+def revByte (b : BitVec 8) : BitVec 8 :=
+  BitVec.extractLsb 0 0 b ++ BitVec.extractLsb 1 1 b ++
+  BitVec.extractLsb 2 2 b ++ BitVec.extractLsb 3 3 b ++
+  BitVec.extractLsb 4 4 b ++ BitVec.extractLsb 5 5 b ++
+  BitVec.extractLsb 6 6 b ++ BitVec.extractLsb 7 7 b
+
+/--
+  This instruction reverses the order of the bits in every byte of a register.
+-/
+def brev8 (rs1_val : BitVec 64) : BitVec 64 :=
+  revByte (BitVec.extractLsb 63 56 rs1_val) ++ revByte (BitVec.extractLsb 55 48 rs1_val) ++
+  revByte (BitVec.extractLsb 47 40 rs1_val) ++ revByte (BitVec.extractLsb 39 32 rs1_val) ++
+  revByte (BitVec.extractLsb 31 24 rs1_val) ++ revByte (BitVec.extractLsb 23 16 rs1_val) ++
+  revByte (BitVec.extractLsb 15 8 rs1_val) ++ revByte (BitVec.extractLsb 7 0 rs1_val)
+
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
