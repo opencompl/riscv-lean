@@ -387,6 +387,10 @@ theorem zbkb_packw_eq (rs2 : regidx) (rs1 : regidx) (rd : regidx) :
     execute_ZBKB_PACKW rs2 rs1 rd
     = skeleton_binary rs2 rs1 rd (fun val1 val2 => SailRV64.zbkb_packw val2 val1) := by rfl
 
+theorem zbkb_brev8_eq (rs1 : regidx) (rd : regidx) :
+    execute_BREV8 rs1 rd
+    = skeleton_unary rs1 rd (fun val1 => SailRV64.zbkb_brev8 val1) := by rfl
+
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/

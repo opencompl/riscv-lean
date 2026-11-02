@@ -838,6 +838,26 @@ theorem zbkb_rtype_packw_eq (rs2_val : BitVec 64) (rs1_val : BitVec 64) :
   simp [SailRV64.zbkb_packw, packw, Sail.BitVec.extractLsb, LeanRV64D.Functions.sign_extend,
     Sail.BitVec.signExtend]
 
+theorem reverse_bits_eq (b : BitVec 8) :
+    LeanRV64D.Functions.reverse_bits b = revByte b := by
+  simp only [LeanRV64D.Functions.reverse_bits, Id.run, forIn, forIn', IntRange.forIn', bind_pure,
+    Sail.BitVec.length]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [Membership.mem])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [Membership.mem])]
+  simp [Sail.BitVec.update, Sail.BitVec.access, Sail.BitVec.updateSubrange',
+    LeanRV64D.Functions.zeros, revByte]
+  bv_decide
+
+theorem zbkb_brev8_eq (rs1_val : BitVec 64) :
+    SailRV64.zbkb_brev8 rs1_val = brev8 rs1_val := by
+  simp only [SailRV64.zbkb_brev8, LeanRV64D.Functions.brev8, Id.run, forIn, forIn', IntRange.forIn',
+    bind_pure, Sail.BitVec.length]
+  iterate 8 rw [IntRange.forIn'_loop_id_mem (h := by simp [Membership.mem])]
+  rw [IntRange.forIn'_loop_id_not_mem (h := by simp [Membership.mem])]
+  simp [Sail.BitVec.updateSubrange, Sail.BitVec.updateSubrange', Sail.BitVec.extractLsb,
+    LeanRV64D.Functions.zeros, reverse_bits_eq, brev8, revByte]
+  bv_decide
+
 /-! ## Zbkc: Carry-less multiplication for Cryptography -/
 
 /-! ## Zbkx: Carry-less multiplication for Cryptography -/
